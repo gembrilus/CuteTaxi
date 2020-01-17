@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "296492857434",
+    "firebase_url": "https://cuteteamproject-1d80b.firebaseio.com",
+    "project_id": "cuteteamproject-1d80b",
+    "storage_bucket": "cuteteamproject-1d80b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:296492857434:android:017e3bb3553ee4087b4063",
+        "android_client_info": {
+          "package_name": "ua.com.cuteteam.cutetaxiproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "296492857434-8sbhuahfjcntefotj03s7fn15ivs59ek.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDExg3J9NGGMe7vNus7Gw4hEG2-43ZNrgA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "296492857434-8sbhuahfjcntefotj03s7fn15ivs59ek.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
