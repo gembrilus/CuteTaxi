@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <SwitchPreferenceCompat
+        app:title="@string/title_send_notification_preference"
+        app:key="@string/key_send_notifications_preference"
+        app:summaryOn="@string/summary_on_send_notification_preference"
+        app:summaryOff="@string/summary_off_send_notification_preference"
+        app:defaultValue="true"/>
+
+</PreferenceScreen>

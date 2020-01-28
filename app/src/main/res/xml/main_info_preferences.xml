@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <EditTextPreference
+        app:dialogTitle="@string/dialog_title_name_preference"
+        app:key="@string/key_user_name_preference"
+        app:title="@string/title_name_preference"
+        app:allowDividerBelow="true"
+        app:useSimpleSummaryProvider="true" />
+
+    <EditTextPreference
+        app:dialogTitle="@string/dialog_title_phone_number_preference"
+        app:key="@string/key_user_phone_number_preference"
+        app:title="@string/title_phone_number_preference"
+        app:allowDividerAbove="true"
+        app:useSimpleSummaryProvider="true" />
+
+</PreferenceScreen>
