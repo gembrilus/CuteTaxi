@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_activity_settings">Settings</string>
+
+
+    // Main info category
+    <string name="title_main_info_category">Main Info</string>
+
+    <string name="dialog_title_name_preference">Enter your name</string>
+    <string name="title_name_preference">User name</string>
+
+    <string name="dialog_title_phone_number_preference">Enter a phone umber</string>
+    <string name="title_phone_number_preference">Phone number</string>
+
+    // Additional info category
+    <string name="title_additional_info_category">Additional Info</string>
+
+    <string name="dialog_title_list_addresses_preference">List of addresses</string>
+    <string name="title_favorite_addresses_preference">Favorite addresses</string>
+    <string name="summary_of_favorite_addresses_preference">Enter your favorite addresses from a new line</string>
+
+    // System settings category
+    <string name="title_system_settings_category">System Settings</string>
+
+    <string name="title_send_notification_preference">Send notifications</string>
+    <string name="summary_on_send_notification_preference">You will receive notifications when the app will be closed</string>
+    <string name="summary_off_send_notification_preference">There will no notifications when the app will be closed</string>
+    <string name="key_user_name_preference">user_name_preference</string>
+    <string name="key_user_phone_number_preference">user_phone_number_preference</string>
+    <string name="key_favorite_addresses_preference">favorite_addresses_preference</string>
+    <string name="key_send_notifications_preference">send_notifications_preference</string>
+
+</resources>
