@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">CuteTaxiProject</string>
+    <string name="app_name">CuteTaxi</string>
+
+    <string name="resend_code">If you didn\'t received sms-message, click here to send again</string>
+    <string name="phone_number">Phone number</string>
+    <string name="sms_code">SMS Code</string>
+    <string name="log_in">Log In</string>
 </resources>
