@@ -79,6 +79,7 @@ dependencies {
     //Moshi
     implementation "com.squareup.moshi:moshi:$moshiVersion"
     implementation "com.squareup.moshi:moshi-kotlin:$moshiVersion"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion"
     implementation "com.squareup.moshi:moshi-adapters:$moshiVersion"
 
