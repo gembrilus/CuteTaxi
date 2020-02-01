@@ -6,16 +6,17 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.View
+import androidx.lifecycle.ViewModelProvider
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.fragments.HeadPieceFragment
+import ua.com.cuteteam.cutetaxiproject.viewmodels.AuthViewModel
+import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.AuthViewModelFactory
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
-
-    companion object{
-        private const val REQUEST_CODE = 1
-        private const val AUTH_ACTIVITY_KEY = "authActivity"
-        private const val MAIN_ACTIVITY_KEY = "mainActivity"
+    private val authViewModel by lazy {
+        ViewModelProvider(this, AuthViewModelFactory())
+            .get(AuthViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,11 +31,12 @@ class MainActivity : AppCompatActivity() {
             override fun run() {
                 startAuthorization()
             }
-        }, 2000)
+        }, 1500)
     }
 
     private fun startAuthorization() {
         val intent = Intent(this, AuthActivity::class.java)
         startActivity(intent)
+        authViewModel.verifyPhoneNumber()
     }
 }
