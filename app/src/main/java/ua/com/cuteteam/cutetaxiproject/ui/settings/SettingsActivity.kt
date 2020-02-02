@@ -3,16 +3,18 @@ package ua.com.cuteteam.cutetaxiproject.ui.settings
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.*
 import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreference
+import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreferenceDialogFragmentCompat
 import ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.SettingsFragment
 
 private const val TAG = "CuteTaxi.SettingsActivity"
 private const val TITLE_TAG = "CuteTaxi.SettingsActivityTitle"
 
 class SettingsActivity : AppCompatActivity(),
-    PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
+    PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
+    PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,5 +66,22 @@ class SettingsActivity : AppCompatActivity(),
             }
             .commit()
     }
+
+    override fun onPreferenceDisplayDialog(
+        caller: PreferenceFragmentCompat,
+        pref: Preference?
+    ): Boolean =
+        when (pref) {
+            is ListBoxPreference -> ListBoxPreferenceDialogFragmentCompat.newInstance(pref.key)
+            is ListPreference -> ListPreferenceDialogFragmentCompat.newInstance(pref.key)
+            is EditTextPreference -> EditTextPreferenceDialogFragmentCompat.newInstance(pref.key)
+            else -> throw IllegalArgumentException()
+        }
+            .apply { setTargetFragment(caller, 0) }
+            .show(
+                supportFragmentManager,
+                ListBoxPreferenceDialogFragmentCompat.TAG
+            )
+            .run { true }
 
 }

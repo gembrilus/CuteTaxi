@@ -9,76 +9,40 @@ import android.content.SharedPreferences
  *
  */
 
+private const val IS_FIRST_START_KEY = "isFirstStart"
+private const val ROLE_KEY = "role"
 
-class AppSettingsHelper private constructor() {
+class AppSettingsHelper(private val shPref: SharedPreferences) {
 
-    private var _shPref: SharedPreferences? = null
-    private val shPref get() = _shPref
-        ?: throw IllegalArgumentException("An instance of SharedPreference is NULL." +
-                "You must to use a static method getInstance()" +
-                "to create an instance of SharedPreference")
+
+    /**
+     * Property that shows is a first start of the app
+     */
+    val isFirstStart: Boolean
+        get() = with(shPref.getBoolean(IS_FIRST_START_KEY, true)){
+            if (this) put(IS_FIRST_START_KEY, false)
+            this
+        }
+
 
     /**
      * Property of the user's role
      */
     var role: Int
-    get() = shPref.getInt("role", -1)
-    set(value) {
-        shPref.edit().apply {
-            putInt("role", value)
-            apply()
-        }
-    }
-
-    /**
-     * Read a user name from shared header_preferences
-     *
-     * @param key is a key for a storing the preference
-     */
-    fun getUserName(key: String) = shPref.getString(key, "")
+        get() = shPref.getInt(ROLE_KEY, -1)
+        set(value) = put(ROLE_KEY, value)
 
 
-    /**
-     * Write a user name to the file of shared header_preferences
-     *
-     * @param key is a key for a storing the preference
-     * @param value is a value of the preference
-     */
-    fun setUserName(key: String, value: String) {
-        shPref.edit().apply {
-            putString(key, value)
-            apply()
-        }
-    }
 
-    /**
-     * Read a phone number from shared header_preferences
-     *
-     * @param is a key for a storing the preference
-     */
-    fun getPhoneNumber(key: String): String = shPref.getString(key, null)
-        ?: throw IllegalArgumentException("No phone number. Please contact support")
-
-
-    /**
-     * Write a user name to the file of shared header_preferences
-     *
-     * @param key is a key for a storing the preference
-     * @param value is a value of the preference
-     */
-    fun setPhoneNumber(key: String, value: String) {
-        shPref.edit().apply {
-            putString(key, value)
-            apply()
-        }
-    }
-
-    companion object {
-
-        fun getInstance(sharedPreferences: SharedPreferences) = AppSettingsHelper().apply {
-            _shPref = sharedPreferences
-        }
-
-    }
-
+    private fun <T> put(key: String, value: T) =
+            with(shPref.edit()) {
+                when (value) {
+                    is Int -> putInt(key, value)
+                    is Boolean -> putBoolean(key, value)
+                    is String -> putString(key, value)
+                    is Float -> putFloat(key, value)
+                    is Long -> putLong(key, value)
+                }
+                apply()
+            }
 }

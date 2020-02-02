@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <SwitchPreferenceCompat
-        app:title="@string/title_send_notification_preference"
-        app:key="@string/key_send_notifications_preference"
-        app:summaryOn="@string/summary_on_send_notification_preference"
-        app:summaryOff="@string/summary_off_send_notification_preference"
-        app:defaultValue="true"/>
+    <PreferenceCategory
+        app:title="@string/title_features_category"
+        app:iconSpaceReserved="false">
+
+        <CheckBoxPreference
+            app:defaultValue="true"
+            app:key="@string/key_send_notifications_preference"
+            app:summaryOff="@string/summary_off_send_notification_preference"
+            app:summaryOn="@string/summary_on_send_notification_preference"
+            app:title="@string/title_send_notification_preference" />
+
+        <EditTextPreference
+            app:defaultValue="60"
+            app:dialogTitle="@string/dialog_title_delay_coords_preference"
+            app:key="@string/key_delay_coords_upd_preference"
+            app:title="@string/title_delay_coords_upd_preference"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="@string/title_interface_category"
+        app:iconSpaceReserved="false">
+
+        <DropDownPreference
+            app:entries="@array/theme_entries"
+            app:entryValues="@array/theme_entries_values"
+            app:defaultValue="@string/value_item_light_theme"
+            app:key="@string/key_app_theme_preference"
+            app:title="@string/title_app_theme_preference"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
 
 </PreferenceScreen>
