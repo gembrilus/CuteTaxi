@@ -10,7 +10,7 @@ import ua.com.cuteteam.cutetaxiproject.R
 
 class ListBoxAdapter(private val list: MutableSet<String>) : BaseAdapter() {
 
-    private val checkedItems = mutableListOf<Int>()
+    private val checkedItems = mutableListOf<String>()
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view = convertView
@@ -20,11 +20,12 @@ class ListBoxAdapter(private val list: MutableSet<String>) : BaseAdapter() {
         with(view) {
             isClickable = true
             setOnLongClickListener {
+                val item = list.elementAt(position)
                 it.cbBox.visibility = if (it.cbBox.isVisible) {
-                    checkedItems.remove(position)
+                    checkedItems.remove(item)
                     View.GONE
                 } else {
-                    checkedItems.add(position)
+                    checkedItems.add(item)
                     it.cbBox.isChecked = true
                     View.VISIBLE
                 }
@@ -52,7 +53,7 @@ class ListBoxAdapter(private val list: MutableSet<String>) : BaseAdapter() {
     }
 
     fun removeChecked() = checkedItems.forEach {
-        remove(list.elementAt(it))
+        remove(it)
     }
 
 }
