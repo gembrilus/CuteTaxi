@@ -1,19 +1,40 @@
 package ua.com.cuteteam.cutetaxiproject.viewmodels
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.android.gms.tasks.TaskExecutors
-import com.google.firebase.FirebaseException
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.PhoneAuthProvider
+import ua.com.cuteteam.cutetaxiproject.AuthListener
 import ua.com.cuteteam.cutetaxiproject.AuthProvider
-import java.util.concurrent.TimeUnit
 
-class AuthViewModel: ViewModel() {
+class AuthViewModel: ViewModel(), AuthListener {
 
-    val authProvider = AuthProvider()
+    private val authProvider = AuthProvider().apply { authListener = this@AuthViewModel }
 
-    fun verifyPhoneNumber() {
-        authProvider.verifyPhoneNumber()
+    val isUserSignIn by lazy {
+        MutableLiveData<Boolean>(isUserSignedIn())
     }
+
+    fun verifyPhoneNumber(number: String) {
+        authProvider.verifyPhoneNumber(number)
+    }
+
+    fun isUserSignedIn() = authProvider.isUserSignedIn()
+
+    fun signOut() = authProvider.signOutUser()
+
+    fun signIn(smsCode: String) {
+        authProvider.signInWithPhoneAuthCredential(authProvider.createCredential(smsCode))
+    }
+
+    override fun onStarted() {
+
+    }
+
+    override fun onSuccess() {
+        isUserSignIn.value = true
+    }
+
+    override fun onFailure() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
 }

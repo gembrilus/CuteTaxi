@@ -15,6 +15,30 @@
       },
       "oauth_client": [
         {
+          "client_id": "296492857434-q43bqnqc0p2dkrrn2lh2j421f9phplsm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ua.com.cuteteam.cutetaxiproject",
+            "certificate_hash": "9693a4ec1730dc1935b6b1751893cc53fbc934e3"
+          }
+        },
+        {
+          "client_id": "296492857434-gvt6hlogbkoausrdc2213slb1egpsrri.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ua.com.cuteteam.cutetaxiproject",
+            "certificate_hash": "0b000451f28899ae8e5c1e9e80dd1dbf42a16927"
+          }
+        },
+        {
+          "client_id": "296492857434-loq3jqrl540aeq1i1glgra8duvqs096k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ua.com.cuteteam.cutetaxiproject",
+            "certificate_hash": "5109eb7c2fa5535d69a94c35103488418e296c11"
+          }
+        },
+        {
           "client_id": "296492857434-8sbhuahfjcntefotj03s7fn15ivs59ek.apps.googleusercontent.com",
           "client_type": 3
         }
