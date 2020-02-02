@@ -10,31 +10,45 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
 import java.util.concurrent.TimeUnit
 
+interface AuthListener {
+    fun onStarted()
+    fun onSuccess()
+    fun onFailure()
+}
+
 class AuthProvider {
     private val phoneAuthProvider = PhoneAuthProvider.getInstance()
     private val auth = FirebaseAuth.getInstance()
+    private lateinit var verificationId: String
+    var authListener: AuthListener? = null
 
     private val verificationStateChangedCallbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+        override fun onCodeSent(id: String, token: PhoneAuthProvider.ForceResendingToken) {
+            super.onCodeSent(id, token)
+            authListener?.onStarted()
+            verificationId = id
+        }
+
         override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-            Log.d("authProvider", "onVerificationCompleted:$credential")
+            signInWithPhoneAuthCredential(credential)
         }
 
         override fun onVerificationFailed(credential: FirebaseException) {
-            Log.d(this.javaClass.name, "onVerificationFailed")
-        }
-
-        override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
-            super.onCodeSent(verificationId, token)
-            val credential = PhoneAuthProvider.getCredential(verificationId, "888999")
-            signInWithPhoneAuthCredential(credential)
+            authListener?.onFailure()
         }
     }
 
     fun isUserSignedIn() = FirebaseAuth.getInstance().currentUser != null
 
-    fun verifyPhoneNumber() {
+    fun signOutUser() = auth.signOut()
+
+    fun createCredential(smsCode: String) = PhoneAuthProvider.getCredential(verificationId, smsCode)
+
+
+    fun verifyPhoneNumber(number: String) {
         phoneAuthProvider.verifyPhoneNumber(
-            "+1 555-666-7777",
+            number,
             60,
             TimeUnit.SECONDS,
             TaskExecutors.MAIN_THREAD,
@@ -42,14 +56,11 @@ class AuthProvider {
         )
     }
 
-    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+    fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
         auth.signInWithCredential(credential).addOnCompleteListener(TaskExecutors.MAIN_THREAD, OnCompleteListener { task ->
             if (task.isSuccessful) {
-                // Sign in success, update UI with the signed-in user's information
-                Log.d(this.javaClass.name, "signInWithCredential:success")
-
                 val user = task.result?.user
-                // ...
+                authListener?.onSuccess()
             } else {
                 // Sign in failed, display a message and update the UI
                 Log.w(this.javaClass.name, "signInWithCredential:failure", task.exception)

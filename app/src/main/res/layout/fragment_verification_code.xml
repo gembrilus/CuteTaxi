@@ -3,25 +3,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragments.AuthFragment"
-    android:orientation="vertical"
-    android:padding="25dp">
+    tools:context=".fragments.VerificationCodeFragment"
+    android:padding="25dp"
+    android:orientation="vertical">
 
     <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/phone_number_et"
+        android:id="@+id/sms_code_et"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/phone_number"
+        android:hint="@string/sms_code"
         android:imeOptions="actionDone"
-        android:inputType="phone" />
+        android:inputType="number" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/continue_btn"
+        android:id="@+id/resend_code_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:text="@string/resend_code"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/log_in_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
-        android:text="@string/continue_"/>
+        android:text="@string/log_in"/>
 
 </LinearLayout>

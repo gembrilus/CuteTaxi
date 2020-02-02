@@ -1,11 +1,8 @@
 package ua.com.cuteteam.cutetaxiproject.activities
 
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.AttributeSet
-import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.fragments.HeadPieceFragment
@@ -19,6 +16,8 @@ class MainActivity : AppCompatActivity() {
             .get(AuthViewModel::class.java)
     }
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -29,14 +28,20 @@ class MainActivity : AppCompatActivity() {
 
         Timer().schedule(object : TimerTask() {
             override fun run() {
-                startAuthorization()
+                if (authViewModel.isUserSignedIn()) startMapActivity()
+                else startAuthorization()
             }
         }, 1500)
+        authViewModel.signOut()
     }
 
     private fun startAuthorization() {
         val intent = Intent(this, AuthActivity::class.java)
         startActivity(intent)
-        authViewModel.verifyPhoneNumber()
+    }
+
+    private fun startMapActivity() {
+        val intent = Intent(this, FakeMapActivity::class.java)
+        startActivity(intent)
     }
 }
