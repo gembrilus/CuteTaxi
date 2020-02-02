@@ -1,5 +1,6 @@
 package ua.com.cuteteam.cutetaxiproject.ui.settings.fragments
 
+import android.view.inputmethod.EditorInfo
 import androidx.preference.EditTextPreference
 import ua.com.cuteteam.cutetaxiproject.R
 
@@ -11,11 +12,19 @@ class MainInfoFragment : BaseSettingsFragment() {
 
         findPreference<EditTextPreference>(
             getString(R.string.key_user_name_preference)
-        )?.preferenceDataStore = appSettingsToFirebaseStore
+        )?.apply {
+            preferenceDataStore = appSettingsToFirebaseStore
+            setOnBindEditTextListener { it.setSingleLine() }
+        }
 
         findPreference<EditTextPreference>(
             getString(R.string.key_user_phone_number_preference)
-        )?.preferenceDataStore = appSettingsToFirebaseStore
+        )?.apply {
+            preferenceDataStore = appSettingsToFirebaseStore
+            setOnBindEditTextListener {
+                it.setSingleLine()
+                it.inputType = EditorInfo.TYPE_CLASS_PHONE
+            }
+        }
     }
-
 }

@@ -7,10 +7,17 @@ import androidx.preference.PreferenceDataStore
  * Class AppSettingsStore stores and/or reads values of shared header_preferences in a custom file on the device
  * @param sharedPreferences is a replacement of default store place
  */
+open class AppSettingsStore: PreferenceDataStore(){
 
-open class AppSettingsStore(
-    private val sharedPreferences: SharedPreferences)
-    : PreferenceDataStore(){
+    private var _sharedPreferences: SharedPreferences? = null
+    protected val sharedPreferences get() = _sharedPreferences
+        ?.let { it }
+        ?: throw IllegalArgumentException("A property of SharedPreferences is null." +
+                "Please set an instance of shared preferences with setSharedPreferences() first.")
+
+    fun setSharedPreferences(sharedPreferences: SharedPreferences){
+        _sharedPreferences = sharedPreferences
+    }
 
     override fun getBoolean(key: String?, defValue: Boolean): Boolean {
         return sharedPreferences.getBoolean(key, defValue)

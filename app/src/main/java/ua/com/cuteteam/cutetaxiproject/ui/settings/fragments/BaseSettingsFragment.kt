@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
 import ua.com.cuteteam.cutetaxiproject.settings.AppSettingsStore
 import ua.com.cuteteam.cutetaxiproject.settings.AppSettingsToFirebaseStore
+import ua.com.cuteteam.cutetaxiproject.settings.FbDbMock
 
 const val SP_FILE = "CuteTaxi_Settings"
 
@@ -17,12 +18,18 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         requireActivity().getSharedPreferences(SP_FILE, Context.MODE_PRIVATE)
     }
 
-    protected val appSettingsStore by lazy {
-        AppSettingsStore(sharedPreferences)
+    private val appSettingsStore by lazy {
+        AppSettingsStore().apply {
+            setSharedPreferences(sharedPreferences)
+        }
     }
 
     protected val appSettingsToFirebaseStore by lazy {
-        AppSettingsToFirebaseStore(sharedPreferences)
+        AppSettingsToFirebaseStore().apply {
+            val fbDbMock = FbDbMock()
+            setPutFunction(fbDbMock::putValueToDb)
+            setGetFunction(fbDbMock::getValueFromDb)
+        }
     }
 
     final override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

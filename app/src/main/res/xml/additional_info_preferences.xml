@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <EditTextPreference
+    <ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreference
+        app:dialogLayout="@layout/preference_dialog_listbox"
         app:dialogTitle="@string/dialog_title_list_addresses_preference"
         app:key="@string/key_favorite_addresses_preference"
-        app:title="@string/title_favorite_addresses_preference"
-        app:summary="@string/summary_of_favorite_addresses_preference" />
+        app:summary="@string/summary_of_favorite_addresses_preference"
+        app:title="@string/title_favorite_addresses_preference" />
+
+    <ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreference
+        app:dialogLayout="@layout/preference_dialog_listbox"
+        app:dialogTitle="@string/dilaog_title_blacklist_preference"
+        app:key="@string/key_black_list_preference"
+        app:summary="@string/summary_blacklist"
+        app:title="@string/title_blacklist_preference" />
 
 </PreferenceScreen>

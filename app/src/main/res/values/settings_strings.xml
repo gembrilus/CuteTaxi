@@ -3,31 +3,89 @@
     <string name="title_activity_settings">Settings</string>
 
 
-    // Main info category
+    /***************************** Main info category (fragment) ***************************/
+
     <string name="title_main_info_category">Main Info</string>
 
+    // Name preference
+
+    <string name="key_user_name_preference">name</string>
     <string name="dialog_title_name_preference">Enter your name</string>
     <string name="title_name_preference">User name</string>
 
+
+    //Phone number preference
+
+    <string name="key_user_phone_number_preference">phone</string>
     <string name="dialog_title_phone_number_preference">Enter a phone umber</string>
     <string name="title_phone_number_preference">Phone number</string>
 
-    // Additional info category
+    /******************************************************************************************/
+    /
+    /
+    /
+    /
+    /**************************** Additional info category (fragment) *************************/
+
     <string name="title_additional_info_category">Additional Info</string>
 
+    // Favorite addresses preference
+
+    <string name="key_favorite_addresses_preference">favorite_addresses</string>
     <string name="dialog_title_list_addresses_preference">List of addresses</string>
     <string name="title_favorite_addresses_preference">Favorite addresses</string>
     <string name="summary_of_favorite_addresses_preference">Enter your favorite addresses from a new line</string>
 
-    // System settings category
+    <string name="listbox_hint_your_favorite_address">Your favorite address</string>
+
+    // Black list of drivers
+
+    <string name="dilaog_title_blacklist_preference">Add or remove driver</string>
+    <string name="key_black_list_preference">black_list</string>
+    <string name="summary_blacklist">You can add or remove bad drivers here.</string>
+    <string name="title_blacklist_preference">Black list of drivers</string>
+
+
+    /******************************************************************************************/
+    /
+    /
+    /
+    /
+    /****************************** System settings category (fragment) ************************/
+
     <string name="title_system_settings_category">System Settings</string>
 
+    /******** Features category ********/
+
+    <string name="title_features_category">Features</string>
+
+    // Delay preference
+
+    <string name="key_delay_coords_upd_preference">delay_coords_updating</string>
+    <string name="title_delay_coords_upd_preference">Delay of coordinates updating in sec</string>
+    <string name="dialog_title_delay_coords_preference">Enter a delay in sec</string>
+
+    // Notification preference
+
+    <string name="key_send_notifications_preference">send_notifications</string>
     <string name="title_send_notification_preference">Send notifications</string>
     <string name="summary_on_send_notification_preference">You will receive notifications when the app will be closed</string>
     <string name="summary_off_send_notification_preference">There will no notifications when the app will be closed</string>
-    <string name="key_user_name_preference">user_name_preference</string>
-    <string name="key_user_phone_number_preference">user_phone_number_preference</string>
-    <string name="key_favorite_addresses_preference">favorite_addresses_preference</string>
-    <string name="key_send_notifications_preference">send_notifications_preference</string>
+
+    /******* App interface category ******/
+
+    <string name="title_interface_category">Interface</string>
+
+    // Themes preference
+
+    <string name="key_app_theme_preference">app_theme</string>
+    <string name="title_app_theme_preference">App theme</string>
+    <string name="name_item_light_theme">Light</string>
+    <string name="name_item_dark_theme">Dark</string>
+    <string name="value_item_light_theme">light</string>
+    <string name="value_item_dark_theme">dark</string>
+
+
+    /*******************************************************************************************/
 
 </resources>
