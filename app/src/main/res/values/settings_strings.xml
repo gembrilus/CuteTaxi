@@ -34,7 +34,7 @@
     <string name="key_favorite_addresses_preference">favorite_addresses</string>
     <string name="dialog_title_list_addresses_preference">List of addresses</string>
     <string name="title_favorite_addresses_preference">Favorite addresses</string>
-    <string name="summary_of_favorite_addresses_preference">Enter your favorite addresses from a new line</string>
+    <string name="summary_of_favorite_addresses_preference">Add your favorite addresses here</string>
 
     <string name="listbox_hint_your_favorite_address">Your favorite address</string>
 
