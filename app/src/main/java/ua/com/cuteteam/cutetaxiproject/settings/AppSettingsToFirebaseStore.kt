@@ -1,5 +1,12 @@
 package ua.com.cuteteam.cutetaxiproject.settings
 
+private const val ERROR_MESSAGE_PUT = "You need to set a 'put' function first. " +
+        "Use a public method 'setPutFunction()'"
+
+private const val ERROR_MESSAGE_GET = "You need to set a 'get' function first. " +
+        "Use a public method 'setGetFunction()'"
+
+
 /**
  * Class AppSettingsToFirebaseStore stores and/or reads values of shared header_preferences in a file on the device and
  * send changes into the Firebase database
@@ -9,8 +16,7 @@ class AppSettingsToFirebaseStore: AppSettingsStore() {
     private var _put: ((String, Array<String>) -> Unit)? = null
     private val put get() = _put
         ?.let { it }
-        ?: throw IllegalArgumentException("You need to set a 'put' function first. " +
-                "Use a public method 'setPutFunction()'")
+        ?: throw IllegalArgumentException(ERROR_MESSAGE_PUT)
 
     /**
      * Sets a function that puts values into the database.
@@ -26,8 +32,7 @@ class AppSettingsToFirebaseStore: AppSettingsStore() {
     private var _get: ((String) -> Array<String>)? = null
     private val get get() = _get
         ?.let { it }
-        ?: throw IllegalArgumentException("You need to set a 'get' function first. " +
-                "Use a public method 'setGetFunction()'")
+        ?: throw IllegalArgumentException(ERROR_MESSAGE_GET)
 
 
     /**

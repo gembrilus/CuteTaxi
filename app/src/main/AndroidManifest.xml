@@ -16,11 +16,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ui.settings.SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="ua.com.cuteteam.cutetaxiproject.MainActivity" />
+            android:label="@string/title_activity_settings">
         </activity>
 
         <meta-data
