@@ -30,6 +30,7 @@ class VerificationCodeFragment : Fragment(), View.OnClickListener {
     override fun onClick(view: View?) {
         when(view) {
             log_in_btn -> (activity as AuthActivity).onLogInButtonClicked()
+            ///resend_code_btn ->
         }
     }
 }
