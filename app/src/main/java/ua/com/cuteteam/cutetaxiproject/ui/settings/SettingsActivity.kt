@@ -1,13 +1,18 @@
 package ua.com.cuteteam.cutetaxiproject.ui.settings
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.preference.*
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreference
 import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreferenceDialogFragmentCompat
-import ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.SettingsFragment
+import ua.com.cuteteam.cutetaxiproject.settings.AppSettingsHelper
+import ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.SP_FILE
+import ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.HeaderFragment
 
 private const val TAG = "CuteTaxi.SettingsActivity"
 private const val TITLE_TAG = "CuteTaxi.SettingsActivityTitle"
@@ -24,7 +29,7 @@ class SettingsActivity : AppCompatActivity(),
             ?.let {
                 title = savedInstanceState.getCharSequence(TITLE_TAG)
             }
-            ?: replaceFragment(SettingsFragment())
+            ?: replaceFragment(HeaderFragment())
 
         supportFragmentManager.addOnBackStackChangedListener {
             if (supportFragmentManager.backStackEntryCount == 0) {

@@ -42,16 +42,31 @@ class ListBoxAdapter(private val list: MutableSet<String>) : BaseAdapter() {
     override fun getItemId(position: Int): Long = position.toLong()
     override fun getCount(): Int = list.size
 
+
+    /**
+     * Adds a value to an adapter data list
+     * @param value is a value that should be added to the list
+     *
+     */
     fun add(value: String) {
         list.add(value)
         notifyDataSetChanged()
     }
 
+
+    /**
+     * Removes a value from an adapter data list
+     * @param value is a value that should be removed from the list
+     *
+     */
     fun remove(value: String) {
         list.remove(value)
         notifyDataSetChanged()
     }
 
+    /**
+     * Removes checked values from an adapter data list. Values are checked with long click on it
+     */
     fun removeChecked() = checkedItems.forEach {
         remove(it)
     }
