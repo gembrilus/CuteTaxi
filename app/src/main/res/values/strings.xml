@@ -6,7 +6,5 @@
     <string name="sms_code">SMS Code</string>
     <string name="continue_">Continue</string>
     <string name="log_in">Log In</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="invalid_phone_number_toast">Invalid phone number. Please try again</string>
 </resources>

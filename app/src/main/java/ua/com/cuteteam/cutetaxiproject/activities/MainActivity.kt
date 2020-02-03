@@ -32,7 +32,6 @@ class MainActivity : AppCompatActivity() {
                 else startAuthorization()
             }
         }, 1500)
-        authViewModel.signOut()
     }
 
     private fun startAuthorization() {

@@ -1,11 +1,9 @@
 package ua.com.cuteteam.cutetaxiproject.activities
 
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.AttributeSet
-import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.fragment_auth.*
@@ -23,10 +21,6 @@ class AuthActivity : AppCompatActivity() {
             .get(AuthViewModel::class.java)
     }
 
-    private val authorizationObserver = Observer<Boolean> {
-        if (it) openFakeMap()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
@@ -35,15 +29,21 @@ class AuthActivity : AppCompatActivity() {
             .replace(R.id.auth_fl, AuthFragment())
             .commit()
 
-        authViewModel.isUserSignIn.observe(this, authorizationObserver)
+        authViewModel.isCodeSent.observe(this, Observer {
+            if (it) supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.auth_fl, VerificationCodeFragment())
+                .addToBackStack(null)
+                .commit()
+        })
+        authViewModel.isUserSignIn.observe(this, Observer { if (it) openFakeMap() })
+        authViewModel.isVerificationFailed.observe(this, Observer {
+            if (it) Toast.makeText(this, getString(R.string.invalid_phone_number_toast), Toast.LENGTH_SHORT).show()
+        })
     }
 
     fun onContinueButtonClicked() {
         authViewModel.verifyPhoneNumber(phone_number_et.text.toString())
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.auth_fl, VerificationCodeFragment())
-            .commit()
     }
 
     fun onLogInButtonClicked() {
@@ -57,7 +57,7 @@ class AuthActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        finishAffinity()
+        if (supportFragmentManager.backStackEntryCount == 0) finishAffinity()
     }
 
 }

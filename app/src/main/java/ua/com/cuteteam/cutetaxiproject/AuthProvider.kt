@@ -8,13 +8,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
+import ua.com.cuteteam.cutetaxiproject.viewmodels.AuthListener
 import java.util.concurrent.TimeUnit
-
-interface AuthListener {
-    fun onStarted()
-    fun onSuccess()
-    fun onFailure()
-}
 
 class AuthProvider {
     private val phoneAuthProvider = PhoneAuthProvider.getInstance()
@@ -34,8 +29,8 @@ class AuthProvider {
             signInWithPhoneAuthCredential(credential)
         }
 
-        override fun onVerificationFailed(credential: FirebaseException) {
-            authListener?.onFailure()
+        override fun onVerificationFailed(exception: FirebaseException) {
+            authListener?.onFailure(exception)
         }
     }
 
