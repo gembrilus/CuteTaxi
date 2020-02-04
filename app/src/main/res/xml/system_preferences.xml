@@ -28,7 +28,7 @@
         <DropDownPreference
             app:entries="@array/theme_entries"
             app:entryValues="@array/theme_entries_values"
-            app:defaultValue="@string/value_item_light_theme"
+            app:defaultValue="@string/default_name_item_theme"
             app:key="@string/key_app_theme_preference"
             app:title="@string/title_app_theme_preference"
             app:useSimpleSummaryProvider="true" />

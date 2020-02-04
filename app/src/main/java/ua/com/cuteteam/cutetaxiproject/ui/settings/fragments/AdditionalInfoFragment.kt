@@ -1,18 +1,25 @@
 package ua.com.cuteteam.cutetaxiproject.ui.settings.fragments
 
 import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreference
+import ua.com.cuteteam.cutetaxiproject.settings.ADDITIONAL_FACILITIES_CATEGORY_KEY
+import ua.com.cuteteam.cutetaxiproject.settings.CAR_CATEGORY_KEY
+import ua.com.cuteteam.cutetaxiproject.settings.IMPROVEMENTS_CATEGORY_KEY
 
-class AdditionalInfoFragment : BaseSettingsFragment() {
+class AdditionalInfoFragment() : BaseSettingsFragment() {
+
     override val resourceId: Int
         get() = R.xml.additional_info_preferences
 
+    val prefsForDatabase = listOf(
+        IMPROVEMENTS_CATEGORY_KEY,
+        ADDITIONAL_FACILITIES_CATEGORY_KEY,
+        CAR_CATEGORY_KEY
+    )
+
     override fun setup() {
 
-        findPreference<ListBoxPreference>(
-            getString(R.string.key_favorite_addresses_preference)
-        )?.apply {
-            preferenceDataStore = appSettingsToFirebaseStore
-        }
+        prefsForDatabase.forEach { setDataStore(it, appSettingsToFirebaseStore) }
+
     }
+
 }

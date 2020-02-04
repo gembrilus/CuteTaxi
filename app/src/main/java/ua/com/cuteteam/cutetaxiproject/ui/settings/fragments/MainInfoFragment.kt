@@ -3,28 +3,27 @@ package ua.com.cuteteam.cutetaxiproject.ui.settings.fragments
 import android.view.inputmethod.EditorInfo
 import androidx.preference.EditTextPreference
 import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.settings.NAME_KEY
+import ua.com.cuteteam.cutetaxiproject.settings.PHONE_KEY
 
 class MainInfoFragment : BaseSettingsFragment() {
     override val resourceId: Int
         get() = R.xml.main_info_preferences
 
+    private val prefsForDatabase = listOf(
+        NAME_KEY,
+        PHONE_KEY
+    )
+
     override fun setup() {
 
-        findPreference<EditTextPreference>(
-            getString(R.string.key_user_name_preference)
-        )?.apply {
-            preferenceDataStore = appSettingsToFirebaseStore
-            setOnBindEditTextListener { it.setSingleLine() }
-        }
+        prefsForDatabase.forEach { setDataStore(it, appSettingsToFirebaseStore) }
 
         findPreference<EditTextPreference>(
-            getString(R.string.key_user_phone_number_preference)
-        )?.apply {
-            preferenceDataStore = appSettingsToFirebaseStore
-            setOnBindEditTextListener {
-                it.setSingleLine()
-                it.inputType = EditorInfo.TYPE_CLASS_PHONE
-            }
+            PHONE_KEY
+        )?.setOnBindEditTextListener {
+            it.setSingleLine()
+            it.inputType = EditorInfo.TYPE_CLASS_PHONE
         }
     }
 }
