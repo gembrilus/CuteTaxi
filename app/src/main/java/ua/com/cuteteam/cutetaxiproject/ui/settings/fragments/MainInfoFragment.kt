@@ -15,7 +15,7 @@ class MainInfoFragment : BaseSettingsFragment() {
         PHONE_KEY
     )
 
-    override fun setup() {
+    override fun onSetDataStore() {
 
         prefsForDatabase.forEach { setDataStore(it, appSettingsToFirebaseStore) }
 

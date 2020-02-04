@@ -1,10 +1,14 @@
 package ua.com.cuteteam.cutetaxiproject.settings
 
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.preference.PreferenceDataStore
 
 private const val ERROR_MESSAGE = "A property of SharedPreferences is null." +
         "Please set an instance of shared preferences with setSharedPreferences() first."
+
+private const val TAG = "CuteTaxi.AppSetStore"
+
 
 /**
  * Class AppSettingsStore stores and/or reads values of shared header_preferences in a custom file on the device
@@ -14,12 +18,12 @@ open class AppSettingsStore : PreferenceDataStore() {
 
     private var _sharedPreferences: SharedPreferences? = null
     protected val sharedPreferences
-        get() = _sharedPreferences
-            ?.let { it }
-            ?: throw IllegalArgumentException(ERROR_MESSAGE)
+        get() = _sharedPreferences ?: throw IllegalArgumentException(ERROR_MESSAGE)
 
     fun setSharedPreferences(sharedPreferences: SharedPreferences) {
-        _sharedPreferences = sharedPreferences
+        if (_sharedPreferences == null){
+            _sharedPreferences = sharedPreferences
+        }
     }
 
     override fun getBoolean(key: String?, defValue: Boolean): Boolean {
@@ -78,10 +82,12 @@ open class AppSettingsStore : PreferenceDataStore() {
     }
 
     override fun getString(key: String?, defValue: String?): String? {
+        Log.d(TAG, "Get value by $key, default value = $defValue")
         return sharedPreferences.getString(key, defValue)
     }
 
     override fun putString(key: String?, value: String?) {
+        Log.d(TAG, "Put value by $key, value = $value")
         sharedPreferences.edit().apply {
             putString(key, value)
             apply()

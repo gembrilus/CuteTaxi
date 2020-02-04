@@ -15,9 +15,7 @@ class AppSettingsToFirebaseStore : AppSettingsStore() {
 
     private var _put: ((String, Array<String>) -> Unit)? = null
     private val put
-        get() = _put
-            ?.let { it }
-            ?: throw IllegalArgumentException(ERROR_MESSAGE_PUT)
+        get() = _put ?: throw IllegalArgumentException(ERROR_MESSAGE_PUT)
 
     /**
      * Sets a function that puts values into the database.
@@ -32,9 +30,7 @@ class AppSettingsToFirebaseStore : AppSettingsStore() {
 
     private var _get: ((String) -> Array<String>)? = null
     private val get
-        get() = _get
-            ?.let { it }
-            ?: throw IllegalArgumentException(ERROR_MESSAGE_GET)
+        get() = _get ?: throw IllegalArgumentException(ERROR_MESSAGE_GET)
 
 
     /**

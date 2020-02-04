@@ -9,7 +9,7 @@ class SystemFragment : BaseSettingsFragment() {
     override val resourceId: Int
         get() = R.xml.system_preferences
 
-    override fun setup() {
+    override fun onSetDataStore() {
 
         findPreference<EditTextPreference>(DELAY_KEY)?.setOnBindEditTextListener {
             it.setSingleLine()

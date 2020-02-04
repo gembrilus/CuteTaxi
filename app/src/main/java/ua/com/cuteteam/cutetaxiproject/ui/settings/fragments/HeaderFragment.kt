@@ -7,7 +7,5 @@ class HeaderFragment : BaseSettingsFragment() {
     override val resourceId: Int
         get() = R.xml.header_preferences
 
-    override fun setup() {
-
-    }
+    override fun onSetDataStore() {}
 }
