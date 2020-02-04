@@ -8,13 +8,21 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
-import ua.com.cuteteam.cutetaxiproject.viewmodels.AuthListener
 import java.util.concurrent.TimeUnit
+
+interface AuthListener {
+    fun onStarted()
+    fun onSuccess()
+    fun onFailure(errorCode: String)
+    fun onResendCode()
+    fun onTimeOut()
+}
 
 class AuthProvider {
     private val phoneAuthProvider = PhoneAuthProvider.getInstance()
     private val auth = FirebaseAuth.getInstance()
     private lateinit var verificationId: String
+    private lateinit var resendingToken: PhoneAuthProvider.ForceResendingToken
     var authListener: AuthListener? = null
 
     private val verificationStateChangedCallbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -23,6 +31,7 @@ class AuthProvider {
             super.onCodeSent(id, token)
             authListener?.onStarted()
             verificationId = id
+            resendingToken = token
         }
 
         override fun onVerificationCompleted(credential: PhoneAuthCredential) {
@@ -30,7 +39,12 @@ class AuthProvider {
         }
 
         override fun onVerificationFailed(exception: FirebaseException) {
-            authListener?.onFailure(exception)
+            authListener?.onFailure((exception as FirebaseAuthInvalidCredentialsException).errorCode)
+        }
+
+        override fun onCodeAutoRetrievalTimeOut(p0: String) {
+            super.onCodeAutoRetrievalTimeOut(p0)
+            authListener?.onTimeOut()
         }
     }
 
@@ -40,6 +54,16 @@ class AuthProvider {
 
     fun createCredential(smsCode: String) = PhoneAuthProvider.getCredential(verificationId, smsCode)
 
+    fun resendVerificationCode(phoneNumber: String) {
+        phoneAuthProvider.verifyPhoneNumber(
+            phoneNumber,
+            60,
+            TimeUnit.SECONDS,
+            TaskExecutors.MAIN_THREAD,
+            verificationStateChangedCallbacks,
+            resendingToken
+        )
+    }
 
     fun verifyPhoneNumber(number: String) {
         phoneAuthProvider.verifyPhoneNumber(
@@ -57,10 +81,8 @@ class AuthProvider {
                 val user = task.result?.user
                 authListener?.onSuccess()
             } else {
-                // Sign in failed, display a message and update the UI
-                Log.w(this.javaClass.name, "signInWithCredential:failure", task.exception)
                 if (task.exception is FirebaseAuthInvalidCredentialsException) {
-                    // The verification code entered was invalid
+                    authListener?.onFailure((task.exception as FirebaseAuthInvalidCredentialsException).errorCode)
                 }
             }
         } )

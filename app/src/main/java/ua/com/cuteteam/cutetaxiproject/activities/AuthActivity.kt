@@ -12,6 +12,7 @@ import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.fragments.AuthFragment
 import ua.com.cuteteam.cutetaxiproject.fragments.VerificationCodeFragment
 import ua.com.cuteteam.cutetaxiproject.viewmodels.AuthViewModel
+import ua.com.cuteteam.cutetaxiproject.viewmodels.AuthViewModel.*
 import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.AuthViewModelFactory
 
 class AuthActivity : AppCompatActivity() {
@@ -24,21 +25,20 @@ class AuthActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.auth_fl, AuthFragment())
-            .commit()
 
-        authViewModel.isCodeSent.observe(this, Observer {
-            if (it) supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.auth_fl, VerificationCodeFragment())
-                .addToBackStack(null)
-                .commit()
-        })
-        authViewModel.isUserSignIn.observe(this, Observer { if (it) openFakeMap() })
-        authViewModel.isVerificationFailed.observe(this, Observer {
-            if (it) Toast.makeText(this, getString(R.string.invalid_phone_number_toast), Toast.LENGTH_SHORT).show()
+
+        authViewModel.state.observe(this, Observer {
+            when(it) {
+                Companion.State.ENTERING_PHONE_NUMBER -> supportFragmentManager.beginTransaction().replace(R.id.auth_fl, AuthFragment()).commit()
+                Companion.State.INVALID_PHONE_NUMBER -> makeToast(R.string.invalid_phone_number_toast)
+                Companion.State.ENTERING_VERIFICATION_CODE -> supportFragmentManager.beginTransaction().replace(R.id.auth_fl, VerificationCodeFragment())
+                    .addToBackStack(null)
+                    .commit()
+                Companion.State.LOGGED_IN -> openFakeMap()
+                Companion.State.RESEND_CODE -> authViewModel.resendVerificationCode()
+                Companion.State.INVALID_CODE -> makeToast(R.string.invalid_code_number_toast)
+                Companion.State.TIME_OUT -> resend_code_btn.isEnabled = true
+            }
         })
     }
 
@@ -50,10 +50,18 @@ class AuthActivity : AppCompatActivity() {
         authViewModel.signIn(sms_code_et.text.toString())
     }
 
+    fun onResendButtonClicked() {
+        authViewModel.verifyPhoneNumber(authViewModel.phoneNumber)
+        resend_code_btn.isEnabled = false
+    }
+
     private fun openFakeMap() {
         val intent = Intent(this, FakeMapActivity::class.java)
         startActivity(intent)
     }
+
+    private fun makeToast(id: Int) = Toast.makeText(this, getString(id), Toast.LENGTH_SHORT).show()
+
 
     override fun onBackPressed() {
         super.onBackPressed()
