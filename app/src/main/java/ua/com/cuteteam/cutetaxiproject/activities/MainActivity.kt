@@ -31,7 +31,9 @@ class MainActivity : AppCompatActivity() {
                 if (authViewModel.isUserSignedIn()) startMapActivity()
                 else startAuthorization()
             }
-        }, 1500)
+        }, 500)
+
+        authViewModel.signOut()
     }
 
     private fun startAuthorization() {

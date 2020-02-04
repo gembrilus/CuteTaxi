@@ -1,32 +1,39 @@
 package ua.com.cuteteam.cutetaxiproject.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.firebase.FirebaseException
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import ua.com.cuteteam.cutetaxiproject.AuthListener
 import ua.com.cuteteam.cutetaxiproject.AuthProvider
 
-interface AuthListener {
-    fun onStarted()
-    fun onSuccess()
-    fun onFailure(exception: FirebaseException)
-}
+
 
 class AuthViewModel: ViewModel(), AuthListener {
 
-    private val authProvider = AuthProvider().apply { authListener = this@AuthViewModel }
-
-    val isUserSignIn by lazy {
-        MutableLiveData<Boolean>(isUserSignedIn())
+    companion object {
+        enum class State {
+            ENTERING_PHONE_NUMBER,
+            INVALID_PHONE_NUMBER,
+            ENTERING_VERIFICATION_CODE,
+            LOGGED_IN,
+            RESEND_CODE,
+            INVALID_CODE,
+            TIME_OUT
+        }
     }
 
-    val isVerificationFailed = MutableLiveData<Boolean>(false)
+    var state = MutableLiveData(State.ENTERING_PHONE_NUMBER)
 
-    val isCodeSent = MutableLiveData<Boolean>(false)
+    private val authProvider = AuthProvider().apply { authListener = this@AuthViewModel }
+
+    lateinit var phoneNumber: String
 
     fun verifyPhoneNumber(number: String) {
+        phoneNumber = number
         authProvider.verifyPhoneNumber(number)
+    }
+
+    fun resendVerificationCode() {
+        authProvider.resendVerificationCode(phoneNumber)
     }
 
     fun isUserSignedIn() = authProvider.isUserSignedIn()
@@ -38,16 +45,25 @@ class AuthViewModel: ViewModel(), AuthListener {
     }
 
     override fun onStarted() {
-        isCodeSent.value = true
+        state.value = State.ENTERING_VERIFICATION_CODE
     }
 
     override fun onSuccess() {
-        isUserSignIn.value = true
+        state.value = State.LOGGED_IN
     }
 
-    override fun onFailure(exception: FirebaseException) {
-        if (exception is FirebaseAuthInvalidCredentialsException) isVerificationFailed.value = true
-        else Log.w(AuthViewModel::javaClass.name, exception.cause)
+    override fun onFailure(errorCode: String) {
+        when(errorCode) {
+            "ERROR_INVALID_PHONE_NUMBER" -> state.value = State.INVALID_PHONE_NUMBER
+            "ERROR_INVALID_VERIFICATION_CODE" -> state.value = State.INVALID_CODE
+        }
     }
 
+    override fun onResendCode() {
+        state.value = State.RESEND_CODE
+    }
+
+    override fun onTimeOut() {
+        state.value = State.TIME_OUT
+    }
 }
