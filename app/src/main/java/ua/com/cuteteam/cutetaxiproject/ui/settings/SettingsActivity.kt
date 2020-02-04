@@ -1,17 +1,12 @@
 package ua.com.cuteteam.cutetaxiproject.ui.settings
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
 import androidx.preference.*
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreference
 import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreferenceDialogFragmentCompat
-import ua.com.cuteteam.cutetaxiproject.settings.AppSettingsHelper
-import ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.SP_FILE
 import ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.HeaderFragment
 
 private const val TAG = "CuteTaxi.SettingsActivity"
@@ -46,7 +41,11 @@ class SettingsActivity : AppCompatActivity(),
     }
 
     override fun onSupportNavigateUp(): Boolean =
-        supportFragmentManager.popBackStackImmediate() || super.onSupportNavigateUp()
+        supportFragmentManager.popBackStackImmediate() ||
+                {
+                    finish()
+                    super.onSupportNavigateUp()
+                }.invoke()
 
     override fun onPreferenceStartFragment(
         caller: PreferenceFragmentCompat,
@@ -88,5 +87,4 @@ class SettingsActivity : AppCompatActivity(),
                 ListBoxPreferenceDialogFragmentCompat.TAG
             )
             .run { true }
-
 }

@@ -10,14 +10,15 @@ private const val ERROR_MESSAGE = "A property of SharedPreferences is null." +
  * Class AppSettingsStore stores and/or reads values of shared header_preferences in a custom file on the device
  * @param sharedPreferences is a replacement of default store place
  */
-open class AppSettingsStore: PreferenceDataStore(){
+open class AppSettingsStore : PreferenceDataStore() {
 
     private var _sharedPreferences: SharedPreferences? = null
-    protected val sharedPreferences get() = _sharedPreferences
-        ?.let { it }
-        ?: throw IllegalArgumentException(ERROR_MESSAGE)
+    protected val sharedPreferences
+        get() = _sharedPreferences
+            ?.let { it }
+            ?: throw IllegalArgumentException(ERROR_MESSAGE)
 
-    fun setSharedPreferences(sharedPreferences: SharedPreferences){
+    fun setSharedPreferences(sharedPreferences: SharedPreferences) {
         _sharedPreferences = sharedPreferences
     }
 
@@ -33,7 +34,7 @@ open class AppSettingsStore: PreferenceDataStore(){
     }
 
     override fun putInt(key: String?, value: Int) {
-        sharedPreferences.edit().apply{
+        sharedPreferences.edit().apply {
             putInt(key, value)
             apply()
         }

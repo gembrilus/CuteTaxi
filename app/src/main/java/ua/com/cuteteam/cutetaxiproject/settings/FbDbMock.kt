@@ -28,7 +28,7 @@ class FbDbMock {
         return if (db.containsKey(parameterName)) {
             Log.d(TAG, "${MESSAGE} Get a value from database!")
             db.getValue(parameterName).toTypedArray()
-        } else arrayOf()
+        } else arrayOf("")
     }
 
 }
