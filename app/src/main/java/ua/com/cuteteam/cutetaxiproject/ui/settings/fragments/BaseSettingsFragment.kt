@@ -15,7 +15,7 @@ abstract class BaseSettingsFragment :
     SharedPreferences.OnSharedPreferenceChangeListener {
 
     abstract val resourceId: Int
-    abstract fun setup()
+    abstract fun onSetDataStore()
 
     private val pass_groups
         get() = arrayOf(
@@ -28,7 +28,10 @@ abstract class BaseSettingsFragment :
             CAR_CATEGORY_KEY
         )
 
-    private lateinit var model: SettingsViewModel
+    private val model by lazy {
+        ViewModelProvider(this, ViewModelFactory(sharedPreferences))
+            .get(SettingsViewModel::class.java)
+    }
 
     private val sharedPreferences by lazy {
         requireActivity().getSharedPreferences(SP_FILE, Context.MODE_PRIVATE)
@@ -42,6 +45,7 @@ abstract class BaseSettingsFragment :
 
     protected val appSettingsToFirebaseStore by lazy {
         AppSettingsToFirebaseStore().apply {
+            setSharedPreferences(sharedPreferences)
             val fbDbMock = FbDbMock()
             setPutFunction(fbDbMock::putValueToDb)
             setGetFunction(fbDbMock::getValueFromDb)
@@ -52,22 +56,15 @@ abstract class BaseSettingsFragment :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        model = ViewModelProvider(
-            this,
-            ViewModelFactory(
-                sharedPreferences
-            )
-        ).get(SettingsViewModel::class.java)
-
         model.role.observe(this, Observer {
             setRoleSettings(it)
         })
     }
 
-    final override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        setPreferencesFromResource(resourceId, rootKey)
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.preferenceDataStore = appSettingsStore
-        setup()
+        onSetDataStore()
+        setPreferencesFromResource(resourceId, rootKey)
     }
 
     private fun changeVisibility(vararg keys: String, visibility: Boolean) {

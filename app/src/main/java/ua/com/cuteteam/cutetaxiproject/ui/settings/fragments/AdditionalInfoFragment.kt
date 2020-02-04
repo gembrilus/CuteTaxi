@@ -16,7 +16,7 @@ class AdditionalInfoFragment() : BaseSettingsFragment() {
         CAR_CATEGORY_KEY
     )
 
-    override fun setup() {
+    override fun onSetDataStore() {
 
         prefsForDatabase.forEach { setDataStore(it, appSettingsToFirebaseStore) }
 
