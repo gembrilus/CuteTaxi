@@ -9,23 +9,22 @@ import ua.com.cuteteam.cutetaxiproject.AuthProvider
 
 class AuthViewModel: ViewModel(), AuthListener {
 
-    companion object {
-        enum class State {
-            ENTERING_PHONE_NUMBER,
-            INVALID_PHONE_NUMBER,
-            ENTERING_VERIFICATION_CODE,
-            LOGGED_IN,
-            RESEND_CODE,
-            INVALID_CODE,
-            TIME_OUT
-        }
+    enum class State {
+        ENTERING_PHONE_NUMBER,
+        INVALID_PHONE_NUMBER,
+        ENTERING_VERIFICATION_CODE,
+        LOGGED_IN,
+        RESEND_CODE,
+        INVALID_CODE,
+        TIME_OUT
     }
 
     var state = MutableLiveData(State.ENTERING_PHONE_NUMBER)
 
     private val authProvider = AuthProvider().apply { authListener = this@AuthViewModel }
 
-    lateinit var phoneNumber: String
+    var phoneNumber: String = ""
+    var smsCode: String = ""
 
     fun verifyPhoneNumber(number: String) {
         phoneNumber = number
@@ -41,6 +40,7 @@ class AuthViewModel: ViewModel(), AuthListener {
     fun signOut() = authProvider.signOutUser()
 
     fun signIn(smsCode: String) {
+        this.smsCode = smsCode
         authProvider.signInWithPhoneAuthCredential(authProvider.createCredential(smsCode))
     }
 
