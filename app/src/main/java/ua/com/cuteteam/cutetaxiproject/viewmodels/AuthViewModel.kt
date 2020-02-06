@@ -44,6 +44,14 @@ class AuthViewModel: ViewModel(), AuthListener {
         authProvider.signInWithPhoneAuthCredential(authProvider.createCredential(smsCode))
     }
 
+    fun backToEnteringPhoneNumber() {
+        state.value = State.ENTERING_PHONE_NUMBER
+    }
+
+    fun backToEnteringVerificationCode() {
+        state.value = State.ENTERING_VERIFICATION_CODE
+    }
+
     override fun onStarted() {
         state.value = State.ENTERING_VERIFICATION_CODE
     }

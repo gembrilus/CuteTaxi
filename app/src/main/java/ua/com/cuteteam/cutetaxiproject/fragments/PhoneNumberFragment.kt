@@ -8,20 +8,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
-import kotlinx.android.synthetic.main.fragment_auth.*
+import kotlinx.android.synthetic.main.fragment_phone_number.*
 import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.activities.AuthActivity
 import ua.com.cuteteam.cutetaxiproject.viewmodels.AuthViewModel
 
-/**
- * A simple [Fragment] subclass.
- */
-class AuthFragment : Fragment(), View.OnClickListener {
+class PhoneNumberFragment : Fragment(), View.OnClickListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_auth, container, false)
+        return inflater.inflate(R.layout.fragment_phone_number, container, false)
     }
 
     private val authViewModel: AuthViewModel by activityViewModels()
