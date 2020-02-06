@@ -15,9 +15,6 @@ import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.viewmodels.AuthViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.AuthViewModel.*
 
-/**
- * A simple [Fragment] subclass.
- */
 class VerificationCodeFragment : Fragment(), View.OnClickListener {
 
     private val authViewModel: AuthViewModel by activityViewModels()

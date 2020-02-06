@@ -1,6 +1,5 @@
 package ua.com.cuteteam.cutetaxiproject
 
-import android.util.Log
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.TaskExecutors
 import com.google.firebase.FirebaseException

@@ -7,7 +7,7 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.fragments.AuthFragment
+import ua.com.cuteteam.cutetaxiproject.fragments.PhoneNumberFragment
 import ua.com.cuteteam.cutetaxiproject.fragments.VerificationCodeFragment
 import ua.com.cuteteam.cutetaxiproject.viewmodels.AuthViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.AuthViewModel.*
@@ -28,16 +28,22 @@ class AuthActivity : AppCompatActivity() {
         authViewModel.state.observe(this, Observer {
             val transaction = supportFragmentManager.beginTransaction()
             when(it) {
-                State.ENTERING_PHONE_NUMBER -> transaction.replace(R.id.auth_fl, AuthFragment(), "AUTH_FRAGMENT")
+                State.ENTERING_PHONE_NUMBER -> transaction.replace(R.id.auth_fl, PhoneNumberFragment(), "AUTH_FRAGMENT")
                     .addToBackStack("AUTH_FRAGMENT")
                     .commit()
-                State.INVALID_PHONE_NUMBER -> makeToast(R.string.invalid_phone_number_toast)
+                State.INVALID_PHONE_NUMBER -> {
+                    makeToast(R.string.invalid_phone_number_toast)
+                    authViewModel.backToEnteringPhoneNumber()
+                }
                 State.ENTERING_VERIFICATION_CODE -> transaction.replace(R.id.auth_fl, VerificationCodeFragment(), "VERIFICATION_CODE_FRAGMENT")
                     .addToBackStack("VERIFICATION_CODE_FRAGMENT")
                     .commit()
                 State.LOGGED_IN -> openFakeMap()
                 State.RESEND_CODE -> authViewModel.resendVerificationCode()
-                State.INVALID_CODE -> makeToast(R.string.invalid_code_number_toast)
+                State.INVALID_CODE -> {
+                    makeToast(R.string.invalid_code_number_toast)
+                    authViewModel.backToEnteringVerificationCode()
+                }
                 else -> {}
             }
         })
@@ -52,7 +58,7 @@ class AuthActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         val verificationCodeFragment = supportFragmentManager.findFragmentByTag("VERIFICATION_CODE_FRAGMENT")
-        if (verificationCodeFragment?.isVisible == true) authViewModel.state.value = State.ENTERING_PHONE_NUMBER
+        if (verificationCodeFragment?.isVisible == true) authViewModel.backToEnteringPhoneNumber()
         else finishAffinity()
     }
 
