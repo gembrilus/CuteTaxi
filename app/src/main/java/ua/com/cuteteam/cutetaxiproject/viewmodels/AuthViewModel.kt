@@ -62,8 +62,8 @@ class AuthViewModel: ViewModel(), AuthListener {
 
     override fun onFailure(errorCode: String) {
         when(errorCode) {
-            "ERROR_INVALID_PHONE_NUMBER" -> state.value = State.INVALID_PHONE_NUMBER
-            "ERROR_INVALID_VERIFICATION_CODE" -> state.value = State.INVALID_CODE
+            ERROR_INVALID_PHONE_NUMBER -> state.value = State.INVALID_PHONE_NUMBER
+            ERROR_INVALID_VERIFICATION_CODE -> state.value = State.INVALID_CODE
         }
     }
 
@@ -73,5 +73,10 @@ class AuthViewModel: ViewModel(), AuthListener {
 
     override fun onTimeOut() {
         state.value = State.TIME_OUT
+    }
+
+    companion object {
+        private const val ERROR_INVALID_PHONE_NUMBER = "ERROR_INVALID_PHONE_NUMBER"
+        private const val ERROR_INVALID_VERIFICATION_CODE = "ERROR_INVALID_VERIFICATION_CODE"
     }
 }

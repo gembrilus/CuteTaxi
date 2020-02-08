@@ -7,13 +7,20 @@
     android:padding="25dp"
     android:orientation="vertical">
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/sms_code_et"
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/sms_code"
-        android:imeOptions="actionDone"
-        android:inputType="number" />
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/sms_code_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/sms_code"
+            android:imeOptions="actionDone"
+            android:inputType="number"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/resend_code_btn"
@@ -21,6 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_marginTop="30dp"
         android:text="@string/resend_code"/>
 
     <com.google.android.material.button.MaterialButton

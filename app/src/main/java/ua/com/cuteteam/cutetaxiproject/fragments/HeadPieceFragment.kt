@@ -8,9 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import ua.com.cuteteam.cutetaxiproject.R
 
-/**
- * A simple [Fragment] subclass.
- */
 class HeadPieceFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
