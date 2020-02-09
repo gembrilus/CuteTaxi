@@ -9,6 +9,11 @@ import ua.com.cuteteam.cutetaxiproject.AuthProvider
 
 class AuthViewModel: ViewModel(), AuthListener {
 
+    companion object {
+        private const val ERROR_INVALID_PHONE_NUMBER = "ERROR_INVALID_PHONE_NUMBER"
+        private const val ERROR_INVALID_VERIFICATION_CODE = "ERROR_INVALID_VERIFICATION_CODE"
+    }
+
     enum class State {
         ENTERING_PHONE_NUMBER,
         INVALID_PHONE_NUMBER,
@@ -73,10 +78,5 @@ class AuthViewModel: ViewModel(), AuthListener {
 
     override fun onTimeOut() {
         state.value = State.TIME_OUT
-    }
-
-    companion object {
-        private const val ERROR_INVALID_PHONE_NUMBER = "ERROR_INVALID_PHONE_NUMBER"
-        private const val ERROR_INVALID_VERIFICATION_CODE = "ERROR_INVALID_VERIFICATION_CODE"
     }
 }
