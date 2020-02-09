@@ -14,6 +14,11 @@ import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.AuthViewMo
 
 class AuthActivity : AppCompatActivity() {
 
+    companion object {
+        private const val VERIFICATION_CODE_FRAGMENT = "VERIFICATION_CODE_FRAGMENT"
+        private const val PHONE_NUMBER_FRAGMENT = "PHONE_NUMBER_FRAGMENT"
+    }
+
     private val authViewModel by lazy {
         ViewModelProvider(this, AuthViewModelFactory())
             .get(AuthViewModel::class.java)
@@ -49,10 +54,5 @@ class AuthActivity : AppCompatActivity() {
         val verificationCodeFragment = supportFragmentManager.findFragmentByTag(VERIFICATION_CODE_FRAGMENT)
         if (verificationCodeFragment?.isVisible == true) authViewModel.backToEnteringPhoneNumber()
         else finishAffinity()
-    }
-
-    companion object {
-        private const val VERIFICATION_CODE_FRAGMENT = "VERIFICATION_CODE_FRAGMENT"
-        private const val PHONE_NUMBER_FRAGMENT = "PHONE_NUMBER_FRAGMENT"
     }
 }
