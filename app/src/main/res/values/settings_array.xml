@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    /************** THEMES LIST ***************/
+
+    <string-array name="theme_entries">
+
+        <item>@string/name_item_light_theme</item>
+        <item>@string/name_item_dark_theme</item>
+
+    </string-array>
+
+    <string-array name="theme_entries_values">
+
+        <item>@string/value_item_light_theme</item>
+        <item>@string/value_item_dark_theme</item>
+
+    </string-array>
+
+    /****************** END  ******************/
+
+
+    /************** THEMES LIST ***************/
+
+    <string-array name="car_class_entries">
+
+        <item>@string/name_item_standard_class</item>
+        <item>@string/name_item_comfort_class</item>
+        <item>@string/name_item_premium_class</item>
+
+    </string-array>
+
+    /****************** END  ******************/
+
+
+
+</resources>
