@@ -1,7 +1,5 @@
 package ua.com.cuteteam.cutetaxiproject.settings
 
-const val SP_FILE = "CuteTaxi_Settings"
-
 const val IS_FIRST_START_KEY = "isFirstStart"
 const val ROLE_KEY = "role"
 
@@ -9,7 +7,7 @@ const val NAME_KEY = "name"
 const val PHONE_KEY = "phone"
 
 const val IMPROVEMENTS_CATEGORY_KEY = "improvements"
-const val CAR_CLASS_FOR_PASSENGER = "carClass"
+const val CAR_CLASS_FOR_PASSENGER_KEY = "carClass"
 
 const val ADDITIONAL_FACILITIES_CATEGORY_KEY = "additional_facilities"
 

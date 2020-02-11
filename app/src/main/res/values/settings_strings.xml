@@ -2,6 +2,12 @@
 <resources>
     <string name="title_activity_settings">Settings</string>
 
+    /******************************* Header settings fragment ******************************/
+
+    <string name="key_role_preference">role</string>
+    <string name="title_role_preference">Are you a driver?</string>
+    <string name="summaryOff_role_preference">You are now as a passenger</string>
+    <string name="summaryOn_role_preference">You are now as a taxist</string>
 
     /***************************** Main info category (fragment) ***************************/
 
@@ -110,12 +116,6 @@
     /******** Features category ********/
 
     <string name="title_features_category">Features</string>
-
-    // Delay preference
-
-    <string name="key_delay_coords_upd_preference" translatable="false">delay_coords_updating</string>
-    <string name="title_delay_coords_upd_preference">Delay of coordinates updating in sec</string>
-    <string name="dialog_title_delay_coords_preference">Enter a delay in sec</string>
 
     // Notification preference
 

@@ -7,28 +7,27 @@ import android.util.Log
     message = "It's a MOCK only",
     replaceWith = ReplaceWith("real instance of database")
 )
-class FbDbMock {
+class FbDbMock: AppSettingsToFirebaseStore.FirebaseStore {
 
     private val db = mutableMapOf<String, MutableList<String>>()
 
     private val TAG = "CuteTaxi.FbDbMock"
     private val MESSAGE = "It is only a MOCK!"
 
-    fun putValueToDb(parameterName: String, vararg value: String){
+    override fun <T> putToFirebase(key: String, value: T) {
         Log.d(TAG, "${MESSAGE} Put a value to database!")
-        value.forEach {rec ->
-            db[parameterName]?.let {list ->
-                list.clear()
-                list.add(rec)
-            }
+        db[key]?.let { list ->
+            list.clear()
+            list.add(value as String)
         }
     }
 
-    fun getValueFromDb(parameterName: String): Array<String> {
-        return if (db.containsKey(parameterName)) {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> getFromFirebase(key: String): T {
+        return if (db.containsKey(key)){
             Log.d(TAG, "${MESSAGE} Get a value from database!")
-            db.getValue(parameterName).toTypedArray()
-        } else arrayOf("")
+            db.getValue(key) as T
+        } else "" as T
     }
 
 }

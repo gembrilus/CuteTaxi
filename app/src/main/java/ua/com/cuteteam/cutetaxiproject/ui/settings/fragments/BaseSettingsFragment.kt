@@ -1,69 +1,39 @@
 package ua.com.cuteteam.cutetaxiproject.ui.settings.fragments
 
-import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import androidx.lifecycle.Observer
+import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.*
-import ua.com.cuteteam.cutetaxiproject.settings.*
+import ua.com.cuteteam.cutetaxiproject.settings.AppSettingsToFirebaseStore
+import ua.com.cuteteam.cutetaxiproject.settings.FbDbMock
 import ua.com.cuteteam.cutetaxiproject.ui.settings.models.SettingsViewModel
 import ua.com.cuteteam.cutetaxiproject.ui.settings.models.ViewModelFactory
 
+private const val TAG = "CuteTaxi.BaseFragment"
+
 abstract class BaseSettingsFragment :
-    PreferenceFragmentCompat(),
-    SharedPreferences.OnSharedPreferenceChangeListener {
+    PreferenceFragmentCompat() {
 
     abstract val resourceId: Int
-    abstract fun onSetDataStore()
 
-    private val pass_groups
-        get() = arrayOf(
-            IMPROVEMENTS_CATEGORY_KEY,
-            ADDITIONAL_FACILITIES_CATEGORY_KEY
-        )
+    abstract fun setNewDataStore()
 
-    private val driver_groups
-        get() = arrayOf(
-            CAR_CATEGORY_KEY
-        )
-
-    private val model by lazy {
-        ViewModelProvider(this, ViewModelFactory(sharedPreferences))
+    protected val model by lazy {
+        ViewModelProvider(requireActivity(), ViewModelFactory(shPrefs))
             .get(SettingsViewModel::class.java)
     }
 
-    private val sharedPreferences by lazy {
-        requireActivity().getSharedPreferences(SP_FILE, Context.MODE_PRIVATE)
-    }
-
-    private val appSettingsStore by lazy {
-        AppSettingsStore().apply {
-            setSharedPreferences(sharedPreferences)
-        }
+    private val shPrefs: SharedPreferences by lazy {
+        PreferenceManager.getDefaultSharedPreferences(requireActivity())
     }
 
     protected val appSettingsToFirebaseStore by lazy {
-        AppSettingsToFirebaseStore().apply {
-            setSharedPreferences(sharedPreferences)
-            val fbDbMock = FbDbMock()
-            setPutFunction(fbDbMock::putValueToDb)
-            setGetFunction(fbDbMock::getValueFromDb)
-        }
-    }
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        model.role.observe(this, Observer {
-            setRoleSettings(it)
-        })
+        AppSettingsToFirebaseStore(shPrefs, FbDbMock())
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        preferenceManager.preferenceDataStore = appSettingsStore
-        onSetDataStore()
+        setNewDataStore()
         setPreferencesFromResource(resourceId, rootKey)
     }
 
@@ -73,42 +43,27 @@ abstract class BaseSettingsFragment :
         }
     }
 
-    private fun setRoleSettings(role: Int) = when (role) {
-        0 -> {
-            changeVisibility(*driver_groups, visibility = false)
-            changeVisibility(*pass_groups, visibility = true)
+    protected fun swapGroupsVisibility(
+        predicate: Boolean,
+        groupVisible: Array<String>,
+        groupInvisible: Array<String>
+    ) = when (predicate) {
+
+        false -> {
+            changeVisibility(*groupVisible, visibility = true)
+            changeVisibility(*groupInvisible, visibility = false)
         }
-        else -> {
-            changeVisibility(*driver_groups, visibility = true)
-            changeVisibility(*pass_groups, visibility = false)
+        true -> {
+            changeVisibility(*groupInvisible, visibility = true)
+            changeVisibility(*groupVisible, visibility = false)
         }
     }
 
-    protected fun setDataStore(key: String, dataStore: PreferenceDataStore) {
-        when (val pref = findPreference<Preference>(key)) {
-            is PreferenceCategory -> {
-                val count = pref.preferenceCount
-                for (i in 0 until count) {
-                    pref.getPreference(i).preferenceDataStore = dataStore
-                }
-            }
-            is PreferenceScreen -> {
-                val count = pref.preferenceCount
-                for (i in 0 until count) {
-                    pref.getPreference(i).preferenceDataStore = dataStore
-                }
-            }
-            else -> {
-                pref?.let {
-                    it.preferenceDataStore = dataStore
-                }
-            }
-        }
-    }
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        if (key == ROLE_KEY) {
-            model.setRole(sharedPreferences?.getInt(ROLE_KEY, 0)!!)
+    protected fun setDataStore(keys: List<String>, dataStore: PreferenceDataStore) {
+        keys.forEach {
+            val pref = findPreference<Preference>(it)
+            Log.d(TAG, "Set DataStore for $it")
+            pref?.preferenceDataStore = dataStore
         }
     }
 }

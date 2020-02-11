@@ -6,7 +6,7 @@
         app:title="@string/title_improvements_category"
         app:key="@string/key_improvements_category">
 
-        <DropDownPreference
+        <ListPreference
             app:defaultValue="@string/default_name_item_car_class"
             app:entries="@array/car_class_entries"
             app:entryValues="@array/car_class_entries"
@@ -54,7 +54,7 @@
             app:title="@string/title_car_number_preference"
             app:useSimpleSummaryProvider="true" />
 
-        <DropDownPreference
+        <ListPreference
             app:defaultValue="@string/default_name_item_car_class"
             app:entries="@array/car_class_entries"
             app:entryValues="@array/car_class_entries"

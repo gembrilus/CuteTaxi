@@ -12,20 +12,13 @@
             app:summaryOn="@string/summary_on_send_notification_preference"
             app:title="@string/title_send_notification_preference" />
 
-        <EditTextPreference
-            app:defaultValue="60"
-            app:dialogTitle="@string/dialog_title_delay_coords_preference"
-            app:key="@string/key_delay_coords_upd_preference"
-            app:title="@string/title_delay_coords_upd_preference"
-            app:useSimpleSummaryProvider="true" />
-
     </PreferenceCategory>
 
     <PreferenceCategory
         app:title="@string/title_interface_category"
         app:iconSpaceReserved="false">
 
-        <DropDownPreference
+        <ListPreference
             app:entries="@array/theme_entries"
             app:entryValues="@array/theme_entries_values"
             app:defaultValue="@string/default_name_item_theme"

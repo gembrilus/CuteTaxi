@@ -1,5 +1,6 @@
 package ua.com.cuteteam.cutetaxiproject.ui.settings.fragments
 
+import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import androidx.preference.EditTextPreference
 import ua.com.cuteteam.cutetaxiproject.R
@@ -10,20 +11,23 @@ class MainInfoFragment : BaseSettingsFragment() {
     override val resourceId: Int
         get() = R.xml.main_info_preferences
 
-    private val prefsForDatabase = listOf(
+    private val changedStore = listOf(
         NAME_KEY,
         PHONE_KEY
     )
 
-    override fun onSetDataStore() {
+    override fun setNewDataStore() {
+        setDataStore(changedStore, appSettingsToFirebaseStore)
+    }
 
-        prefsForDatabase.forEach { setDataStore(it, appSettingsToFirebaseStore) }
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        super.onCreatePreferences(savedInstanceState, rootKey)
 
-        findPreference<EditTextPreference>(
-            PHONE_KEY
-        )?.setOnBindEditTextListener {
+        findPreference<EditTextPreference>(PHONE_KEY)?.setOnBindEditTextListener {
             it.setSingleLine()
             it.inputType = EditorInfo.TYPE_CLASS_PHONE
         }
+
     }
+
 }
