@@ -24,8 +24,8 @@ class AppSettingsHelper(private val shPref: SharedPreferences) {
     /**
      * Property for the user's role
      */
-    var role: Int
-        get() = shPref.getInt(ROLE_KEY, 0)
+    var role: Boolean
+        get() = shPref.getBoolean(ROLE_KEY, false)
         set(value) = put(ROLE_KEY, value)
 
 
@@ -48,9 +48,9 @@ class AppSettingsHelper(private val shPref: SharedPreferences) {
     /**
      * Property for car  comfort class
      */
-    var carClass: Int
-        get() = shPref.getInt(CAR_CLASS_KEY, 0)
-        set(value) = put(CAR_CLASS_KEY, value)
+    var comfortClass: Int
+        get() = shPref.getInt(CAR_CLASS_FOR_PASSENGER_KEY, 0)
+        set(value) = put(CAR_CLASS_FOR_PASSENGER_KEY, value)
 
 
     /**
@@ -85,20 +85,21 @@ class AppSettingsHelper(private val shPref: SharedPreferences) {
         set(value) = put(CAR_NUMBER_KEY, value)
 
 
+
+    /**
+     * Property for car  comfort class
+     */
+    var carClass: Int
+        get() = shPref.getInt(CAR_CLASS_KEY, 0)
+        set(value) = put(CAR_CLASS_KEY, value)
+
+
     /**
      * Property for the user's phone
      */
     var carColor: String
         get() = shPref.getString(CAR_COLOR_KEY, "")!!
         set(value) = put(CAR_COLOR_KEY, value)
-
-
-    /**
-     * Property for delay of coordinates updating
-     */
-    var delayForCoords: Int
-        get() = shPref.getInt(DELAY_KEY, 60)
-        set(value) = put(DELAY_KEY, value)
 
 
     /**

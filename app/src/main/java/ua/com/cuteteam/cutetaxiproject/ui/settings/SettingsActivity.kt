@@ -2,24 +2,42 @@ package ua.com.cuteteam.cutetaxiproject.ui.settings
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.preference.*
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreference
 import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreferenceDialogFragmentCompat
+import ua.com.cuteteam.cutetaxiproject.settings.ROLE_KEY
 import ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.HeaderFragment
+import ua.com.cuteteam.cutetaxiproject.ui.settings.models.SettingsViewModel
+import ua.com.cuteteam.cutetaxiproject.ui.settings.models.ViewModelFactory
 
-private const val TAG = "CuteTaxi.SettingsActivity"
+private const val TAG = "CuteTaxi.SetActivity"
 private const val TITLE_TAG = "CuteTaxi.SettingsActivityTitle"
 
 class SettingsActivity : AppCompatActivity(),
     PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
-    PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback {
+    PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback,
+    SharedPreferences.OnSharedPreferenceChangeListener {
+
+    private val shPrefs: SharedPreferences by lazy {
+        PreferenceManager.getDefaultSharedPreferences(this)
+    }
+
+    private val model by lazy {
+        ViewModelProvider(this, ViewModelFactory(shPrefs))
+        .get(SettingsViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.settings_activity)
+
+        PreferenceManager.getDefaultSharedPreferences(this)
+            .registerOnSharedPreferenceChangeListener(this)
 
         savedInstanceState
             ?.let {
@@ -39,6 +57,12 @@ class SettingsActivity : AppCompatActivity(),
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putCharSequence(TITLE_TAG, title)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        PreferenceManager.getDefaultSharedPreferences(this)
+            .unregisterOnSharedPreferenceChangeListener(this)
     }
 
     override fun onSupportNavigateUp(): Boolean =
@@ -88,4 +112,11 @@ class SettingsActivity : AppCompatActivity(),
                 ListBoxPreferenceDialogFragmentCompat.TAG
             )
             .run { true }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        Log.d(TAG, "$key is changed")
+        if (key == ROLE_KEY) {
+            model.setRole(sharedPreferences?.getBoolean(ROLE_KEY, false)!!)
+        }
+    }
 }
