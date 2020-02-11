@@ -4,11 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.MainActivity">
+    tools:context=".activities.FakeMapActivity">
 
-    <FrameLayout
-        android:id="@+id/head_piece_fl"
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:text="Map"
+        android:gravity="center"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

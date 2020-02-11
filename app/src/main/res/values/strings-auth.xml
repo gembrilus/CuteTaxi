@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="resend_code">If you didn\'t received sms, click here to send again</string>
+    <string name="phone_number">Phone number</string>
+    <string name="sms_code">SMS Code</string>
+    <string name="continue_">Continue</string>
+    <string name="log_in">Log In</string>
+    <string name="invalid_phone_number_error">Invalid phone number</string>
+    <string name="invalid_code_number_error">The sms verification code is invalid</string>
+
+</resources>

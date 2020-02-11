@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.MainActivity">
+    tools:context=".activities.AuthActivity">
 
     <FrameLayout
-        android:id="@+id/head_piece_fl"
+        android:id="@+id/auth_fl"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
