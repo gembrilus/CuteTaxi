@@ -1,0 +1,27 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <SwitchPreferenceCompat
+        app:key="@string/key_role_preference"
+        app:title="@string/title_role_preference"
+        app:defaultValue="0"
+        app:summaryOff="@string/summaryOff_role_preference"
+        app:summaryOn="@string/summaryOn_role_preference"/>
+
+    <Preference
+        app:title="@string/title_main_info_category"
+        app:fragment="ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.MainInfoFragment"
+        app:allowDividerBelow="true" />
+
+    <Preference
+        app:title="@string/title_additional_info_category"
+        app:fragment="ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.AdditionalInfoFragment"
+        app:allowDividerAbove="true"
+        app:allowDividerBelow="true"/>
+
+    <Preference
+        app:title="@string/title_system_settings_category"
+        app:fragment="ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.SystemFragment"
+        app:allowDividerAbove="true"
+        app:allowDividerBelow="true"/>
+
+</PreferenceScreen>

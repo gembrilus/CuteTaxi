@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_activity_settings">Settings</string>
+
+    /******************************* Header settings fragment ******************************/
+
+    <string name="key_role_preference">role</string>
+    <string name="title_role_preference">Are you a driver?</string>
+    <string name="summaryOff_role_preference">You are now as a passenger</string>
+    <string name="summaryOn_role_preference">You are now as a taxist</string>
+
+    /***************************** Main info category (fragment) ***************************/
+
+    <string name="title_main_info_category">Main Info</string>
+
+    // Name preference
+
+    <string name="key_user_name_preference" translatable="false">name</string>
+    <string name="dialog_title_name_preference">Enter your name</string>
+    <string name="title_name_preference">User name</string>
+
+
+    //Phone number preference
+
+    <string name="key_user_phone_number_preference" translatable="false">phone</string>
+    <string name="dialog_title_phone_number_preference">Enter a phone umber</string>
+    <string name="title_phone_number_preference">Phone number</string>
+
+    /******************************************************************************************/
+    /
+    /
+    /
+    /
+    /**************************** Additional info category (fragment) *************************/
+
+    <string name="title_additional_info_category">Additional Info</string>
+
+    // Subcategory for improvements
+
+    <string name="title_improvements_category">Improvements</string>
+    <string name="key_improvements_category" translatable="false">improvements</string>
+
+    // Passenger part - Car comfort class
+
+    <string name="key_car_class_preference" translatable="false">carClass</string>
+
+    <string name="title_car_class_preference">Car comfort class</string>
+    <string name="summary_car_class_preference">What a car comfort class you want</string>
+
+    <string name="name_item_standard_class">STANDARD</string>
+    <string name="name_item_comfort_class">COMFORT</string>
+    <string name="name_item_premium_class">PREMIUM</string>
+
+    <string name="default_name_item_car_class" translatable="false">@string/name_item_standard_class</string>
+
+
+    // Subcategory for lists for a passenger
+
+    <string name="title_additional_facilities_category">Additional facilities</string>
+    <string name="key_additional_facilities_category" translatable="false">additional_facilities</string>
+
+    // Favorite addresses preference
+
+    <string name="key_favorite_addresses_preference" translatable="false">favorite_addresses</string>
+    <string name="dialog_title_list_addresses_preference">List of addresses</string>
+    <string name="title_favorite_addresses_preference">Favorite addresses</string>
+    <string name="summary_of_favorite_addresses_preference">Add your favorite addresses here</string>
+
+    <string name="listbox_hint_your_favorite_address">Your favorite address</string>
+
+    // Black list of drivers
+
+    <string name="dilaog_title_blacklist_preference">Add or remove driver</string>
+    <string name="key_black_list_preference" translatable="false">black_list</string>
+    <string name="summary_blacklist">You can add or remove bad drivers here.</string>
+    <string name="title_blacklist_preference">Black list of drivers</string>
+
+    // Driver part - Car category
+
+    <string name="title_car_category">Car</string>
+    <string name="key_car_category" translatable="false">car</string>
+
+    // Car model
+
+    <string name="dialog_title_car_model_preference">Enter a car model</string>
+    <string name="key_car_model_preference" translatable="false">model</string>
+    <string name="title_car_model_preference">Car model</string>
+
+    // Car number
+
+    <string name="dialog_title_car_number_preference">Enter a car number</string>
+    <string name="key_car_number_preference" translatable="false">number</string>
+    <string name="title_car_number_preference">Car license number</string>
+
+    // Car class
+
+    <string name="key_car_class_preference_for_car" translatable="false">class</string>
+    <string name="title_car_class_preference_for_car">Car comfort class</string>
+
+    // Car color
+
+    <string name="dialog_title_car_color_preference">Enter a car color</string>
+    <string name="key_car_color_preference" translatable="false">color</string>
+    <string name="title_car_color_preference">Car color</string>
+
+
+    /******************************************************************************************/
+    /
+    /
+    /
+    /
+    /****************************** System settings category (fragment) ************************/
+
+    <string name="title_system_settings_category">System Settings</string>
+
+    /******** Features category ********/
+
+    <string name="title_features_category">Features</string>
+
+    // Notification preference
+
+    <string name="key_send_notifications_preference" translatable="false">send_notifications</string>
+    <string name="title_send_notification_preference">Send notifications</string>
+    <string name="summary_on_send_notification_preference">You will receive notifications when the app will be closed</string>
+    <string name="summary_off_send_notification_preference">There will no notifications when the app will be closed</string>
+
+    /******* App interface category ******/
+
+    <string name="title_interface_category">Interface</string>
+
+    // Themes preference
+
+    <string name="key_app_theme_preference" translatable="false">app_theme</string>
+    <string name="title_app_theme_preference">App theme</string>
+    <string name="name_item_light_theme">Light</string>
+    <string name="name_item_dark_theme">Dark</string>
+    <string name="value_item_light_theme">light</string>
+    <string name="value_item_dark_theme">dark</string>
+    <string name="default_name_item_theme" translatable="false">@string/value_item_light_theme</string>
+
+
+    /*******************************************************************************************/
+
+</resources>
