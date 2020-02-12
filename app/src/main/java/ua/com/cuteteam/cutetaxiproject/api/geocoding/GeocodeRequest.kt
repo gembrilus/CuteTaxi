@@ -3,6 +3,7 @@ package ua.com.cuteteam.cutetaxiproject.api.geocoding
 import kotlinx.coroutines.withContext
 import ua.com.cuteteam.cutetaxiproject.BuildConfig
 import ua.com.cuteteam.cutetaxiproject.api.APIRequest
+import ua.com.cuteteam.cutetaxiproject.api.RequestParameters
 import java.util.*
 
 class GeocodeRequest : APIRequest<GeocodeService>() {
