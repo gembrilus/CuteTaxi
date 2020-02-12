@@ -3,6 +3,7 @@ package ua.com.cuteteam.cutetaxiproject.api.directions
 import kotlinx.coroutines.withContext
 import ua.com.cuteteam.cutetaxiproject.BuildConfig
 import ua.com.cuteteam.cutetaxiproject.api.APIRequest
+import ua.com.cuteteam.cutetaxiproject.api.RequestParameters
 import java.util.*
 
 class DirectionRequest: APIRequest<DirectionService>() {
@@ -30,7 +31,7 @@ class DirectionRequest: APIRequest<DirectionService>() {
         private var alternatives: Boolean = false
         private var avoid: MutableSet<String> = mutableSetOf()
         private var language = Locale.getDefault().language
-        private var units = Units.METRIC
+        private var units = RequestParameters.Units.METRIC
         private var region = Locale.getDefault().country.toLowerCase(Locale.ENGLISH)
 
 

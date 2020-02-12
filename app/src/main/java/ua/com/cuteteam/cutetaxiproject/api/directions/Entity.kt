@@ -11,13 +11,13 @@ data class Route(
 
 data class RouteInfo(
     val summary: String,
-    val legs: List<Steps>,
-    val duration: Map<String, String>,
-    val distance: Map<String, String>
+    val legs: List<LegInfo>
 )
 
-data class Steps(
-    val steps: List<StepInfo>
+data class LegInfo(
+    val steps: List<StepInfo>,
+    val duration: Map<String, String>,
+    val distance: Map<String, String>
 )
 
 data class StepInfo(
@@ -26,5 +26,29 @@ data class StepInfo(
     @Json(name = "end_location")
     val endLocation: Map<String, Double>,
     val duration: Map<String, String>,
-    val distance: Map<String, String>
+    val distance: Map<String, String>,
+    val maneuver: String
 )
+
+class Maneuver {
+    companion object{
+        const val TURN_SLIGHT_LEFT = "turn-slight-left"
+        const val TURN_SHARP_LEFT = "turn-sharp-left"
+        const val UTURN_LEFT = "uturn-left"
+        const val TURN_LEFT = "turn-left"
+        const val TURN_SLIGHT_RIGHT = "turn-slight-right"
+        const val TURN_SHARP_RIGHT = "turn-sharp-right"
+        const val UTURN_RIGHT = "uturn-right"
+        const val TURN_RIGHT = "turn-right"
+        const val STRAIGHT = "straight"
+        const val RAMP_LEFT = "ramp-left"
+        const val RAMP_RIGHT = "ramp-right"
+        const val MERGE = "merge"
+        const val FORK_LEFT = "fork-left"
+        const val FORK_RIGHT = "fork-right"
+        const val FERRY = "ferry"
+        const val FERRY_TRAIN = "ferry-train"
+        const val ROUND_ABOUT_LEFT = "roundabout-left"
+        const val ROUND_ABOUT_RIGHT = "roundabout-right"
+    }
+}
