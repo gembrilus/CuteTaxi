@@ -22,41 +22,56 @@ data class RouteInfo(
 
 data class LegInfo(
     val steps: List<StepInfo>,
-    val duration: Map<String, String>,
-    val distance: Map<String, String>
+    val duration: Duration,
+    val distance: Distance
 )
 
 data class StepInfo(
     @Json(name = "start_location")
-    val startLocation: Map<String, Double>,
+    val startLocation: Location,
     @Json(name = "end_location")
-    val endLocation: Map<String, Double>,
-    val duration: Map<String, String>,
-    val distance: Map<String, String>,
+    val endLocation: Location,
+    val duration: Duration,
+    val distance: Distance,
     @Json(name = "html_instructions")
     val instructions: String,
-    val maneuver: String
+    val maneuver: Maneuver?
 )
 
-class Maneuver {
-    companion object{
-        const val TURN_SLIGHT_LEFT = "turn-slight-left"
-        const val TURN_SHARP_LEFT = "turn-sharp-left"
-        const val UTURN_LEFT = "uturn-left"
-        const val TURN_LEFT = "turn-left"
-        const val TURN_SLIGHT_RIGHT = "turn-slight-right"
-        const val TURN_SHARP_RIGHT = "turn-sharp-right"
-        const val UTURN_RIGHT = "uturn-right"
-        const val TURN_RIGHT = "turn-right"
-        const val STRAIGHT = "straight"
-        const val RAMP_LEFT = "ramp-left"
-        const val RAMP_RIGHT = "ramp-right"
-        const val MERGE = "merge"
-        const val FORK_LEFT = "fork-left"
-        const val FORK_RIGHT = "fork-right"
-        const val FERRY = "ferry"
-        const val FERRY_TRAIN = "ferry-train"
-        const val ROUND_ABOUT_LEFT = "roundabout-left"
-        const val ROUND_ABOUT_RIGHT = "roundabout-right"
-    }
+data class Duration(
+    val value: Double,
+    val text: String
+)
+
+data class Distance(
+    val value: Double,
+    val text: String
+)
+
+data class Location(
+    @Json(name = "lat")
+    val latitude: Double,
+    @Json(name = "lng")
+    val longitude: Double
+)
+
+enum class Maneuver(val maneuver: String) {
+    TURN_SLIGHT_LEFT("turn-slight-left"),
+    TURN_SHARP_LEFT("turn-sharp-left"),
+    UTURN_LEFT("uturn-left"),
+    TURN_LEFT("turn-left"),
+    TURN_SLIGHT_RIGHT("turn-slight-right"),
+    TURN_SHARP_RIGHT("turn-sharp-right"),
+    UTURN_RIGHT("uturn-right"),
+    TURN_RIGHT("turn-right"),
+    STRAIGHT("straight"),
+    RAMP_LEFT("ramp-left"),
+    RAMP_RIGHT("ramp-right"),
+    MERGE("merge"),
+    FORK_LEFT("fork-left"),
+    FORK_RIGHT("fork-right"),
+    FERRY("ferry"),
+    FERRY_TRAIN("ferry-train"),
+    ROUND_ABOUT_LEFT("roundabout-left"),
+    ROUND_ABOUT_RIGHT("roundabout-right")
 }

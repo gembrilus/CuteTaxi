@@ -87,8 +87,8 @@ class RouteProvider(private val route: Route) {
         route.routes.forEach { route ->
             add(
                 Summary(
-                    getParam(route){ distance[DISTANCE_VALUE]?.toDouble() },
-                    getParam(route){ duration[DURATION_VALUE]?.toDouble() },
+                    getParam(route){ distance.value },
+                    getParam(route){ duration.value },
                     getPolyline(route),
                     getStepsParams(route){ maneuver },
                     getStepsParams(route){ instructions }
@@ -104,12 +104,12 @@ class RouteProvider(private val route: Route) {
             .map { step ->
 
                 val start = LatLng(
-                    step.startLocation.getValue(LATITUDE),
-                    step.startLocation.getValue(LONGITUDE)
+                    step.startLocation.latitude,
+                    step.startLocation.longitude
                 )
                 val end = LatLng(
-                    step.endLocation.getValue(LATITUDE),
-                    step.endLocation.getValue(LONGITUDE)
+                    step.endLocation.latitude,
+                    step.endLocation.longitude
                 )
 
                 listOf(start, end)
@@ -118,7 +118,7 @@ class RouteProvider(private val route: Route) {
             .toTypedArray()
 
 
-    private fun getStepsParams(routeInfo: RouteInfo, getParam: StepInfo.() -> String): List<String> =
+    private inline fun <reified T> getStepsParams(routeInfo: RouteInfo, getParam: StepInfo.() -> T): List<T> =
         routeInfo.legs
             .flatMap { leg -> leg.steps }
             .map { getParam.invoke(it) }
@@ -136,7 +136,7 @@ class RouteProvider(private val route: Route) {
         val distance: Double = 0.0,
         val time: Double = 0.0,
         val polyline: Array<LatLng> = arrayOf(),
-        val maneuvers: List<String> = arrayListOf(),
+        val maneuvers: List<Maneuver?> = arrayListOf(),
         val instructions: List<String> = arrayListOf()
     )
 
