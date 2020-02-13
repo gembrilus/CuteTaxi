@@ -3,6 +3,12 @@ package ua.com.cuteteam.cutetaxiproject.api.directions
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
+/**
+ * Data class with route info
+ * @param status server response status, normal - OK
+ * @param routes  list of routes. If request will be build with enableAlternatives(true)
+ * you can receive more as one route.
+ */
 @JsonClass(generateAdapter = true)
 data class Route(
     val status: String,

@@ -7,7 +7,15 @@ private const val DURATION_VALUE = "value"
 private const val LATITUDE = "lat"
 private const val LONGITUDE = "lng"
 
-class RouteBuilder(private val route: Route) {
+
+/**
+ * Class provides an info about routes
+ * @param route is an instance of Route received in [DirectionRequest]
+ * @see DirectionRequest
+ * @see Route
+ *
+ */
+class RouteProvider(private val route: Route) {
 
     private var fastest = false
     private var shortest = false
@@ -33,12 +41,7 @@ class RouteBuilder(private val route: Route) {
     /**
      * Terminal method that return a list with summary info about route or routes
      * @return List<Summary> contains list of routes, their total distance and duration
-     *
-     * class Summary(
-     * val distance: Double,
-     * val time: Double,
-     * val polyline: Array<LatLng>
-     * )
+     * @see Summary
      */
     fun build(): List<Summary> {
 
@@ -79,33 +82,25 @@ class RouteBuilder(private val route: Route) {
         return list
     }
 
+
     private fun buildAll() = mutableListOf<Summary>().apply {
         route.routes.forEach { route ->
             add(
                 Summary(
-                    getDistance(route),
-                    getDuration(route),
-                    getPolyline(route)
+                    getParam(route){ distance[DISTANCE_VALUE]?.toDouble() },
+                    getParam(route){ duration[DURATION_VALUE]?.toDouble() },
+                    getPolyline(route),
+                    getStepsParams(route){ maneuver },
+                    getStepsParams(route){ instructions }
                 )
             )
         }
     }
 
-    private fun getDistance(routeInfo: RouteInfo) =
-        getParam(routeInfo) {
-            distance[DISTANCE_VALUE]?.toDouble()
-        }
-
-    private fun getDuration(routeInfo: RouteInfo) =
-        getParam(routeInfo) {
-            duration[DURATION_VALUE]?.toDouble()
-        }
 
     private fun getPolyline(routeInfo: RouteInfo) =
         routeInfo.legs
-            .flatMap { leg ->
-                leg.steps
-            }
+            .flatMap { leg -> leg.steps }
             .map { step ->
 
                 val start = LatLng(
@@ -123,7 +118,13 @@ class RouteBuilder(private val route: Route) {
             .toTypedArray()
 
 
-    private fun getParam(routeInfo: RouteInfo, supplier: LegInfo.() -> Double?) =
+    private fun getStepsParams(routeInfo: RouteInfo, getParam: StepInfo.() -> String): List<String> =
+        routeInfo.legs
+            .flatMap { leg -> leg.steps }
+            .map { getParam.invoke(it) }
+
+
+    private fun getParam(routeInfo: RouteInfo, supplier: LegInfo.() -> Double?): Double =
         routeInfo.legs
             .mapNotNull { leg ->
                 supplier.invoke(leg)
@@ -134,7 +135,9 @@ class RouteBuilder(private val route: Route) {
     inner class Summary(
         val distance: Double = 0.0,
         val time: Double = 0.0,
-        val polyline: Array<LatLng> = arrayOf()
+        val polyline: Array<LatLng> = arrayOf(),
+        val maneuvers: List<String> = arrayListOf(),
+        val instructions: List<String> = arrayListOf()
     )
 
 }
