@@ -12,15 +12,34 @@ class RouteBuilder(private val route: Route) {
     private var fastest = false
     private var shortest = false
 
+    /**
+     * Builder-function - Search for the fastest route
+     * @return RouteBuilder
+      */
     fun findTheFastest() = apply {
         fastest = true
     }
 
+
+    /**
+     * Builder-function - Search for the shortest route
+     * @return RouteBuilder
+     */
     fun findTheShortest() = apply {
         shortest = true
     }
 
 
+    /**
+     * Terminal method that return a list with summary info about route or routes
+     * @return List<Summary> contains list of routes, their total distance and duration
+     *
+     * class Summary(
+     * val distance: Double,
+     * val time: Double,
+     * val polyline: Array<LatLng>
+     * )
+     */
     fun build(): List<Summary> {
 
         val list = mutableListOf<Summary>()
@@ -36,6 +55,28 @@ class RouteBuilder(private val route: Route) {
         }
         return list
 
+    }
+
+
+    /**
+     * Terminal method that return a list with polilines only
+     * @return List<Array<LatLng>> contains list of polylines
+     *
+     */
+    fun buildPolylines(): List<Array<LatLng>> {
+
+        val list = mutableListOf<Array<LatLng>>()
+
+        if (fastest){
+            buildAll().minBy { it.time }?.let { list.add(it.polyline) }
+        }
+        if (shortest){
+            buildAll().minBy { it.distance }?.let { list.add(it.polyline) }
+        }
+        if (!fastest && !shortest){
+            return buildAll().map { it.polyline }
+        }
+        return list
     }
 
     private fun buildAll() = mutableListOf<Summary>().apply {

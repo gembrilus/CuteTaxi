@@ -1,28 +1,23 @@
 package ua.com.cuteteam.cutetaxiproject.api.directions
 
-import kotlinx.coroutines.withContext
 import ua.com.cuteteam.cutetaxiproject.BuildConfig
 import ua.com.cuteteam.cutetaxiproject.api.APIRequest
 import ua.com.cuteteam.cutetaxiproject.api.RequestParameters
 import java.util.*
 
-class DirectionRequest: APIRequest<DirectionService>() {
+class DirectionRequest() : APIRequest<DirectionService>() {
+
+    internal constructor(map: Map<String, String>): this(){
+        this.map = map
+    }
+
+    private lateinit var map: Map<String, String>
 
     override val url: String
         get() = BuildConfig.GOOGLE_DIRECTIONS_API_URL
 
-    suspend fun fullDirectionRequest(map: Map<String, String>) = withContext(IO){
+    suspend fun requestDirection() =
         getService<DirectionService>().getDirection(map)
-    }
-
-    suspend fun simpleDirectionRequest(orig: String, dest: String): Route = withContext(IO) {
-        val map = Builder()
-            .addOrigin(orig)
-            .addDestination(dest)
-            .build()
-        fullDirectionRequest(map)
-    }
-
 
     class Builder {
         private lateinit var origin: String
@@ -32,7 +27,7 @@ class DirectionRequest: APIRequest<DirectionService>() {
         private var avoid: MutableSet<String> = mutableSetOf()
         private var language = Locale.getDefault().language
         private var units = RequestParameters.Units.METRIC
-        private var region = Locale.getDefault().country.toLowerCase(Locale.ENGLISH)
+        private var region: String = ""
 
 
         fun addOrigin(origin: String) = apply {
@@ -67,25 +62,32 @@ class DirectionRequest: APIRequest<DirectionService>() {
             region = country
         }
 
-        fun build(): Map<String, String> {
+        fun build(): DirectionRequest {
             val map = mutableMapOf<String, String>()
 
             map[RequestParameters.ORIGIN_PLACE] = origin
             map[RequestParameters.DESTINATION_PLACE] = destination
+
             if (wayPoints.isNotEmpty()) {
                 map[RequestParameters.WAY_POINTS] = wayPoints.joinToString("|", "", "")
             }
+
             if (alternatives) {
                 map[RequestParameters.IS_ALTERNATIVE_WAYS] = alternatives.toString()
             }
+
             if (avoid.isNotEmpty()) {
                 map[RequestParameters.AVOID] = avoid.joinToString("|", "", "")
             }
+
             map[RequestParameters.LANG] = language
             map[RequestParameters.UNITS] = units
-            map[RequestParameters.REGION] = region
 
-            return map
+            if (region.isNotEmpty()){
+                map[RequestParameters.REGION] = region
+            }
+
+            return DirectionRequest(map)
         }
     }
 }

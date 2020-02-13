@@ -27,6 +27,8 @@ data class StepInfo(
     val endLocation: Map<String, Double>,
     val duration: Map<String, String>,
     val distance: Map<String, String>,
+    @Json(name = "html_instructions")
+    val instructions: String,
     val maneuver: String
 )
 
