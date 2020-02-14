@@ -7,7 +7,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import ua.com.cuteteam.cutetaxiproject.api.directions.ManeuverAdapter
+import ua.com.cuteteam.cutetaxiproject.api.adapters.ManeuverAdapter
 import ua.com.cuteteam.cutetaxiproject.api.interceptors.AuthInterceptor
 
 abstract class APIRequest<T> where T: APIService {

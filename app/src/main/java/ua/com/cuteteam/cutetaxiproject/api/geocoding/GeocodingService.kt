@@ -7,13 +7,13 @@ import ua.com.cuteteam.cutetaxiproject.api.APIService
 
 interface GeocodeService : APIService {
 
-    @GET
+    @GET(value = "json")
     suspend fun getNameByCoordinates(
         @Query("latlng") latlng: String,
         @QueryMap map: Map<String, String>
     ): Geocode
 
-    @GET
+    @GET(value = "json")
     suspend fun getCoordinatesByName(
         @Query("address", encoded = true) address: String,
         @QueryMap map: Map<String, String>

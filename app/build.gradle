@@ -22,8 +22,8 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField "String", "GOOGLE_GEO_API_URL", '"https://maps.googleapis.com/maps/api/geocode/json"'
-        buildConfigField "String", "GOOGLE_DIRECTIONS_API_URL", '"https://maps.googleapis.com/maps/api/directions/json"'
+        buildConfigField "String", "GOOGLE_GEO_API_URL", '"https://maps.googleapis.com/maps/api/geocode/"'
+        buildConfigField "String", "GOOGLE_DIRECTIONS_API_URL", '"https://maps.googleapis.com/maps/api/directions/"'
         buildConfigField "String", "GOOGLE_KEY", '"AIzaSyDUTwknPHCe9ztenzmKiBNi2cEoFMN3Nnw"'
 
     }

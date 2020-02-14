@@ -1,6 +1,7 @@
-package ua.com.cuteteam.cutetaxiproject.api.directions
+package ua.com.cuteteam.cutetaxiproject.api.adapters
 
 import com.squareup.moshi.*
+import ua.com.cuteteam.cutetaxiproject.api.directions.Maneuver
 
 class ManeuverAdapter {
 

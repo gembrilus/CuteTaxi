@@ -2,12 +2,6 @@ package ua.com.cuteteam.cutetaxiproject.api.directions
 
 import com.google.android.gms.maps.model.LatLng
 
-private const val DISTANCE_VALUE = "value"
-private const val DURATION_VALUE = "value"
-private const val LATITUDE = "lat"
-private const val LONGITUDE = "lng"
-
-
 /**
  * Class provides an info about routes
  * @param route is an instance of Route received in [DirectionRequest]
@@ -138,6 +132,30 @@ class RouteProvider(private val route: Route) {
         val polyline: Array<LatLng> = arrayOf(),
         val maneuvers: List<Maneuver?> = arrayListOf(),
         val instructions: List<String> = arrayListOf()
-    )
+    ){
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as Summary
+
+            if (distance != other.distance) return false
+            if (time != other.time) return false
+            if (!polyline.contentEquals(other.polyline)) return false
+            if (maneuvers != other.maneuvers) return false
+            if (instructions != other.instructions) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = distance.hashCode()
+            result = 31 * result + time.hashCode()
+            result = 31 * result + polyline.contentHashCode()
+            result = 31 * result + maneuvers.hashCode()
+            result = 31 * result + instructions.hashCode()
+            return result
+        }
+    }
 
 }
