@@ -6,7 +6,7 @@ import ua.com.cuteteam.cutetaxiproject.api.APIService
 
 interface DirectionService : APIService {
 
-    @GET
-    suspend fun getDirection(@QueryMap map: Map<String, String>): Route
+    @GET(value = "json")
+    suspend fun getDirection(@QueryMap(encoded = true) map: Map<String, String>): Route
 
 }
