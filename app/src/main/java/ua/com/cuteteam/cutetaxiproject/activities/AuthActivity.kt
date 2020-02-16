@@ -46,7 +46,7 @@ class AuthActivity : AppCompatActivity() {
     }
 
     private fun openFakeMap() {
-        val intent = Intent(this, FakeMapActivity::class.java)
+        val intent = Intent(this, MapsActivity::class.java)
         startActivity(intent)
     }
 
