@@ -1,3 +1,4 @@
+import android.content.Context
 import android.location.Location
 import android.os.Looper
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -5,11 +6,11 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 
-class LocationProvider {
+class LocationProvider(private val context: Context) {
 
-    fun requestLocation(): Location {
+    fun requestLocation() {
         var location: Location
-        val fusedLocationProviderClient = FusedLocationProviderClient()
+        val fusedLocationProviderClient = FusedLocationProviderClient(context)
         val request = createLocationRequest()
         val callback: LocationCallback = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult?) {
@@ -19,7 +20,6 @@ class LocationProvider {
             }
         }
         fusedLocationProviderClient.requestLocationUpdates(request, callback, Looper.getMainLooper())
-        return location
     }
 
     private fun createLocationRequest(): LocationRequest {
