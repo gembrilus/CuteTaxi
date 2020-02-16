@@ -112,7 +112,6 @@ class NetHelper(context: Context) {
     }
 
 
-
     private fun hasNetwork(predicate: NetworkCapabilities.() -> Boolean): Boolean =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             connectivityManager
