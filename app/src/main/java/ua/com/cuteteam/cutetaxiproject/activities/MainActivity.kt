@@ -28,12 +28,10 @@ class MainActivity : AppCompatActivity() {
 
         Timer().schedule(object : TimerTask() {
             override fun run() {
-                if (authViewModel.isUserSignedIn()) startMapActivity()
+                if (authViewModel.isUserSignedIn()) startMapsActivity()
                 else startAuthorization()
             }
         }, 500)
-
-        authViewModel.signOut()
     }
 
     private fun startAuthorization() {
@@ -41,8 +39,8 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun startMapActivity() {
-        val intent = Intent(this, FakeMapActivity::class.java)
+    private fun startMapsActivity() {
+        val intent = Intent(this, MapsActivity::class.java)
         startActivity(intent)
     }
 }
