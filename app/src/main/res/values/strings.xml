@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">CuteTaxiProject</string>
+    <string name="black">Black</string>
+    <string name="yellow">Yellow</string>
 </resources>
