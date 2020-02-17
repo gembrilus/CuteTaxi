@@ -30,13 +30,12 @@ class AppSettingsToFirebaseStore(
 
     }
 
-    override fun getString(key: String?, defValue: String?): String =
+    override fun getString(key: String?, defValue: String?): String? =
         sharedPreferences.getString(key, defValue)
             ?: key?.let {
                 callback.getFromFirebase<String>(it)
             }
             ?: defValue
-            ?: ""
 
 
     override fun putString(key: String?, value: String?) {
@@ -59,11 +58,10 @@ class AppSettingsToFirebaseStore(
     }
 
 
-    override fun getStringSet(key: String?, defValues: MutableSet<String>?): MutableSet<String> =
+    override fun getStringSet(key: String?, defValues: MutableSet<String>?): MutableSet<String>? =
         sharedPreferences.getStringSet(key, defValues)
             ?: key?.let {
                 callback.getFromFirebase<MutableSet<String>>(it)
             }
             ?: defValues
-            ?: mutableSetOf()
 }

@@ -12,4 +12,9 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDarkHeadPiece</item>
     </style>
 
+    <style name="SlideUpDownAnimation" parent="@android:style/Animation.Activity">
+        <item name="android:windowEnterAnimation">@anim/anim_slide_up</item>
+        <item name="android:windowExitAnimation">@anim/anim_slide_down</item>
+    </style>
+
 </resources>
