@@ -6,7 +6,7 @@ import com.google.firebase.ktx.Firebase
 import ua.com.cuteteam.cutetaxiproject.data.User
 import ua.com.cuteteam.cutetaxiproject.data.entities.Trip
 
-abstract class DbHelper {
+abstract class BaseDao {
 
     //Will be moved to dagger2 module
     private val database = Firebase.database

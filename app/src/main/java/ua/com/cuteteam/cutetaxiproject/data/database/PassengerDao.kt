@@ -3,7 +3,7 @@ package ua.com.cuteteam.cutetaxiproject.data.database
 import com.google.firebase.database.DatabaseReference
 import ua.com.cuteteam.cutetaxiproject.data.entities.Trip
 
-class PassengerDbHelper : DbHelper() {
+class PassengerDao : BaseDao() {
 
     override val usersReference: DatabaseReference
         get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
