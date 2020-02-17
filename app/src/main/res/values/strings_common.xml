@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_dialog_title">Error</string>
+    <string name="dialog_title_rate_driver">RATE DRIVER</string>
+    <string name="dialog_positive_button_rate">Rate</string>
+    <string name="dialog_negative_button_dismiss">Dismiss</string>
+
+</resources>

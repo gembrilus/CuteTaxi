@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#8aacc8</color>
     <color name="colorPrimaryDarkHeadPiece">#FFFFFF</color>
     <color name="colorAccent">#bbdefb</color>
+    <color name="colorError">#FF5722</color>
 </resources>
