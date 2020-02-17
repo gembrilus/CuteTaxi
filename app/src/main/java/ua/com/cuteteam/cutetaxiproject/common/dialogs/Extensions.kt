@@ -5,9 +5,14 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
-import ua.com.cuteteam.cutetaxiproject.R
 
-
+/**
+ * Show info dialog in bootom of the screen - SnackBar. You can set an action for it.
+ * @param viewGroup Parent view for binding Snackbar
+ * @param text Text message that will be shown
+ * @param actionName Text name for the action if it is not null!
+ * @param action Lambda-function that runs the action you need. It has an argument View that is SnackBar.
+ */
 fun Context.showInfoSnackBar(
     viewGroup: ViewGroup,
     text: String,
@@ -28,8 +33,4 @@ fun Context.showInfoSnackBar(
         show()
     }
 }
-
-
-fun Context.showErrorSnackBar(viewGroup: ViewGroup) =
-    showInfoSnackBar(viewGroup, getString(R.string.error_dialog_title))
 

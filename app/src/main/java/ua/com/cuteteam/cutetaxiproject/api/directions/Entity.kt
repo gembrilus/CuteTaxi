@@ -55,6 +55,10 @@ data class Location(
     val longitude: Double
 )
 
+
+/**
+ * Maneuvers. You can use it for audio or visual support of navigation
+ */
 enum class Maneuver(val maneuver: String) {
     TURN_SLIGHT_LEFT("turn-slight-left"),
     TURN_SHARP_LEFT("turn-sharp-left"),

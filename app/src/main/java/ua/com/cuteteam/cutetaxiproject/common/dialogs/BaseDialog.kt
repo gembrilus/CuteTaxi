@@ -10,6 +10,9 @@ import androidx.fragment.app.DialogFragment
 import kotlinx.android.synthetic.main.dialog_simple_layout.*
 import ua.com.cuteteam.cutetaxiproject.R
 
+/**
+ * It is simple the base abstract class for dialogs in the app.
+ */
 abstract class BaseDialog : DialogFragment() {
 
     abstract val layoutResId: Int

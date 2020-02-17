@@ -3,6 +3,11 @@ package ua.com.cuteteam.cutetaxiproject.api.adapters
 import com.squareup.moshi.*
 import ua.com.cuteteam.cutetaxiproject.api.directions.Maneuver
 
+
+/**
+ *
+ * Moshi adapter class for enum class [Maneuver]
+ */
 class ManeuverAdapter {
 
     @ToJson

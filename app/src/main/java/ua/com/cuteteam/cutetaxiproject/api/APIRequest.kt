@@ -10,6 +10,10 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import ua.com.cuteteam.cutetaxiproject.api.adapters.ManeuverAdapter
 import ua.com.cuteteam.cutetaxiproject.api.interceptors.AuthInterceptor
 
+/**
+ * Base abstract class for Request classes: [DirectionRequest] and [GeocodeRequest]
+ * Extend this class if you add new service
+ */
 abstract class APIRequest<T> where T: APIService {
 
     abstract val url: String

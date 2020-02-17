@@ -4,6 +4,9 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import ua.com.cuteteam.cutetaxiproject.api.directions.Location
 
+/**
+ * Class for geocode info. Contains coordinates and names of requested objects
+ */
 @JsonClass(generateAdapter = true)
 data class Geocode(
     val results: List<Results>,
