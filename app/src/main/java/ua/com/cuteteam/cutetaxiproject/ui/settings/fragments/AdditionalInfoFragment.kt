@@ -1,11 +1,9 @@
 package ua.com.cuteteam.cutetaxiproject.ui.settings.fragments
 
 import android.os.Bundle
-import android.util.Log
 import androidx.lifecycle.Observer
-import androidx.preference.EditTextPreference
 import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.settings.*
+import ua.com.cuteteam.cutetaxiproject.common.settings.*
 
 private const val TAG = "CuteTaxi.AddInfoFrag"
 

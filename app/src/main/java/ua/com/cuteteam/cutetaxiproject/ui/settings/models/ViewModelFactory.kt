@@ -3,7 +3,7 @@ package ua.com.cuteteam.cutetaxiproject.ui.settings.models
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import ua.com.cuteteam.cutetaxiproject.settings.AppSettingsHelper
+import ua.com.cuteteam.cutetaxiproject.common.settings.AppSettingsHelper
 
 /**
  * Factory for creating ViewModels by type

@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.settings
+package ua.com.cuteteam.cutetaxiproject.common.settings
 
 import android.content.SharedPreferences
 
