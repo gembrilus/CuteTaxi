@@ -1,11 +1,8 @@
-package ua.com.cuteteam.cutetaxiproject.settings
+package ua.com.cuteteam.cutetaxiproject.common.settings
 
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.preference.PreferenceDataStore
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 
 private const val ERROR_MESSAGE_PUT = "You need to set a 'put' function first. " +
         "Use a public method 'setPutFunction()'"

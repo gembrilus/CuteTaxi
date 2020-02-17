@@ -10,7 +10,7 @@ import androidx.preference.*
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreference
 import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreferenceDialogFragmentCompat
-import ua.com.cuteteam.cutetaxiproject.settings.ROLE_KEY
+import ua.com.cuteteam.cutetaxiproject.common.settings.ROLE_KEY
 import ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.HeaderFragment
 import ua.com.cuteteam.cutetaxiproject.ui.settings.models.SettingsViewModel
 import ua.com.cuteteam.cutetaxiproject.ui.settings.models.ViewModelFactory
