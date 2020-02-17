@@ -5,6 +5,9 @@ import retrofit2.http.Query
 import retrofit2.http.QueryMap
 import ua.com.cuteteam.cutetaxiproject.api.APIService
 
+/**
+ * Retrofit service. Don't use it alone
+ */
 interface GeocodeService : APIService {
 
     @GET(value = "json")

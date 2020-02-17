@@ -5,6 +5,12 @@ import ua.com.cuteteam.cutetaxiproject.api.APIRequest
 import ua.com.cuteteam.cutetaxiproject.api.RequestParameters
 import java.util.*
 
+
+/**
+ *
+ * Do request for geocode with this class
+ *
+ */
 class GeocodeRequest() : APIRequest<GeocodeService>() {
 
     internal constructor(map: Map<String, String>) : this() {
@@ -19,7 +25,10 @@ class GeocodeRequest() : APIRequest<GeocodeService>() {
                         "or use parametrized constructor GeocodeRequest(map: Map<String, String>)"
             )
 
-
+    /**
+     * Base url for API request. Used by Retrofit
+     *
+     */
     override val url: String
         get() = BuildConfig.GOOGLE_GEO_API_URL
 

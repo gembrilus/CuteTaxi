@@ -1,5 +1,9 @@
 package ua.com.cuteteam.cutetaxiproject.api
 
+
+/**
+ * Constants are used by [DirectionRequest]
+ */
 object RequestParameters {
     const val ORIGIN_PLACE = "origin"
     const val DESTINATION_PLACE = "destination"

@@ -1,6 +1,7 @@
 package ua.com.cuteteam.cutetaxiproject.common.notifications
 
 import android.app.Activity
+import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -46,7 +47,7 @@ class NotificationUtils(private val context: Context) {
      * @return [NotificationUtils]
      */
     fun addAction(icon: Int, name: String, pendingIntent: PendingIntent) = apply {
-        val action = NotificationCompat.Action(icon, name, intent)
+        val action = NotificationCompat.Action(icon, name, pendingIntent)
         actions.add(action)
     }
 
@@ -93,6 +94,7 @@ class NotificationUtils(private val context: Context) {
         .apply {
 
             setSmallIcon(R.drawable.cute_taxi_headpiece)
+            setTicker(title)
             setContentTitle(title)
             setContentText(text)
             priority = NotificationCompat.PRIORITY_DEFAULT
@@ -102,8 +104,8 @@ class NotificationUtils(private val context: Context) {
             extras?.let { addExtras(it) }
             setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             setAutoCancel(true)
-            setColorized(true)
-            setColor(Color.LTGRAY)
+            setWhen(System.currentTimeMillis())
+            setDefaults(Notification.DEFAULT_ALL)
 
         }
         .run {
@@ -116,7 +118,7 @@ class NotificationUtils(private val context: Context) {
      * Cancel all previously shown notifications.
      *
      */
-    fun cancellAll() = NotificationManagerCompat.from(context).cancelAll()
+    fun cancelAll() = NotificationManagerCompat.from(context).cancelAll()
 
     companion object {
 
