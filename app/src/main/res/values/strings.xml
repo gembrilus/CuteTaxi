@@ -2,6 +2,4 @@
 
     <string name="app_name">CuteTaxi</string>
     <string name="title_activity_maps">Map</string>
-    <string name="black">Black</string>
-    <string name="yellow">Yellow</string>
 </resources>
