@@ -20,6 +20,7 @@
         <activity
             android:name=".ui.settings.SettingsActivity"
             android:label="@string/title_activity_settings">
+
         </activity>
 
         <activity android:name=".activities.MapsActivity" />
@@ -32,6 +33,7 @@
         <activity
             android:name=".activities.MainActivity"
             android:theme="@style/HeadPieceTheme">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
