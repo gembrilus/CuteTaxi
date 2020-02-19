@@ -22,7 +22,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
-        
+
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -35,10 +35,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     @AfterPermissionGranted(PermissionProvider.LOCATION_REQUEST_CODE)
     private fun addAMarkerAndMoveTheCamera() {
-        val permission =
-            AccessFineLocationPermission(getString(R.string.location_permission_rationale))
-
-        permissionProvider.withPermission(permission) {
+        permissionProvider.withPermission(AccessFineLocationPermission()) {
             val sydney = LatLng(-34.0, 151.0)
             mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
             mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
