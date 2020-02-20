@@ -1,0 +1,298 @@
+package ua.com.cuteteam.cutetaxiproject.api
+
+import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import ua.com.cuteteam.cutetaxiproject.api.directions.*
+import ua.com.cuteteam.cutetaxiproject.api.roads.RoadsRequest
+import java.util.*
+
+/**
+ * Class provides an info about routes
+ * @param route is an instance of Route received in [DirectionRequest]
+ * @see DirectionRequest
+ * @see Route
+ *
+ */
+class RouteProvider private constructor(
+    private val directionRequest: DirectionRequest = DirectionRequest(),
+    private val roadsRequest: RoadsRequest = RoadsRequest()
+) {
+
+    private lateinit var map: Map<String, String>
+    private var fastest = false
+    private var shortest = false
+
+
+    /**
+     * Terminal method that return a list with summary info about route or routes
+     * @return List<Summary> contains list of routes, their total distance and duration
+     * @see RouteSummary
+     */
+    suspend fun routes(): List<RouteSummary> {
+
+        val list = mutableListOf<RouteSummary>()
+
+        if (fastest){
+            allRoutes().minBy { it.time }?.let { list.add(it) }
+        }
+        if (shortest){
+            allRoutes().minBy { it.distance }?.let { list.add(it) }
+        }
+        if (!fastest && !shortest){
+            return allRoutes()
+        }
+        return list
+
+    }
+
+    private suspend fun allRoutes(): List<RouteSummary> = withContext(Dispatchers.IO) {
+        val list = mutableListOf<RouteSummary>()
+        directionRequest.requestDirection(map)
+            .routes.forEach { routeInfo ->
+
+            val points = mutableListOf<LatLng>()
+
+            getPolyline(routeInfo).forEach { pair ->
+
+                val path = pair
+                    .toList()
+                    .joinToString("|") { latLng ->
+
+                        "${latLng.latitude},${latLng.longitude}"
+
+                    }
+
+                val step = roadsRequest.getRoads(path).snappedPoints
+                    .map { node ->
+                        node.location
+                    }
+                points.addAll(step)
+            }
+
+            list.add(
+                createRouteSummary(routeInfo, points.toTypedArray())
+            )
+        }
+        list
+    }
+
+
+    private fun createRouteSummary(routeInfo: RouteInfo, polyline: Array<LatLng>) =
+        RouteSummary(
+            getParam(routeInfo) { distance.value },
+            getParam(routeInfo) { duration.value },
+            polyline,
+            getStepsParams(routeInfo) { maneuver },
+            getStepsParams(routeInfo) { instructions }
+        )
+
+
+    private fun getPolyline(routeInfo: RouteInfo) =
+        routeInfo.legs
+            .flatMap { leg -> leg.steps }
+            .map { step ->
+
+                val start = LatLng(
+                    step.startLocation.latitude,
+                    step.startLocation.longitude
+                )
+                val end = LatLng(
+                    step.endLocation.latitude,
+                    step.endLocation.longitude
+                )
+
+                Pair(start, end)
+            }
+
+
+    private inline fun <reified T> getStepsParams(
+        routeInfo: RouteInfo,
+        getParam: StepInfo.() -> T
+    ): List<T> =
+        routeInfo.legs
+            .flatMap { leg -> leg.steps }
+            .map { getParam.invoke(it) }
+
+
+    private fun getParam(routeInfo: RouteInfo, supplier: LegInfo.() -> Double?): Double =
+        routeInfo.legs
+            .mapNotNull { leg ->
+                supplier.invoke(leg)
+            }
+            .sumByDouble { it }
+
+
+    class Builder {
+        private lateinit var origin: String
+        private lateinit var destination: String
+        private var wayPoints: MutableList<String> = mutableListOf()
+        private var alternatives: Boolean = false
+        private var avoid: MutableSet<String> = mutableSetOf()
+        private var language = Locale.getDefault().language
+        private var units = RequestParameters.Units.METRIC
+        private var region: String = ""
+        private var fastest = false
+        private var shortest = false
+
+
+        /**
+         * Add an origin place to the request parameters
+         * @param origin Destination. It can be human readable text or coordinates
+         * (by example, "12.23123, 13.121231") or Object ID from Google Maps
+         */
+        fun addOrigin(origin: String) = apply {
+            this@Builder.origin = origin
+        }
+
+        /**
+         * Add a destination place to the request parameters
+         * @param dest Destination. It can be human readable text or coordinates
+         * (by example, "12.23123, 13.121231") or Object ID from Google Maps
+         */
+        fun addDestination(dest: String) = apply {
+            destination = dest
+        }
+
+
+        /**
+         *  Set <b>true</b> if you need an alternative ways else set <b>false</b>
+         */
+        fun enableAlternatives() = apply {
+            alternatives = true
+        }
+
+
+        /**
+         * Add way points if need
+         * @param point It can be human readable text or coordinates(by example, "12.23123, 13.121231")
+         * or Object ID from Google Maps
+         */
+        fun addWayPoint(point: String) = apply {
+            wayPoints.add(point)
+        }
+
+
+        /**
+         * Add an avoid if you need.
+         * If you won't to use highways, by example, set value HIGHWAYS
+         * @param _avoid Possible values: TOLLS, HIGHWAYS, FERRIES
+         */
+        fun addAvoid(_avoid: String) = apply {
+            avoid.add(_avoid)
+        }
+
+        /**
+         * Set a language of  response(by example, "ru", "en").
+         * @param lang Language in two-words format. By default uses a language of your device
+         */
+        fun setLanguage(lang: String) = apply {
+            language = lang
+        }
+
+
+        /**
+         * Set a metric system of response.
+         * @param system Metric system. Possible values: METRIC, IMPERIAL. By default uses METRIC.
+         */
+        fun setMeasureSystem(system: String) = apply {
+            units = system
+        }
+
+
+        /**
+         * Set a region of response in two-words format. It needs if exist two different objects with the same name
+         * @param country Region. Possible values: "ru", "uk"... Not uses by default
+         */
+        fun setRegion(country: String) = apply {
+            region = country
+        }
+
+        /**
+         * Builder-function - Search for the fastest route
+         * @return RouteBuilder
+         */
+        fun findTheFastest() = apply {
+            fastest = true
+        }
+
+
+        /**
+         * Builder-function - Search for the shortest route
+         * @return RouteBuilder
+         */
+        fun findTheShortest() = apply {
+            shortest = true
+        }
+
+
+        /**
+         * Terminate function that builds a DirectionRequest with full map of parameters
+         * After this step you can do asynchronous request by [requestDirection]
+         */
+        fun build(): RouteProvider {
+            val map = mutableMapOf<String, String>()
+
+            map[RequestParameters.ORIGIN_PLACE] = origin
+            map[RequestParameters.DESTINATION_PLACE] = destination
+
+            if (wayPoints.isNotEmpty()) {
+                map[RequestParameters.WAY_POINTS] = wayPoints.joinToString("|", "", "")
+            }
+
+            if (alternatives) {
+                map[RequestParameters.IS_ALTERNATIVE_WAYS] = alternatives.toString()
+            }
+
+            if (avoid.isNotEmpty()) {
+                map[RequestParameters.AVOID] = avoid.joinToString("|", "", "")
+            }
+
+            map[RequestParameters.LANG] = language
+            map[RequestParameters.UNITS] = units
+
+            if (region.isNotEmpty()) {
+                map[RequestParameters.REGION] = region
+            }
+
+            return RouteProvider().apply {
+                this.map = map
+                this.fastest = this@Builder.fastest
+                this.shortest = this@Builder.shortest
+            }
+        }
+    }
+
+    inner class RouteSummary(
+        val distance: Double = 0.0,
+        val time: Double = 0.0,
+        val polyline: Array<LatLng>,
+        val maneuvers: List<Maneuver?>,
+        val instructions: List<String>
+    ) {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as RouteSummary
+
+            if (distance != other.distance) return false
+            if (time != other.time) return false
+            if (!polyline.contentEquals(other.polyline)) return false
+            if (maneuvers != other.maneuvers) return false
+            if (instructions != other.instructions) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = distance.hashCode()
+            result = 31 * result + time.hashCode()
+            result = 31 * result + polyline.contentHashCode()
+            result = 31 * result + maneuvers.hashCode()
+            result = 31 * result + instructions.hashCode()
+            return result
+        }
+    }
+
+}

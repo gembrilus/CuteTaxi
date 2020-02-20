@@ -1,6 +1,9 @@
 package ua.com.cuteteam.cutetaxiproject.common.settings
 
+import android.content.Context
 import android.content.SharedPreferences
+import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.data.entities.ComfortLevel
 
 /**
  * Class helps to write/read header_preferences to/from a file
@@ -8,7 +11,10 @@ import android.content.SharedPreferences
  * @param shPref is a shared header_preferences file where they are stored
  *
  */
-class AppSettingsHelper(private val shPref: SharedPreferences) {
+class AppSettingsHelper(
+    private val context: Context,
+    private val shPref: SharedPreferences
+) {
 
 
     /**
@@ -32,56 +38,62 @@ class AppSettingsHelper(private val shPref: SharedPreferences) {
     /**
      * Property for the user's name
      */
-    var name: String
-        get() = shPref.getString(NAME_KEY, "")!!
+    var name: String?
+        get() = shPref.getString(NAME_KEY, null)
         set(value) = put(NAME_KEY, value)
 
 
     /**
      * Property for the user's phone
      */
-    var phone: String
-        get() = shPref.getString(PHONE_KEY, "")!!
+    var phone: String?
+        get() = shPref.getString(PHONE_KEY, null)
         set(value) = put(PHONE_KEY, value)
 
 
     /**
      * Property for car  comfort class
      */
-    var comfortClass: Int
-        get() = shPref.getInt(CAR_CLASS_FOR_PASSENGER_KEY, 0)
+    var comfortClass: String?
+        get() = shPref.getString(CAR_CLASS_FOR_PASSENGER_KEY, ComfortLevel.STANDARD.name)
         set(value) = put(CAR_CLASS_FOR_PASSENGER_KEY, value)
 
 
     /**
      * Property of the black list drivers
      */
-    var blackListOfDrivers: Set<String>
-        get() = shPref.getStringSet(BLACK_LIST_OF_DRIVERS_KEY, emptySet())!!
-        set(value) = put(BLACK_LIST_OF_DRIVERS_KEY, value)
+    var blackListOfDrivers: Set<String>?
+        get() = shPref.getStringSet(BLACK_LIST_OF_DRIVERS_KEY, null)
+        set(value) = with(shPref.edit()) {
+            putStringSet(BLACK_LIST_OF_DRIVERS_KEY, value)
+            apply()
+        }
 
 
     /**
      * Property of the user's favorite addresses
      */
-    var favoriteAddresses: Set<String>
-        get() = shPref.getStringSet(FAVORITE_ADDRESSES_KEY, emptySet())!!
-        set(value) = put(FAVORITE_ADDRESSES_KEY, value)
+    var favoriteAddresses: Set<String>?
+        get() = shPref.getStringSet(FAVORITE_ADDRESSES_KEY, null)
+        set(value) = with(shPref.edit()) {
+            putStringSet(FAVORITE_ADDRESSES_KEY, value)
+            apply()
+        }
 
 
     /**
      * Property for the user's phone
      */
-    var carModel: String
-        get() = shPref.getString(CAR_MODEL_KEY, "")!!
+    var carModel: String?
+        get() = shPref.getString(CAR_MODEL_KEY, null)
         set(value) = put(CAR_MODEL_KEY, value)
 
 
     /**
      * Property for the user's phone
      */
-    var carNumber: String
-        get() = shPref.getString(CAR_NUMBER_KEY, "")!!
+    var carNumber: String?
+        get() = shPref.getString(CAR_NUMBER_KEY, null)
         set(value) = put(CAR_NUMBER_KEY, value)
 
 
@@ -97,8 +109,8 @@ class AppSettingsHelper(private val shPref: SharedPreferences) {
     /**
      * Property for the user's phone
      */
-    var carColor: String
-        get() = shPref.getString(CAR_COLOR_KEY, "")!!
+    var carColor: String?
+        get() = shPref.getString(CAR_COLOR_KEY, null)
         set(value) = put(CAR_COLOR_KEY, value)
 
 
@@ -113,10 +125,9 @@ class AppSettingsHelper(private val shPref: SharedPreferences) {
     /**
      * Property for set an app theme
      */
-    var appTheme: String
-        get() = shPref.getString(APP_THEME_KEY, "Light")!!
+    var appTheme: String?
+        get() = shPref.getString(APP_THEME_KEY, context.getString(R.string.value_item_light_theme))
         set(value) = put(APP_THEME_KEY, value)
-
 
 
     private fun <T> put(key: String, value: T) =
@@ -130,4 +141,5 @@ class AppSettingsHelper(private val shPref: SharedPreferences) {
             }
             apply()
         }
+
 }
