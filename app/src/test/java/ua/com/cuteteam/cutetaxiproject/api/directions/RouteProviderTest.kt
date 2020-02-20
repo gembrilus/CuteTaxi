@@ -1,11 +1,13 @@
-package ua.com.cuteteam.cutetaxiproject.api.directions
 
+package ua.com.cuteteam.cutetaxiproject.api.directions
+/*
 import com.google.android.gms.maps.model.LatLng
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import ua.com.cuteteam.cutetaxiproject.api.RouteProvider
 
 class RouteProviderTest {
 
@@ -134,7 +136,11 @@ class RouteProviderTest {
                 )
             )
         )
-        routeProvider = route?.let { RouteProvider(it) }
+        routeProvider = route?.let {
+            RouteProvider(
+                it
+            )
+        }
     }
 
     @After
@@ -147,7 +153,7 @@ class RouteProviderTest {
     fun findTheFastest() {
 
         val actual = listOf(
-            routeProvider!!.Summary(
+            routeProvider!!.RouteSummary(
                 distance = 1000.0,
                 time = 58.0,
                 polyline = arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
@@ -164,7 +170,7 @@ class RouteProviderTest {
     fun findTheShortest() {
 
         val actual = listOf(
-            routeProvider!!.Summary(
+            RouteProvider.RouteSummary(
                 distance = 999.0,
                 time = 60.0,
                 polyline = arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
@@ -181,14 +187,14 @@ class RouteProviderTest {
     @Test
     fun findTheFastestAndTheShortestWays() {
         val actual = listOf(
-            routeProvider!!.Summary(
+            RouteProvider.RouteSummary(
                 distance = 1000.0,
                 time = 58.0,
                 polyline = arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
                 maneuvers = arrayListOf(Maneuver.STRAIGHT),
                 instructions = arrayListOf("bla bla car")
             ),
-            routeProvider!!.Summary(
+            RouteProvider.RouteSummary(
                 distance = 999.0,
                 time = 60.0,
                 polyline = arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
@@ -208,21 +214,21 @@ class RouteProviderTest {
     fun build() {
 
         val actual = listOf(
-            routeProvider!!.Summary(
+            RouteProvider.RouteSummary(
                 distance = 999.0,
                 time = 60.0,
                 polyline = arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
                 maneuvers = arrayListOf(Maneuver.STRAIGHT),
                 instructions = arrayListOf("bla bla car")
             ),
-            routeProvider!!.Summary(
+            RouteProvider.RouteSummary(
                 distance = 1000.0,
                 time = 58.0,
                 polyline = arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
                 maneuvers = arrayListOf(Maneuver.STRAIGHT),
                 instructions = arrayListOf("bla bla car")
             ),
-            routeProvider!!.Summary(
+            RouteProvider.RouteSummary(
                 distance = 1001.0,
                 time = 60.0,
                 polyline = arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
@@ -251,4 +257,4 @@ class RouteProviderTest {
         assertThat(transformActual, Matchers.equalTo(transformResult))
     }
 
-}
+}*/
