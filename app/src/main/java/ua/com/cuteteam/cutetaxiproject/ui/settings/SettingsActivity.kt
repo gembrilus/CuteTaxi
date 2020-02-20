@@ -23,12 +23,8 @@ class SettingsActivity : AppCompatActivity(),
     PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback,
     SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private val shPrefs: SharedPreferences by lazy {
-        PreferenceManager.getDefaultSharedPreferences(this)
-    }
-
     private val model by lazy {
-        ViewModelProvider(this, ViewModelFactory(shPrefs))
+        ViewModelProvider(this, ViewModelFactory(this))
         .get(SettingsViewModel::class.java)
     }
 

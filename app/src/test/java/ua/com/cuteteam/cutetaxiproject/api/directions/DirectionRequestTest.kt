@@ -37,7 +37,7 @@ class DirectionRequestTest {
         assert(DirectionRequest::requestDirection.visibility == KVisibility.PUBLIC)
         assert(DirectionRequest::requestDirection.returnType.classifier == Route::class)
         assert(!DirectionRequest::requestDirection.returnType.isMarkedNullable)
-        assert(DirectionRequest::requestDirection.valueParameters.count() == 0)
+        assert(DirectionRequest::requestDirection.valueParameters.count() == 1)
 
     }
 
@@ -45,10 +45,10 @@ class DirectionRequestTest {
     fun classDirectionRequestTest() {
 
         assertThat(DirectionRequest::class.isFinal, Matchers.equalTo(true))
-        assert(DirectionRequest::class.constructors.size == 2)
-        assert(DirectionRequest::class.constructors.any { it.valueParameters.size == 1 })
-        assert(DirectionRequest::class.primaryConstructor != null)
-        assert(DirectionRequest::class.primaryConstructor?.visibility == KVisibility.PUBLIC)
+        assertThat(DirectionRequest::class.constructors.size, Matchers.equalTo(1))
+        assertThat(DirectionRequest::class.constructors.any { it.valueParameters.size == 0 }, Matchers.`is`(true))
+        assertThat(DirectionRequest::class.primaryConstructor != null, Matchers.`is`(true))
+        assertThat(DirectionRequest::class.primaryConstructor?.visibility, Matchers.equalTo(KVisibility.PUBLIC))
 
         assert(DirectionRequest::class.declaredFunctions.size == 1)
         assert(DirectionRequest::class.declaredFunctions.contains(DirectionRequest::requestDirection))
