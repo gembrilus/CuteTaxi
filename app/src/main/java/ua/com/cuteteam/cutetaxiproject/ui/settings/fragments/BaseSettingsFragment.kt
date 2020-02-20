@@ -20,7 +20,7 @@ abstract class BaseSettingsFragment :
     abstract fun setNewDataStore()
 
     protected val model by lazy {
-        ViewModelProvider(requireActivity(), ViewModelFactory(shPrefs))
+        ViewModelProvider(requireActivity(), ViewModelFactory(requireActivity()))
             .get(SettingsViewModel::class.java)
     }
 
