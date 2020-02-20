@@ -49,7 +49,7 @@
 
     <string name="name_item_standard_class">STANDARD</string>
     <string name="name_item_comfort_class">COMFORT</string>
-    <string name="name_item_premium_class">PREMIUM</string>
+    <string name="name_item_eco_class">ECO</string>
 
     <string name="default_name_item_car_class" translatable="false">@string/name_item_standard_class</string>
 

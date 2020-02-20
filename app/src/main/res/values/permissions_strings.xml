@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<!--    ACCESS_FINE_LOCATION-->
+
+    <string name="location_permission_rationale">Give permission to determine your location</string>
+    <string name="location_permission_required_dialog_title">Permission required</string>
+    <string name="location_permission_required_dialog_message">No location permissions. Please enable permission in application settings</string>
+
+<!--    CALL_PHONE-->
+
+    <string name="call_phone_permission_rationale">Give permission to make calls</string>
+    <string name="call_phone_permission_required_dialog_title">Permission required</string>
+    <string name="call_phone_permission_required_dialog_message">No permission to make calls. Please enable permission in application settings</string>
+
+</resources>
