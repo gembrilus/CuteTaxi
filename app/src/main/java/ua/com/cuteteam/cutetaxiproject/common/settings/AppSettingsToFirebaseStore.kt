@@ -36,7 +36,6 @@ class AppSettingsToFirebaseStore(
 
 
     override fun putString(key: String?, value: String?) {
-        Log.d(TAG, "Put a value with AppSettingsToFirebaseStore!")
         sharedPreferences.edit().apply {
             putString(key, value)
             apply()
@@ -46,7 +45,6 @@ class AppSettingsToFirebaseStore(
 
 
     override fun putStringSet(key: String?, values: MutableSet<String>?) {
-        Log.d(TAG, "Put a value with AppSettingsToFirebaseStore!")
         sharedPreferences.edit().apply {
             putStringSet(key, values)
             apply()
