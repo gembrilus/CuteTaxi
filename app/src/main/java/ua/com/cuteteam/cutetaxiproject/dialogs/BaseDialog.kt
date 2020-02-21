@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.common.dialogs
+package ua.com.cuteteam.cutetaxiproject.dialogs
 
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import androidx.fragment.app.DialogFragment
-import kotlinx.android.synthetic.main.dialog_simple_layout.*
 import ua.com.cuteteam.cutetaxiproject.R
 
 /**
@@ -31,6 +30,7 @@ abstract class BaseDialog : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val divider = view.findViewById<View>(R.id.divider)
         divider.background = requireContext().getDrawable(colorStatusResId)
     }
 

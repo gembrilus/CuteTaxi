@@ -7,5 +7,6 @@ data class Roads(
 )
 
 data class RoadNode(
-    val location: LatLng
+    val location: LatLng,
+    val originalIndex: Int?
 )

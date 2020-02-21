@@ -1,9 +1,8 @@
 package ua.com.cuteteam.cutetaxiproject.api.directions
 
 import org.hamcrest.Matchers
-import org.junit.Test
-
 import org.junit.Assert.*
+import org.junit.Test
 import kotlin.reflect.KVariance
 import kotlin.reflect.KVisibility
 import kotlin.reflect.full.declaredMemberProperties
@@ -21,7 +20,7 @@ class RouteInfoTest {
         assert(RouteInfo::class.constructors.size == 1)
         assert(RouteInfo::class.primaryConstructor != null)
         assert(RouteInfo::class.primaryConstructor?.visibility == KVisibility.PUBLIC)
-        assert(RouteInfo::class.declaredMemberProperties.size == 2)
+        assert(RouteInfo::class.declaredMemberProperties.size == 3)
 
     }
 
@@ -47,5 +46,13 @@ class RouteInfoTest {
         assert(RouteInfo::legs.visibility == KVisibility.PUBLIC)
         assert(!RouteInfo::legs.returnType.isMarkedNullable)
 
+    }
+
+    @Test
+    fun getPolyline(){
+        assert(RouteInfo::polyline.isFinal)
+        assert(RouteInfo::polyline.returnType.classifier == Polyline::class)
+        assert(RouteInfo::polyline.visibility == KVisibility.PUBLIC)
+        assert(!RouteInfo::polyline.returnType.isMarkedNullable)
     }
 }
