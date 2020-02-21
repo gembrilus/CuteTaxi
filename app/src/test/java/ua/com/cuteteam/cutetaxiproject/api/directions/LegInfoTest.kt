@@ -28,7 +28,7 @@ class LegInfoTest {
         assert(LegInfo::steps.isFinal)
         assert(LegInfo::steps.returnType.arguments.size == 1)
         assert(LegInfo::steps.returnType.arguments[0].variance == KVariance.INVARIANT)
-        assert(LegInfo::steps.returnType.arguments[0].type == StepInfo::class.defaultType)
+        assert(LegInfo::steps.returnType.arguments[0].type == Step::class.defaultType)
         assert(LegInfo::steps.visibility == KVisibility.PUBLIC)
         assert(LegInfo::steps.returnType.classifier == List::class)
         assert(!LegInfo::steps.returnType.isMarkedNullable)

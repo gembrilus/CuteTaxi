@@ -1,12 +1,10 @@
 package ua.com.cuteteam.cutetaxiproject.ui.settings.models
 
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
-import ua.com.cuteteam.cutetaxiproject.application.AppClass
-import ua.com.cuteteam.cutetaxiproject.common.settings.AppSettingsHelper
+import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 
 /**
  * Factory for creating ViewModels by type

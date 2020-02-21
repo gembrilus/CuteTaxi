@@ -1,11 +1,11 @@
 package ua.com.cuteteam.cutetaxiproject.api
 
 import com.google.android.gms.maps.model.LatLng
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import io.leonard.PolylineUtils
 import ua.com.cuteteam.cutetaxiproject.api.directions.*
 import ua.com.cuteteam.cutetaxiproject.api.roads.RoadsRequest
 import java.util.*
+import kotlin.math.min
 
 /**
  * Class provides an info about routes
@@ -33,48 +33,94 @@ class RouteProvider private constructor(
 
         val list = mutableListOf<RouteSummary>()
 
-        if (fastest){
+        if (fastest) {
             allRoutes().minBy { it.time }?.let { list.add(it) }
         }
-        if (shortest){
+        if (shortest) {
             allRoutes().minBy { it.distance }?.let { list.add(it) }
         }
-        if (!fastest && !shortest){
+        if (!fastest && !shortest) {
             return allRoutes()
         }
         return list
 
     }
 
-    private suspend fun allRoutes(): List<RouteSummary> = withContext(Dispatchers.IO) {
+
+    private suspend fun allRoutes(): List<RouteSummary> {
         val list = mutableListOf<RouteSummary>()
+
         directionRequest.requestDirection(map)
             .routes.forEach { routeInfo ->
 
-            val points = mutableListOf<LatLng>()
+            val polyline = PolylineUtils.decode(routeInfo.polyline.points, 5)
+                .map { LatLng(it.latitude, it.longitude) }
 
-            getPolyline(routeInfo).forEach { pair ->
+            val points = snapToRoads(polyline)
 
-                val path = pair
-                    .toList()
-                    .joinToString("|") { latLng ->
+            val summary = createRouteSummary(routeInfo, points.toTypedArray())
 
-                        "${latLng.latitude},${latLng.longitude}"
+            list.add(summary)
 
-                    }
+        }
 
-                val step = roadsRequest.getRoads(path).snappedPoints
-                    .map { node ->
-                        node.location
-                    }
-                points.addAll(step)
+        return list
+    }
+
+
+    fun getPolyline(routeInfo: RouteInfo) =
+        routeInfo.legs
+            .flatMap { leg -> leg.steps }
+            .map { step ->
+                Pair(
+                    LatLng(
+                        step.startLocation.latitude,
+                        step.startLocation.longitude
+                    ),
+                    LatLng(
+                        step.endLocation.latitude,
+                        step.endLocation.longitude
+                    )
+                )
             }
 
-            list.add(
-                createRouteSummary(routeInfo, points.toTypedArray())
-            )
+
+    private suspend fun snapToRoads(points: List<LatLng>): List<LatLng> {
+
+        val snappedPoints = mutableListOf<LatLng>()
+
+        var offset = 0
+        while (offset < points.size) {
+            if (offset > 0) {
+                offset -= 5
+            }
+
+            val lowerBound = offset
+            val upperBound = min(offset + 100, points.size)
+
+            val path = points
+                .subList(lowerBound, upperBound)
+
+            val roadsPoints = roadsRequest.getRoads(path)
+                .snappedPoints
+
+            var passedOverlap = false
+
+            roadsPoints.forEach {
+
+                if (offset == 0 || (it.originalIndex != null && it.originalIndex >= 5)) {
+                    passedOverlap = true
+                }
+
+                if (passedOverlap) {
+                    snappedPoints.add(it.location)
+                }
+
+            }
+            offset = upperBound
         }
-        list
+
+        return snappedPoints
     }
 
 
@@ -88,27 +134,9 @@ class RouteProvider private constructor(
         )
 
 
-    private fun getPolyline(routeInfo: RouteInfo) =
-        routeInfo.legs
-            .flatMap { leg -> leg.steps }
-            .map { step ->
-
-                val start = LatLng(
-                    step.startLocation.latitude,
-                    step.startLocation.longitude
-                )
-                val end = LatLng(
-                    step.endLocation.latitude,
-                    step.endLocation.longitude
-                )
-
-                Pair(start, end)
-            }
-
-
     private inline fun <reified T> getStepsParams(
         routeInfo: RouteInfo,
-        getParam: StepInfo.() -> T
+        getParam: Step.() -> T
     ): List<T> =
         routeInfo.legs
             .flatMap { leg -> leg.steps }

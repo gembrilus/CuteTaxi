@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.common.settings
+package ua.com.cuteteam.cutetaxiproject.shPref
 
 const val IS_FIRST_START_KEY = "isFirstStart"
 const val ROLE_KEY = "role"

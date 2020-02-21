@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.common.dialogs
+package ua.com.cuteteam.cutetaxiproject.dialogs
 
 import android.os.Bundle
 import android.view.View

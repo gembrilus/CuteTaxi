@@ -1,7 +1,6 @@
-package ua.com.cuteteam.cutetaxiproject.common.settings
+package ua.com.cuteteam.cutetaxiproject.shPref
 
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.preference.PreferenceDataStore
 
 private const val ERROR_MESSAGE_PUT = "You need to set a 'put' function first. " +
