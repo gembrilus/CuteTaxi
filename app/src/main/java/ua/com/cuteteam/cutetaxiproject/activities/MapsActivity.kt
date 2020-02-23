@@ -1,5 +1,6 @@
 package ua.com.cuteteam.cutetaxiproject.activities
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -21,6 +22,9 @@ import ua.com.cuteteam.cutetaxiproject.AccessFineLocationPermission
 import ua.com.cuteteam.cutetaxiproject.PermissionProvider
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.api.RouteProvider
+import ua.com.cuteteam.cutetaxiproject.application.AppClass
+import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
+import ua.com.cuteteam.cutetaxiproject.ui.passenger.activities.PassengerActivity
 import ua.com.cuteteam.cutetaxiproject.ui.settings.SettingsActivity
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -29,6 +33,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
 
+    private val prefs by lazy { getPreferences(Context.MODE_PRIVATE) }
+    private val settings by lazy { AppSettingsHelper(AppClass.appContext(), prefs) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
@@ -36,6 +43,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+
+        if (!settings.role) {
+            openPassengerActivity()
+        }
 
     }
 
@@ -148,5 +160,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         permissionProvider.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    private fun openPassengerActivity() {
+        val intent = Intent(this, PassengerActivity::class.java)
+        startActivity(intent)
     }
 }
