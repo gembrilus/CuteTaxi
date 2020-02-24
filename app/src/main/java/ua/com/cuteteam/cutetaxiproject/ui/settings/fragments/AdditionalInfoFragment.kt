@@ -7,7 +7,7 @@ import ua.com.cuteteam.cutetaxiproject.shPref.*
 
 private const val TAG = "CuteTaxi.AddInfoFrag"
 
-class AdditionalInfoFragment() : BaseSettingsFragment() {
+class AdditionalInfoFragment : BaseSettingsFragment() {
 
     override val resourceId: Int
         get() = R.xml.additional_info_preferences

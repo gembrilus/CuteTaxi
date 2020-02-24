@@ -4,7 +4,7 @@ const val IS_FIRST_START_KEY = "isFirstStart"
 const val ROLE_KEY = "role"
 
 const val NAME_KEY = "name"
-const val PHONE_KEY = "phone"
+const val PHONE_KEY = "phoneNumber"
 
 const val IMPROVEMENTS_CATEGORY_KEY = "improvements"
 const val CAR_CLASS_FOR_PASSENGER_KEY = "carClass"
@@ -17,9 +17,10 @@ const val FAVORITE_ADDRESSES_KEY = "favorite_addresses"
 
 const val CAR_CATEGORY_KEY = "car"
 
+const val CAR_BRAND_KEY = "brand"
 const val CAR_MODEL_KEY = "model"
-const val CAR_NUMBER_KEY = "number"
-const val CAR_CLASS_KEY = "class"
+const val CAR_NUMBER_KEY = "regNumber"
+const val CAR_CLASS_KEY = "comfortLevel"
 const val CAR_COLOR_KEY = "color"
 
 const val DELAY_KEY = "delay_coords_updating"
