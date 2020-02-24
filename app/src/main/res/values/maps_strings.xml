@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="enable_gps_recommended_dialog_title">GPS is turned off</string>
+    <string name="enable_gps_recommended_dialog_message">For more accurate location, it is recommended to enable gps</string>
+</resources>
