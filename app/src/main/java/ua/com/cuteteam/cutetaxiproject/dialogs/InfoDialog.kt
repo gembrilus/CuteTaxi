@@ -24,19 +24,6 @@ class InfoDialog : BaseDialog() {
     var run: ((View) -> Unit)? = null
 
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(TITLE_KEY, title)
-        outState.putString(MESSAGE_KEY, message)
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        title = savedInstanceState?.getString(TITLE_KEY, null)
-        message = savedInstanceState?.getString(MESSAGE_KEY, null)
-    }
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -48,8 +35,6 @@ class InfoDialog : BaseDialog() {
     companion object {
 
         private const val TAG = "CuteTaxi.InfoDialog"
-        private const val TITLE_KEY = "InfoDialog.TitleKey"
-        private const val MESSAGE_KEY = "InfoDialog.MessageKey"
 
         /**
          * Show a dialog window with any information.

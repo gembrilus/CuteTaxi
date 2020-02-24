@@ -21,19 +21,6 @@ class ErrorDialog : BaseDialog() {
 
     var message: String? = null
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(MESSAGE_KEY, message)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        savedInstanceState?.let {
-            message = it.getString(MESSAGE_KEY, null)
-        }
-    }
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -50,7 +37,6 @@ class ErrorDialog : BaseDialog() {
     companion object {
 
         private const val TAG = "CuteTaxi.ErrorDialog"
-        private const val MESSAGE_KEY = "ErrorDialog.MessageKey"
 
         fun show(fm: FragmentManager, message: String) = ErrorDialog().apply {
             this.message = message

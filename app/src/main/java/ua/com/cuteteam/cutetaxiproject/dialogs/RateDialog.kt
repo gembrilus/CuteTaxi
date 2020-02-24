@@ -44,17 +44,6 @@ class RateDialog : BaseDialog() {
         runOnRatingChanged = run
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(layoutResId, container, false)
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(0))
-        dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
-        return view
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -71,11 +60,6 @@ class RateDialog : BaseDialog() {
         btn_dismiss.setOnClickListener {
             dismiss()
         }
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        dialog?.window?.attributes?.windowAnimations = R.style.SlideUpDownAnimation
     }
 
     companion object {
