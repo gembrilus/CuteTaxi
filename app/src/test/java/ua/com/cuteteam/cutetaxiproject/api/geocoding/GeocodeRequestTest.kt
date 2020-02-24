@@ -15,9 +15,14 @@ class GeocodeRequestTest {
 
     private var geocodeRequest: GeocodeRequest? = null
 
+    private val geocodeFuns = listOf(
+        "requestNameByCoordinates",
+        "requestCoordinatesByName"
+    )
+
     @Before
     fun init() {
-        geocodeRequest = GeocodeRequest()
+        geocodeRequest = GeocodeRequest.Builder().build()
     }
 
     @After
@@ -30,14 +35,12 @@ class GeocodeRequestTest {
     fun classGeocodeRequestTest() {
 
         MatcherAssert.assertThat(GeocodeRequest::class.isFinal, Matchers.equalTo(true))
-        assert(GeocodeRequest::class.constructors.size == 2)
+        assert(GeocodeRequest::class.constructors.size == 1)
         assert(GeocodeRequest::class.constructors.any { it.valueParameters.size == 1 })
         assert(GeocodeRequest::class.primaryConstructor != null)
-        assert(GeocodeRequest::class.primaryConstructor?.visibility == KVisibility.PUBLIC)
-
-        assert(GeocodeRequest::class.declaredFunctions.size == 2)
-        assert(GeocodeRequest::class.declaredFunctions.contains(GeocodeRequest::requestNameByCoordinates))
-        assert(GeocodeRequest::class.declaredFunctions.contains(GeocodeRequest::requestCoordinatesByName))
+        assert(GeocodeRequest::class.primaryConstructor?.visibility == KVisibility.PRIVATE)
+        assert(GeocodeRequest::class.declaredFunctions.size == 4)
+        assert(GeocodeRequest::class.declaredFunctions.all { geocodeFuns.contains(it.name) })
 
     }
 
@@ -50,17 +53,6 @@ class GeocodeRequestTest {
         )
     }
 
-    @Test
-    fun requestNameByCoordinates() {
-
-        assert(GeocodeRequest::requestNameByCoordinates.isSuspend)
-        assert(GeocodeRequest::requestNameByCoordinates.visibility == KVisibility.PUBLIC)
-        assert(GeocodeRequest::requestNameByCoordinates.returnType.classifier == Geocode::class)
-        assert(!GeocodeRequest::requestNameByCoordinates.returnType.isMarkedNullable)
-        assert(GeocodeRequest::requestNameByCoordinates.valueParameters.count() == 2)
-        assert(GeocodeRequest::requestNameByCoordinates.valueParameters.all { it.type == Double::class.defaultType })
-
-    }
 
     @Test
     fun requestCoordinatesByName() {

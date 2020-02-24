@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.*
-import ua.com.cuteteam.cutetaxiproject.common.settings.AppSettingsToFirebaseStore
-import ua.com.cuteteam.cutetaxiproject.common.settings.FbDbMock
+import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsToFirebaseStore
+import ua.com.cuteteam.cutetaxiproject.shPref.FbDbMock
 import ua.com.cuteteam.cutetaxiproject.ui.settings.models.SettingsViewModel
 import ua.com.cuteteam.cutetaxiproject.ui.settings.models.ViewModelFactory
 

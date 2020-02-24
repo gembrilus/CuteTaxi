@@ -1,5 +1,6 @@
 package ua.com.cuteteam.cutetaxiproject.api.geocoding
 
+import com.google.android.gms.maps.model.LatLng
 import ua.com.cuteteam.cutetaxiproject.BuildConfig
 import ua.com.cuteteam.cutetaxiproject.api.APIRequest
 import ua.com.cuteteam.cutetaxiproject.api.RequestParameters
@@ -11,9 +12,9 @@ import java.util.*
  * Do request for geocode with this class
  *
  */
-class GeocodeRequest() : APIRequest<GeocodeService>() {
+class GeocodeRequest private constructor(private val map: Map<String, String>) : APIRequest<GeocodeService>() {
 
-    internal constructor(map: Map<String, String>) : this() {
+/*    internal constructor(map: Map<String, String>) : this() {
         _map = map
     }
 
@@ -23,7 +24,7 @@ class GeocodeRequest() : APIRequest<GeocodeService>() {
             ?: throw IllegalArgumentException(
                 "You need to use Builder for building a request" +
                         "or use parametrized constructor GeocodeRequest(map: Map<String, String>)"
-            )
+            )*/
 
     /**
      * Base url for API request. Used by Retrofit
@@ -42,6 +43,28 @@ class GeocodeRequest() : APIRequest<GeocodeService>() {
      */
     suspend fun requestNameByCoordinates(lat: Double, lon: Double) =
         getService<GeocodeService>().getNameByCoordinates("$lat, $lon", map)
+
+
+    /**
+     * Overloaded method receives human-readable name of map object by coordinates given as LatLng.
+     * Can to throw an exception. You must use try .. catch or CoroutineHandlerException
+     * @param latLng Coordinates as [LatLng] class
+     * @return Geocode with all info you need or throw any exception when a request fails
+     */
+    suspend fun requestNameByCoordinates(latLng: LatLng) =
+        getService<GeocodeService>().getNameByCoordinates("${latLng.latitude}, ${latLng.longitude}", map)
+
+
+    /**
+     * Overloaded method receives human-readable name of map object by coordinates given as String.
+     * An argument format is "12.121212,32.111234" for example
+     * Can to throw an exception. You must use try .. catch or CoroutineHandlerException
+     * @param lat Latitude
+     * @param lon Longitude
+     * @return Geocode with all info you need or throw any exception when a request fails
+     */
+    suspend fun requestNameByCoordinates(latLng: String) =
+        getService<GeocodeService>().getNameByCoordinates(latLng, map)
 
 
     /**

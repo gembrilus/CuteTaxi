@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.common.settings
+package ua.com.cuteteam.cutetaxiproject.shPref
 
 import android.util.Log
 

@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import androidx.preference.EditTextPreference
 import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.common.settings.NAME_KEY
-import ua.com.cuteteam.cutetaxiproject.common.settings.PHONE_KEY
+import ua.com.cuteteam.cutetaxiproject.shPref.NAME_KEY
+import ua.com.cuteteam.cutetaxiproject.shPref.PHONE_KEY
 
 class MainInfoFragment : BaseSettingsFragment() {
     override val resourceId: Int

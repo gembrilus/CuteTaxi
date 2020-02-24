@@ -3,7 +3,7 @@ package ua.com.cuteteam.cutetaxiproject.ui.settings.fragments
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.common.settings.*
+import ua.com.cuteteam.cutetaxiproject.shPref.*
 
 private const val TAG = "CuteTaxi.AddInfoFrag"
 

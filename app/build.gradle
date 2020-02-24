@@ -78,6 +78,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-functions:19.0.2'
     implementation 'com.google.firebase:firebase-crashlytics:17.0.0-beta01'
 
+    implementation 'io.leonard:google-polyline-codec:0.0.2'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
 
     //Navigation

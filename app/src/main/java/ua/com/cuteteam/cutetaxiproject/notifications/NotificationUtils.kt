@@ -1,11 +1,10 @@
-package ua.com.cuteteam.cutetaxiproject.common.notifications
+package ua.com.cuteteam.cutetaxiproject.notifications
 
 import android.app.Activity
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
