@@ -5,8 +5,9 @@ import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.*
-import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsToFirebaseStore
-import ua.com.cuteteam.cutetaxiproject.shPref.FbDbMock
+import ua.com.cuteteam.cutetaxiproject.shPref.FirebasePreferenceCallback
+import ua.com.cuteteam.cutetaxiproject.shPref.FirebaseSettingsDataStore
+import ua.com.cuteteam.cutetaxiproject.shPref.MockFbDb
 import ua.com.cuteteam.cutetaxiproject.ui.settings.models.SettingsViewModel
 import ua.com.cuteteam.cutetaxiproject.ui.settings.models.ViewModelFactory
 
@@ -29,7 +30,7 @@ abstract class BaseSettingsFragment :
     }
 
     protected val appSettingsToFirebaseStore by lazy {
-        AppSettingsToFirebaseStore(shPrefs, FbDbMock())
+        FirebaseSettingsDataStore(FirebasePreferenceCallback(MockFbDb()))
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
