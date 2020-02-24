@@ -26,6 +26,10 @@ abstract class BaseDao(
 
     private val eventListeners = mutableMapOf<DatabaseReference, ValueEventListener>()
 
+
+    /**Writes user to realtime database
+     * @see User
+     */
     fun writeUser(user: User) {
         usersRef.child(authUser.uid).setValue(user).addOnFailureListener {
             Log.e("Firebase: writeUser()", it.message.toString())
@@ -34,6 +38,10 @@ abstract class BaseDao(
         }
     }
 
+    /**Writes value into user field, specified by entry
+     * @param entry field entry in enum class
+     * @see entry
+     */
     fun <T> writeField(entry: Entry, value: T, uid: String = authUser.uid) {
         usersRef.child(uid).child(entry.field).setValue(value).addOnFailureListener {
             Log.d("Firebase: writeField()", it.message.toString())
@@ -43,20 +51,83 @@ abstract class BaseDao(
     }
 
 
+    /** Updates user fields. Function doesn't check database structure, use carefully.
+     *  @param map map of path-value pairs
+     */
+    fun writeField(map: HashMap<String, Any>) {
+        usersRef.child(authUser.uid).updateChildren(map)
+    }
+
+
+    /** Updates user field.
+     * Function doesn't check database structure, use carefully.
+     * @param path  path to field in user entry
+     * @param value value for writing into specified path
+     */
+    fun <T> writeField(path: String, value: T) {
+        val childUpdate = HashMap<String, Any>()
+        childUpdate[path] = value as Any
+        usersRef.child(authUser.uid).updateChildren(childUpdate)
+    }
+
+
+    /** Returns value from specified field
+     * @param entry field entry in enum class
+     * @see Entry
+     * @return value or null if field doesn't exist
+     */
     suspend fun <T> getField(entry: Entry, uid: String = authUser.uid): T? {
         val fieldData = usersRef.child(uid).child(entry.field).getValue()
         @Suppress("UNCHECKED_CAST")
         return fieldData.value as T
     }
 
+
+    /** Returns value from specified field
+     * @param path  path to field in user entry
+     * @return value or null if field doesn't exist
+     */
+    suspend fun <T> getField(path: String): T {
+        var reference = usersRef.child(authUser.uid)
+        val children = path.split("/")
+        for (child in children) {
+            reference = reference.child(child)
+            Log.d("GetField", "new reference is $reference")
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        return reference.getValue().value as T
+    }
+
+
+    /** Checks if user exist in database table
+     * @param uid user uid, by default uid from firebase authentication
+     * @return true if user exist, else false
+     */
     suspend fun isUserExist(uid: String = authUser.uid): Boolean {
         return usersRef.child(uid).exists()
     }
 
+
+    /** Checks if field exist in user entry
+     * @param entry field entry in enum class
+     * @see Entry
+     * @return true if field exist in database, else false
+     */
     suspend fun isFieldExist(entry: Entry, uid: String = authUser.uid): Boolean {
         return usersRef.child(uid).child(entry.field).exists()
     }
 
+
+    /** Subscribes for value changes. Updates receives using callbacks in ValueEvenListener.
+     * If updates aren't necessary anymore, don't forget to remove callbacks using
+     * removeListeners() or removeAllListeners()
+     * @param entry field entry in enum class
+     * @see Entry
+     * @see ValueEventListener
+     * @see removeAllListeners
+     * @see removeListeners
+     */
     fun subscribeForChanges(
         entry: Entry,
         listener: ValueEventListener,
@@ -72,6 +143,10 @@ abstract class BaseDao(
         }
     }
 
+    /** Removes all active listeners
+     * @see ValueEventListener
+     * @see subscribeForChanges
+     */
     fun removeAllListeners() {
         for (item in eventListeners) {
             item.key.removeEventListener(item.value)
@@ -79,9 +154,16 @@ abstract class BaseDao(
         eventListeners.clear()
     }
 
+    /** Removes listener, specified by entry
+     * @param entry
+     * @see ValueEventListener
+     * @see subscribeForChanges
+     * @see Entry
+     */
     fun removeListeners(entry: Entry, uid: String = authUser.uid) {
         removeListeners(usersRef.child(uid).child(entry.field))
     }
+
 
     private fun removeListeners(reference: DatabaseReference) {
         for (item in eventListeners) {
