@@ -3,7 +3,7 @@ package ua.com.cuteteam.cutetaxiproject.ui.settings.models
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import ua.com.cuteteam.cutetaxiproject.common.settings.AppSettingsHelper
+import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 
 class SettingsViewModel(
     appSettingsHelper: AppSettingsHelper

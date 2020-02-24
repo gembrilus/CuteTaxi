@@ -17,16 +17,18 @@ data class Route(
 
 data class RouteInfo(
     val summary: String,
-    val legs: List<LegInfo>
+    val legs: List<LegInfo>,
+    @Json(name = "overview_polyline")
+    val polyline: Polyline
 )
 
 data class LegInfo(
-    val steps: List<StepInfo>,
+    val steps: List<Step>,
     val duration: Duration,
     val distance: Distance
 )
 
-data class StepInfo(
+data class Step(
     @Json(name = "start_location")
     val startLocation: Location,
     @Json(name = "end_location")
@@ -46,6 +48,10 @@ data class Duration(
 data class Distance(
     val value: Double,
     val text: String
+)
+
+data class Polyline(
+    val points: String
 )
 
 data class Location(

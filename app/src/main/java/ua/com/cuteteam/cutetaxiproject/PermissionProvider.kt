@@ -5,7 +5,7 @@ import android.Manifest
 import android.content.Context
 import androidx.fragment.app.FragmentActivity
 import ua.com.cuteteam.cutetaxiproject.application.AppClass
-import ua.com.cuteteam.cutetaxiproject.common.dialogs.InfoDialog
+import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
 
 open class Permission(
     open val rationale: String, val name: String, val requestCode: Int,

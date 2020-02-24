@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.text.InputType
 import androidx.preference.EditTextPreference
 import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.common.settings.DELAY_KEY
+import ua.com.cuteteam.cutetaxiproject.shPref.DELAY_KEY
 
 class SystemFragment : BaseSettingsFragment() {
     override val resourceId: Int
