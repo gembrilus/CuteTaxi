@@ -12,15 +12,12 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PolylineOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import pub.devrel.easypermissions.AfterPermissionGranted
 import ua.com.cuteteam.cutetaxiproject.PermissionProvider
 import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.api.RouteProvider
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
 import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
 import ua.com.cuteteam.cutetaxiproject.ui.TestActivity
@@ -59,77 +56,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         addAMarkerAndMoveTheCamera()
-
-        var isFirstClick = true
-        var orig = ""
-        var dest = ""
-
-        mMap.setOnMapLongClickListener { latLng ->
-
-            mMap.addMarker(MarkerOptions().position(latLng))
-
-            val lat = latLng.latitude
-            val lng = latLng.longitude
-
-            GlobalScope.launch {
-
-                withContext(Dispatchers.Main) {
-                    if (isFirstClick) {
-                        orig = "$lat,$lng"
-                        isFirstClick = false
-                    } else {
-                        dest = "$lat,$lng"
-                        isFirstClick = true
-                    }
-                }
-
-                if (isFirstClick) {
-                    val routeProvider = RouteProvider.Builder()   // Пример построения маршрута
-                        .addOrigin(orig)
-                        .addDestination(dest)
-                        .build()
-
-                    GlobalScope.launch(Dispatchers.Main) {
-                        val value =
-                            routeProvider.routes()
-                        mMap.addPolyline(
-                            PolylineOptions()
-                                .clickable(true)
-                                .add(*value[0].polyline)
-                        )
-                    }
-                }
-
-            }
-
-        }
     }
-
-/*    override fun onResume() {
-        super.onResume()
-
-        GlobalScope.launch {
-
-            val geocode = GeocodeRequest.Builder()
-                .build()
-                .requestCoordinatesByName("Черкассы, ул. Шевченкоб 237")  // Пример Геокодинга
-
-            val geocode2 = GeocodeRequest.Builder()
-                .setLanguageResponse("us")
-                .setRegion("us")
-                .build()
-                .requestNameByCoordinates("32.1231231,51.3333323")
-
-            withContext(Dispatchers.Main) {
-                InfoDialog.show(
-                    supportFragmentManager, "Координаты", geocode.toLatLng().toString() + "\n" +
-                            geocode2.toName()
-                )
-            }
-
-        }
-
-    }*/
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
