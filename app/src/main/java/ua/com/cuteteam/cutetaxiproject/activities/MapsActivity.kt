@@ -16,7 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import pub.devrel.easypermissions.AfterPermissionGranted
-import ua.com.cuteteam.cutetaxiproject.PermissionProvider
+import ua.com.cuteteam.cutetaxiproject.permissions.PermissionProvider
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
 import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
@@ -26,7 +26,8 @@ import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.PassengerV
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    private val permissionProvider = PermissionProvider(this)
+    private val permissionProvider =
+        PermissionProvider(this)
 
 
     private val passengerViewModel by lazy {
