@@ -21,6 +21,7 @@ import ua.com.cuteteam.cutetaxiproject.AccessFineLocationPermission
 import ua.com.cuteteam.cutetaxiproject.PermissionProvider
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.api.RouteProvider
+import ua.com.cuteteam.cutetaxiproject.ui.TestActivity
 import ua.com.cuteteam.cutetaxiproject.ui.settings.SettingsActivity
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -125,6 +126,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 Intent(
                     this,
                     SettingsActivity::class.java
+                )
+            ).run { return true }
+            R.id.home -> startActivity(
+                Intent(
+                    this,
+                    TestActivity::class.java
                 )
             ).run { return true }
             else -> return super.onOptionsItemSelected(item)
