@@ -10,7 +10,7 @@
             app:defaultValue="@string/default_name_item_car_class"
             app:entries="@array/car_class_entries"
             app:entryValues="@array/car_class_entries"
-            app:key="@string/key_car_class_preference"
+            app:key="@string/key_passenger_car_class_preference"
             app:summary="@string/summary_car_class_preference"
             app:title="@string/title_car_class_preference" />
 
@@ -57,8 +57,8 @@
         <ListPreference
             app:defaultValue="@string/default_name_item_car_class"
             app:entries="@array/car_class_entries"
-            app:entryValues="@array/car_class_entries"
-            app:key="@string/key_car_class_preference_for_car"
+            app:entryValues="@array/car_class_entries_values"
+            app:key="@string/key_car_class_preference"
             app:title="@string/title_car_class_preference_for_car"
             app:useSimpleSummaryProvider="true"/>
 

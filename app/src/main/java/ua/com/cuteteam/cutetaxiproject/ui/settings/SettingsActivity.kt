@@ -10,7 +10,7 @@ import androidx.preference.*
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreference
 import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreferenceDialogFragmentCompat
-import ua.com.cuteteam.cutetaxiproject.shPref.ROLE_KEY
+import ua.com.cuteteam.cutetaxiproject.shPref.SPKeys
 import ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.HeaderFragment
 import ua.com.cuteteam.cutetaxiproject.ui.settings.models.SettingsViewModel
 import ua.com.cuteteam.cutetaxiproject.ui.settings.models.ViewModelFactory
@@ -111,8 +111,11 @@ class SettingsActivity : AppCompatActivity(),
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         Log.d(TAG, "$key is changed")
-        if (key == ROLE_KEY) {
-            model.setRole(sharedPreferences?.getBoolean(ROLE_KEY, false)!!)
+        val spKeys = SPKeys(applicationContext)
+        val roleKey = spKeys.ROLE_KEY
+        if (key == roleKey) {
+            val defaultRole = resources.getString(R.string.role_passenger)
+            model.setRole(sharedPreferences?.getString(roleKey, defaultRole)?.toInt() ?: defaultRole.toInt())
         }
     }
 }

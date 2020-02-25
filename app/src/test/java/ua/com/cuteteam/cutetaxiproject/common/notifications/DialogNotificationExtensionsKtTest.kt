@@ -1,10 +1,10 @@
-package ua.com.cuteteam.cutetaxiproject.dialogs
+package ua.com.cuteteam.cutetaxiproject.common.notifications
 
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-class ExtensionsKtTest {
+class DialogNotificationExtensionsKtTest {
 
     @Before
     fun setUp() {
@@ -15,6 +15,6 @@ class ExtensionsKtTest {
     }
 
     @Test
-    fun showInfoSnackBar() {
+    fun createNotificationChannel() {
     }
 }
