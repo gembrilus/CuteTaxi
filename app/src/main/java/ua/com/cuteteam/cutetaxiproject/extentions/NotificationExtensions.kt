@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.notifications
+package ua.com.cuteteam.cutetaxiproject.extentions
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
