@@ -21,7 +21,11 @@
     /****************** END  ******************/
 
 
-    /************** THEMES LIST ***************/
+    /************** CAR CLASS LIST ***************/
+
+    <string name="standart_class">0</string>
+    <string name="comfort_class">1</string>
+    <string name="eco_class">2</string>
 
     <string-array name="car_class_entries">
 
@@ -30,6 +34,35 @@
         <item>@string/name_item_eco_class</item>
 
     </string-array>
+
+    <integer-array name="car_class_entries_values">
+
+        <item>@string/standart_class</item>
+        <item>@string/comfort_class</item>
+        <item>@string/eco_class</item>
+
+    </integer-array>
+
+    /****************** END  ******************/
+
+    /************** ROLE LIST ***************/
+
+    <string name="role_passenger">0</string>
+    <string name="role_driver">1</string>
+
+    <string-array name="role_entries">
+
+        <item>@string/name_role_passenger</item>
+        <item>@string/name_role_driver</item>
+
+    </string-array>
+
+    <integer-array name="role_entries_values">
+
+        <item>@string/role_passenger</item>
+        <item>@string/role_driver</item>
+
+    </integer-array>
 
     /****************** END  ******************/
 

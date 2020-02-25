@@ -2,8 +2,12 @@ package ua.com.cuteteam.cutetaxiproject.shPref
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
 import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.data.User
 import ua.com.cuteteam.cutetaxiproject.data.entities.ComfortLevel
+import ua.com.cuteteam.cutetaxiproject.data.entities.Driver
+import ua.com.cuteteam.cutetaxiproject.data.entities.Passenger
 
 /**
  * Class helps to write/read header_preferences to/from a file
@@ -12,17 +16,39 @@ import ua.com.cuteteam.cutetaxiproject.data.entities.ComfortLevel
  *
  */
 class AppSettingsHelper(
-    private val context: Context,
-    private val shPref: SharedPreferences
+    private val context: Context
 ) {
+
+    private val spKeys = SPKeys(context)
+    private val shPref = PreferenceManager.getDefaultSharedPreferences(context)
+
+
+    fun initUser(user: User){
+
+        name = user.name
+        phone = user.phoneNumber
+
+        when(user) {
+            is Passenger -> {
+                comfortClass = ComfortLevel.STANDARD.ordinal
+            }
+            is Driver -> {
+                carBrand = user.car?.brand
+                carModel = user.car?.model
+                carClass = user.car?.comfortLevel?.ordinal ?: ComfortLevel.STANDARD.ordinal
+                carColor = user.car?.color
+                carNumber = user.car?.regNumber
+            }
+        }
+    }
 
 
     /**
      * Property that shows is a first start of the app
      */
     val isFirstStart: Boolean
-        get() = with(shPref.getBoolean(IS_FIRST_START_KEY, true)) {
-            if (this) put(IS_FIRST_START_KEY, false)
+        get() = with(shPref.getBoolean(spKeys.IS_FIRST_START_KEY, true)) {
+            if (this) put(spKeys.IS_FIRST_START_KEY, false)
             this
         }
 
@@ -30,42 +56,46 @@ class AppSettingsHelper(
     /**
      * Property for the user's role
      */
-    var role: Boolean
-        get() = shPref.getBoolean(ROLE_KEY, false)
-        set(value) = put(ROLE_KEY, value)
+    var role: Int
+        get() {
+            val defaultValue = context.resources.getString(R.string.role_passenger)
+            val currentValue = shPref.getString(spKeys.ROLE_KEY, defaultValue)
+            return currentValue?.toInt() ?: defaultValue.toInt()
+        }
+        set(value) = put(spKeys.ROLE_KEY, value.toString())
 
 
     /**
      * Property for the user's name
      */
     var name: String?
-        get() = shPref.getString(NAME_KEY, null)
-        set(value) = put(NAME_KEY, value)
+        get() = shPref.getString(spKeys.NAME_KEY, null)
+        set(value) = put(spKeys.NAME_KEY, value)
 
 
     /**
      * Property for the user's phone
      */
     var phone: String?
-        get() = shPref.getString(PHONE_KEY, null)
-        set(value) = put(PHONE_KEY, value)
+        get() = shPref.getString(spKeys.PHONE_KEY, null)
+        set(value) = put(spKeys.PHONE_KEY, value)
 
 
     /**
-     * Property for car  comfort class
+     * Property for the car comfort class what user selects
      */
-    var comfortClass: String?
-        get() = shPref.getString(CAR_CLASS_FOR_PASSENGER_KEY, ComfortLevel.STANDARD.name)
-        set(value) = put(CAR_CLASS_FOR_PASSENGER_KEY, value)
+    var comfortClass: Int?
+        get() = shPref.getInt(spKeys.PASSENGER_CAR_CLASS_KEY, ComfortLevel.STANDARD.ordinal)
+        set(value) = put(spKeys.PASSENGER_CAR_CLASS_KEY, value)
 
 
     /**
      * Property of the black list drivers
      */
     var blackListOfDrivers: Set<String>?
-        get() = shPref.getStringSet(BLACK_LIST_OF_DRIVERS_KEY, null)
+        get() = shPref.getStringSet(spKeys.BLACK_LIST_DRIVERS_KEY, null)
         set(value) = with(shPref.edit()) {
-            putStringSet(BLACK_LIST_OF_DRIVERS_KEY, value)
+            putStringSet(spKeys.BLACK_LIST_DRIVERS_KEY, value)
             apply()
         }
 
@@ -74,60 +104,67 @@ class AppSettingsHelper(
      * Property of the user's favorite addresses
      */
     var favoriteAddresses: Set<String>?
-        get() = shPref.getStringSet(FAVORITE_ADDRESSES_KEY, null)
+        get() = shPref.getStringSet(spKeys.FAVORITE_ADDRESSES_KEY, null)
         set(value) = with(shPref.edit()) {
-            putStringSet(FAVORITE_ADDRESSES_KEY, value)
+            putStringSet(spKeys.FAVORITE_ADDRESSES_KEY, value)
             apply()
         }
 
 
     /**
-     * Property for the user's phone
+     * Property for the car brand
+     */
+    var carBrand: String?
+        get() = shPref.getString(spKeys.CAR_BRAND_KEY, null)
+        set(value) = put(spKeys.CAR_BRAND_KEY, value)
+
+
+    /**
+     * Property for the car model
      */
     var carModel: String?
-        get() = shPref.getString(CAR_MODEL_KEY, null)
-        set(value) = put(CAR_MODEL_KEY, value)
+        get() = shPref.getString(spKeys.CAR_MODEL_KEY, null)
+        set(value) = put(spKeys.CAR_MODEL_KEY, value)
 
 
     /**
-     * Property for the user's phone
+     * Property for the car registration number
      */
     var carNumber: String?
-        get() = shPref.getString(CAR_NUMBER_KEY, null)
-        set(value) = put(CAR_NUMBER_KEY, value)
-
+        get() = shPref.getString(spKeys.CAR_NUMBER_KEY, null)
+        set(value) = put(spKeys.CAR_NUMBER_KEY, value)
 
 
     /**
-     * Property for car  comfort class
+     * Property for the car comfort class
      */
     var carClass: Int
-        get() = shPref.getInt(CAR_CLASS_KEY, 0)
-        set(value) = put(CAR_CLASS_KEY, value)
+        get() = shPref.getInt(spKeys.CAR_CLASS_KEY, ComfortLevel.STANDARD.ordinal)
+        set(value) = put(spKeys.CAR_CLASS_KEY, value)
 
 
     /**
-     * Property for the user's phone
+     * Property for the car color
      */
     var carColor: String?
-        get() = shPref.getString(CAR_COLOR_KEY, null)
-        set(value) = put(CAR_COLOR_KEY, value)
+        get() = shPref.getString(spKeys.CAR_COLOR_KEY, null)
+        set(value) = put(spKeys.CAR_COLOR_KEY, value)
 
 
     /**
      * Property for enable/disable a background service
      */
     var isServiceEnabled: Boolean
-        get() = shPref.getBoolean(SEND_NOTIFICATION_KEY, true)
-        set(value) = put(SEND_NOTIFICATION_KEY, value)
+        get() = shPref.getBoolean(spKeys.SEND_NOTIFICATION_KEY, true)
+        set(value) = put(spKeys.SEND_NOTIFICATION_KEY, value)
 
 
     /**
      * Property for set an app theme
      */
     var appTheme: String?
-        get() = shPref.getString(APP_THEME_KEY, context.getString(R.string.value_item_light_theme))
-        set(value) = put(APP_THEME_KEY, value)
+        get() = shPref.getString(spKeys.APP_THEME_KEY, context.getString(R.string.value_item_light_theme))
+        set(value) = put(spKeys.APP_THEME_KEY, value)
 
 
     private fun <T> put(key: String, value: T) =

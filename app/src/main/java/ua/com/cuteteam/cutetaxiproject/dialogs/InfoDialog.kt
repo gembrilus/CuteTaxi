@@ -29,7 +29,10 @@ class InfoDialog : BaseDialog() {
 
         ct_dialog_title.text = title
         ct_dialog_content.text = message
-        btn_ok.setOnClickListener { run?.invoke(view) ?: dialog?.dismiss() }
+        btn_ok.setOnClickListener {
+            run?.invoke(view)
+            dialog?.dismiss()
+        }
     }
 
     companion object {

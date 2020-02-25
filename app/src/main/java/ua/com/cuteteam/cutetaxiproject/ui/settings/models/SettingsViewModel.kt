@@ -9,12 +9,12 @@ class SettingsViewModel(
     appSettingsHelper: AppSettingsHelper
 ) : ViewModel() {
 
-    private val _role = MutableLiveData<Boolean>().apply {
+    private val _role = MutableLiveData<Int>().apply {
         value = appSettingsHelper.role
     }
-    val role: LiveData<Boolean> get() = _role
+    val role: LiveData<Int> get() = _role
 
-    fun setRole(role: Boolean) {
+    fun setRole(role: Int) {
         _role.value = role
     }
 

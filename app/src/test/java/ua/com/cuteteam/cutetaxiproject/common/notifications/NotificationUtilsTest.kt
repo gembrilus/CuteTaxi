@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.notifications
+package ua.com.cuteteam.cutetaxiproject.common.notifications
 
 import org.junit.After
 import org.junit.Before
