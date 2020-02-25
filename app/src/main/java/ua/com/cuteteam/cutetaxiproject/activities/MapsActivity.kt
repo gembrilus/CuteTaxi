@@ -18,13 +18,12 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import pub.devrel.easypermissions.AfterPermissionGranted
-import ua.com.cuteteam.cutetaxiproject.AccessFineLocationPermission
 import ua.com.cuteteam.cutetaxiproject.PermissionProvider
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.api.RouteProvider
-import ua.com.cuteteam.cutetaxiproject.ui.TestActivity
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
 import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
+import ua.com.cuteteam.cutetaxiproject.ui.TestActivity
 import ua.com.cuteteam.cutetaxiproject.ui.settings.SettingsActivity
 import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.PassengerViewModelFactory
@@ -38,7 +37,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         ViewModelProvider(this, PassengerViewModelFactory(PassengerRepository()))
             .get(PassengerViewModel::class.java)
     }
-    
+
     private lateinit var mMap: GoogleMap
 
     override fun onCreate(savedInstanceState: Bundle?) {
