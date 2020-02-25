@@ -5,9 +5,10 @@ import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.*
-import ua.com.cuteteam.cutetaxiproject.shPref.FirebasePreferenceCallback
+import ua.com.cuteteam.cutetaxiproject.data.database.PassengerDao
+import ua.com.cuteteam.cutetaxiproject.data.entities.Passenger
 import ua.com.cuteteam.cutetaxiproject.shPref.FirebaseSettingsDataStore
-import ua.com.cuteteam.cutetaxiproject.shPref.MockFbDb
+import ua.com.cuteteam.cutetaxiproject.shPref.SPKeys
 import ua.com.cuteteam.cutetaxiproject.ui.settings.models.SettingsViewModel
 import ua.com.cuteteam.cutetaxiproject.ui.settings.models.ViewModelFactory
 
@@ -25,12 +26,10 @@ abstract class BaseSettingsFragment :
             .get(SettingsViewModel::class.java)
     }
 
-    private val shPrefs: SharedPreferences by lazy {
-        PreferenceManager.getDefaultSharedPreferences(requireActivity())
-    }
+    protected val spKeys get() = SPKeys(requireContext())
 
     protected val appSettingsToFirebaseStore by lazy {
-        FirebaseSettingsDataStore(FirebasePreferenceCallback(MockFbDb()))
+        FirebaseSettingsDataStore(requireContext(), PassengerDao())
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

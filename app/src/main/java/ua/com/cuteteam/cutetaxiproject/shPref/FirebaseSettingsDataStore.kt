@@ -1,26 +1,29 @@
 package ua.com.cuteteam.cutetaxiproject.shPref
 
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.lifecycle.LiveData
 import androidx.preference.PreferenceDataStore
+import androidx.preference.PreferenceManager
+import ua.com.cuteteam.cutetaxiproject.data.database.BaseDao
 
 class FirebaseSettingsDataStore(
-    private val callback: FirebaseStoreCallback
+    context: Context,
+    private val fbDao: BaseDao
 ) : PreferenceDataStore(){
 
-    interface FirebaseStoreCallback{
-
-        fun getString(key: String?, defValue: String?): String?
-        fun putString(key: String?, value: String?)
-
-    }
+    private val spKeys = SPKeys(context)
+    private val shPref = PreferenceManager.getDefaultSharedPreferences(context)
 
     override fun getString(key: String?, defValue: String?): String? {
-        return super.getString(key, defValue)
-            ?: callback.getString(key, defValue)
+        return shPref.getString(key, defValue)
             ?: defValue
     }
 
     override fun putString(key: String?, value: String?) {
-        super.putString(key, value)
-        callback.putString(key, value)
+        shPref.edit().putString(key, value).apply()
+
+        val path = spKeys.paths[key] ?: return
+        fbDao.writeField(path, value)
     }
 }

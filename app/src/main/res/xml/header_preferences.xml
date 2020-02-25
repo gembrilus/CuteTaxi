@@ -1,11 +1,12 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <SwitchPreferenceCompat
+    <ListPreference
         app:key="@string/key_role_preference"
         app:title="@string/title_role_preference"
-        app:defaultValue="0"
-        app:summaryOff="@string/summaryOff_role_preference"
-        app:summaryOn="@string/summaryOn_role_preference"/>
+        app:defaultValue="@string/role_passenger"
+        app:entries="@array/role_entries"
+        app:entryValues="@array/role_entries_values"
+        app:useSimpleSummaryProvider="true"/>
 
     <Preference
         app:title="@string/title_main_info_category"

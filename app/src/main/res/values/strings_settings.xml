@@ -2,12 +2,15 @@
 <resources>
     <string name="title_activity_settings">Settings</string>
 
+    <string name="key_is_first_start_app">isFirstStart</string>
+
     /******************************* Header settings fragment ******************************/
 
-    <string name="key_role_preference">role</string>
-    <string name="title_role_preference">Are you a driver?</string>
-    <string name="summaryOff_role_preference">You are now as a passenger</string>
-    <string name="summaryOn_role_preference">You are now as a taxist</string>
+    <string name="key_role_preference" translatable="false">role</string>
+    <string name="default_role" translatable="false">@string/name_role_passenger</string>
+    <string name="name_role_passenger">Passenger</string>
+    <string name="name_role_driver">Driver</string>
+    <string name="title_role_preference">Change role</string>
 
     /***************************** Main info category (fragment) ***************************/
 
@@ -22,7 +25,7 @@
 
     //Phone number preference
 
-    <string name="key_user_phone_number_preference" translatable="false">phone</string>
+    <string name="key_user_phone_number_preference" translatable="false">phoneNumber</string>
     <string name="dialog_title_phone_number_preference">Enter a phone umber</string>
     <string name="title_phone_number_preference">Phone number</string>
 
@@ -42,7 +45,7 @@
 
     // Passenger part - Car comfort class
 
-    <string name="key_car_class_preference" translatable="false">carClass</string>
+    <string name="key_passenger_car_class_preference" translatable="false">comfortLevel</string>
 
     <string name="title_car_class_preference">Car comfort class</string>
     <string name="summary_car_class_preference">What a car comfort class you want</string>
@@ -80,6 +83,12 @@
     <string name="title_car_category">Car</string>
     <string name="key_car_category" translatable="false">car</string>
 
+    // Car brand
+
+    <string name="dialog_title_car_brand_preference">Enter a car brand</string>
+    <string name="key_car_brand_preference" translatable="false">brand</string>
+    <string name="title_car_brand_preference">Car brand</string>
+
     // Car model
 
     <string name="dialog_title_car_model_preference">Enter a car model</string>
@@ -89,12 +98,12 @@
     // Car number
 
     <string name="dialog_title_car_number_preference">Enter a car number</string>
-    <string name="key_car_number_preference" translatable="false">number</string>
+    <string name="key_car_number_preference" translatable="false">regNumber</string>
     <string name="title_car_number_preference">Car license number</string>
 
     // Car class
 
-    <string name="key_car_class_preference_for_car" translatable="false">class</string>
+    <string name="key_car_class_preference" translatable="false">comfortLevel</string>
     <string name="title_car_class_preference_for_car">Car comfort class</string>
 
     // Car color
