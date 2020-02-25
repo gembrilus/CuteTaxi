@@ -17,19 +17,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import ua.com.cuteteam.cutetaxiproject.R
 import pub.devrel.easypermissions.AfterPermissionGranted
 import ua.com.cuteteam.cutetaxiproject.PermissionProvider
+import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.api.RouteProvider
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
-import ua.com.cuteteam.cutetaxiproject.ui.settings.SettingsActivity
 import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
+import ua.com.cuteteam.cutetaxiproject.ui.TestActivity
+import ua.com.cuteteam.cutetaxiproject.ui.settings.SettingsActivity
 import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.PassengerViewModelFactory
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private val permissionProvider = PermissionProvider(this)
+
 
     private val passengerViewModel by lazy {
         ViewModelProvider(this, PassengerViewModelFactory(PassengerRepository()))
@@ -140,6 +142,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 Intent(
                     this,
                     SettingsActivity::class.java
+                )
+            ).run { return true }
+            R.id.home -> startActivity(
+                Intent(
+                    this,
+                    TestActivity::class.java
                 )
             ).run { return true }
             else -> return super.onOptionsItemSelected(item)

@@ -6,16 +6,16 @@ import androidx.lifecycle.ViewModel
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 
 class SettingsViewModel(
-    appSettingsHelper: AppSettingsHelper
+    private val appSettingsHelper: AppSettingsHelper
 ) : ViewModel() {
 
-    private val _role = MutableLiveData<Int>().apply {
-        value = appSettingsHelper.role
-    }
+    private val _role = MutableLiveData<Int>(appSettingsHelper.role)
+
     val role: LiveData<Int> get() = _role
 
     fun setRole(role: Int) {
         _role.value = role
+        appSettingsHelper.role = role
     }
 
 }
