@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -16,16 +17,24 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import pub.devrel.easypermissions.AfterPermissionGranted
-import ua.com.cuteteam.cutetaxiproject.AccessFineLocationPermission
-import ua.com.cuteteam.cutetaxiproject.PermissionProvider
 import ua.com.cuteteam.cutetaxiproject.R
+import pub.devrel.easypermissions.AfterPermissionGranted
+import ua.com.cuteteam.cutetaxiproject.PermissionProvider
 import ua.com.cuteteam.cutetaxiproject.api.RouteProvider
+import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
 import ua.com.cuteteam.cutetaxiproject.ui.settings.SettingsActivity
+import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
+import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
+import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.PassengerViewModelFactory
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private val permissionProvider = PermissionProvider(this)
+
+    private val passengerViewModel by lazy {
+        ViewModelProvider(this, PassengerViewModelFactory(PassengerRepository()))
+            .get(PassengerViewModel::class.java)
+    }
 
     private lateinit var mMap: GoogleMap
 
@@ -37,6 +46,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
+        if (passengerViewModel.shouldShowGPSRationale())
+            InfoDialog.show(
+                supportFragmentManager,
+                getString(R.string.enable_gps_recommended_dialog_title),
+                getString(R.string.enable_gps_recommended_dialog_message)
+            )
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -134,10 +149,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     @AfterPermissionGranted(PermissionProvider.LOCATION_REQUEST_CODE)
     private fun addAMarkerAndMoveTheCamera() {
-        permissionProvider.withPermission(AccessFineLocationPermission()) {
-            val sydney = LatLng(-34.0, 151.0)
-            mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 15f))
+        GlobalScope.launch(Dispatchers.Main) {
+            val location = passengerViewModel.locationProvider.getLocation()
+            location ?: return@launch
+
+            val latLng = LatLng(location.latitude, location.longitude)
+            mMap.addMarker(MarkerOptions().position(latLng).title("My location"))
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
         }
     }
 
