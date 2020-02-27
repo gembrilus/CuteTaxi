@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,14 +11,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <FrameLayout
-        android:minHeight="150dp"
-        android:id="@+id/bottom_sheet_container"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="?attr/bottomSheetStyle"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
-        <include layout="@layout/passenger_bottom_sheet"/>
-    </FrameLayout>
+        android:layout_height="match_parent">
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <FrameLayout
+            android:id="@+id/bottom_sheet_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            style="?attr/bottomSheetStyle"
+            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        </FrameLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
