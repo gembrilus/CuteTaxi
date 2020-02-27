@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/title_car_category"
+        app:key="@string/key_car_category">
+
+        <EditTextPreference
+            app:dialogTitle="@string/dialog_title_car_model_preference"
+            app:key="@string/key_car_model_preference"
+            app:title="@string/title_car_model_preference"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:dialogTitle="@string/dialog_title_car_number_preference"
+            app:key="@string/key_car_number_preference"
+            app:title="@string/title_car_number_preference"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="@string/default_name_item_car_class"
+            app:entries="@array/car_class_entries"
+            app:entryValues="@array/car_class_entries_values"
+            app:key="@string/key_car_class_preference"
+            app:title="@string/title_car_class_preference_for_car"
+            app:useSimpleSummaryProvider="true"/>
+
+        <EditTextPreference
+            app:dialogTitle="@string/dialog_title_car_color_preference"
+            app:key="@string/key_car_color_preference"
+            app:title="@string/title_car_color_preference"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

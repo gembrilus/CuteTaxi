@@ -9,7 +9,7 @@
         app:showAsAction="always"/>
 
     <item
-        android:id="@+id/main_menu_settings"
+        android:id="@+id/settings"
         android:icon="@drawable/settings_menu_item"
         android:title="@string/title_activity_settings"
         app:showAsAction="always"/>
