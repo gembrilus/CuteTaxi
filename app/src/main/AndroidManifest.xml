@@ -19,9 +19,6 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
 
-        <activity
-            android:name=".ui.settings.SettingsActivity"
-            android:label="@string/title_activity_settings"/>
         <activity android:name=".activities.MapsActivity" />
         <activity android:name=".activities.AuthActivity" />
 

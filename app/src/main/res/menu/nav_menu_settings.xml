@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/mainInfoFragment"
+        android:icon="@drawable/settings_menu_item"
+        android:title="Main info"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/additionalInfoFragment"
+        android:icon="@drawable/settings_menu_item"
+        android:title="Additional info"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/systemFragment"
+        android:icon="@drawable/settings_menu_item"
+        android:title="System settings"
+        app:showAsAction="always"/>
+
+
+</menu>

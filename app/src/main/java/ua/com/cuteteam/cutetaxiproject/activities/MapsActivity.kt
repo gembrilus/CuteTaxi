@@ -21,7 +21,6 @@ import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
 import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
 import ua.com.cuteteam.cutetaxiproject.ui.TestActivity
-import ua.com.cuteteam.cutetaxiproject.ui.settings.SettingsActivity
 import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.PassengerViewModelFactory
 
@@ -65,12 +64,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.main_menu_settings -> startActivity(
-                Intent(
-                    this,
-                    SettingsActivity::class.java
-                )
-            ).run { return true }
             R.id.home -> startActivity(
                 Intent(
                     this,
