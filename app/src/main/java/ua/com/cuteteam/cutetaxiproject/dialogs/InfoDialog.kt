@@ -1,5 +1,7 @@
 package ua.com.cuteteam.cutetaxiproject.dialogs
 
+import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.FragmentManager
@@ -21,7 +23,7 @@ class InfoDialog : BaseDialog() {
 
     var title: String? = null
     var message: String? = null
-    var run: ((View) -> Unit)? = null
+    var onClose: ((Dialog?) -> Unit)? = null
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -30,9 +32,14 @@ class InfoDialog : BaseDialog() {
         ct_dialog_title.text = title
         ct_dialog_content.text = message
         btn_ok.setOnClickListener {
-            run?.invoke(view)
+            onClose?.invoke(dialog)
             dialog?.dismiss()
         }
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        onClose?.invoke(this.dialog)
+        super.onCancel(dialog)
     }
 
     companion object {
@@ -50,10 +57,10 @@ class InfoDialog : BaseDialog() {
             fm: FragmentManager,
             title: String,
             message: String,
-            run: ((View) ->  Unit)? = null) = InfoDialog().apply {
+            run: ((Dialog?) ->  Unit)? = null) = InfoDialog().apply {
             this.title = title
             this.message = message
-            this.run = run
+            this.onClose = run
         }.show(fm, TAG)
 
     }
