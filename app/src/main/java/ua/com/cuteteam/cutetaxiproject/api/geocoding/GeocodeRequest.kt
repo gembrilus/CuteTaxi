@@ -10,7 +10,7 @@ import java.util.*
 /**
  *
  * Do request for geocode with this class
- *
+ * Class has a private constructor. Use GeocodeRequest.Builder() for building requests.
  */
 class GeocodeRequest private constructor(private val map: Map<String, String>) : APIRequest<GeocodeService>() {
 

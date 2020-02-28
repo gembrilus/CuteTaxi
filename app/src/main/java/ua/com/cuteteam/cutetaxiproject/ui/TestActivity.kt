@@ -12,13 +12,9 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.onNavDestinationSelected
-import androidx.preference.*
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.switchmaterial.SwitchMaterial
-import kotlinx.android.synthetic.main.activity_test.*
 import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreference
-import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreferenceDialogFragmentCompat
 import ua.com.cuteteam.cutetaxiproject.ui.settings.models.SettingsViewModel
 import ua.com.cuteteam.cutetaxiproject.ui.settings.models.ViewModelFactory
 
