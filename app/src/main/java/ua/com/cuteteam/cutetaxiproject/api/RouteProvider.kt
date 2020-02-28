@@ -2,16 +2,18 @@ package ua.com.cuteteam.cutetaxiproject.api
 
 import com.google.android.gms.maps.model.LatLng
 import io.leonard.PolylineUtils
+import ua.com.cuteteam.cutetaxiproject.api.RouteProvider.RouteSummary
 import ua.com.cuteteam.cutetaxiproject.api.directions.*
 import ua.com.cuteteam.cutetaxiproject.api.roads.RoadsRequest
 import java.util.*
 import kotlin.math.min
 
 /**
- * Class provides an info about routes
- * @param route is an instance of Route received in [DirectionRequest]
+ * Class provides an info about routes. Class has a private constructor
+ * Use RouteProvider.Builder() for building routes
  * @see DirectionRequest
- * @see Route
+ * @see RoadsRequest
+ * @see RouteSummary
  *
  */
 class RouteProvider private constructor(
@@ -25,8 +27,8 @@ class RouteProvider private constructor(
 
 
     /**
-     * Terminal method that return a list with summary info about route or routes
-     * @return List<Summary> contains list of routes, their total distance and duration
+     * Terminal suspend function that return a list with summary info about route or routes
+     * @return List<RouteSummary> contains list of routes, their total distance, duration, maneuvers
      * @see RouteSummary
      */
     suspend fun routes(): List<RouteSummary> {
@@ -49,30 +51,25 @@ class RouteProvider private constructor(
 
     private suspend fun allRoutes(): List<RouteSummary> {
         val list = mutableListOf<RouteSummary>()
-
         directionRequest.requestDirection(map)
             .routes.forEach { routeInfo ->
-
-            val polyline = PolylineUtils.decode(routeInfo.polyline.points, 5)
-                .map { LatLng(it.latitude, it.longitude) }
-
+            val polyline = decodedPolyline(routeInfo)
             val points = snapToRoads(polyline)
-
             val summary = createRouteSummary(routeInfo, points.toTypedArray())
-
             list.add(summary)
-
         }
-
         return list
     }
 
-
-    fun getPolyline(routeInfo: RouteInfo) =
+    /**
+     * This function returns exclusive points where maneuvers are happened
+     * @param routeInfo Routeinfo is an info about one route from any in the instance [Route]
+     */
+    fun getManeuverPoints(routeInfo: RouteInfo) =
         routeInfo.legs
             .flatMap { leg -> leg.steps }
             .map { step ->
-                Pair(
+                listOf(
                     LatLng(
                         step.startLocation.latitude,
                         step.startLocation.longitude
@@ -83,7 +80,13 @@ class RouteProvider private constructor(
                     )
                 )
             }
+            .flatten()
+            .distinct()
 
+
+    private fun decodedPolyline(routeInfo: RouteInfo) =
+        PolylineUtils.decode(routeInfo.polyline.points, 5)
+            .map { LatLng(it.latitude, it.longitude) }
 
     private suspend fun snapToRoads(points: List<LatLng>): List<LatLng> {
 
@@ -256,7 +259,7 @@ class RouteProvider private constructor(
 
         /**
          * Terminate function that builds a DirectionRequest with full map of parameters
-         * After this step you can do asynchronous request by [requestDirection]
+         * After this step you can do asynchronous request by [routes]
          */
         fun build(): RouteProvider {
             val map = mutableMapOf<String, String>()

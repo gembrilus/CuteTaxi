@@ -51,7 +51,7 @@ class InfoDialog : BaseDialog() {
          * @param fm An instance of FragmentManager
          * @param title A dialog title
          * @param message An info message of the dialog
-         * @param run A function that handles an OK button click
+         * @param onClose A function that handles a dialog closing
          */
         fun show(
             fm: FragmentManager,

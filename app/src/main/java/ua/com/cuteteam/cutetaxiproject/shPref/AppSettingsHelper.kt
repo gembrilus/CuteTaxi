@@ -23,6 +23,10 @@ class AppSettingsHelper(
     private val shPref = PreferenceManager.getDefaultSharedPreferences(context)
 
 
+    /**
+     *  First initialisation of shared preferences.
+     *  Unpack user info and write it to shared preferences.
+     */
     fun initUser(user: User){
 
         name = user.name
