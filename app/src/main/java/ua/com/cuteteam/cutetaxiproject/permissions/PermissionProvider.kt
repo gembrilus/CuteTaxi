@@ -4,8 +4,6 @@ import pub.devrel.easypermissions.EasyPermissions
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
 
-import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
-
 class PermissionProvider(private val activity: FragmentActivity) :
     EasyPermissions.PermissionCallbacks {
 
@@ -15,8 +13,7 @@ class PermissionProvider(private val activity: FragmentActivity) :
     }
 
     var onGranted: (() -> Unit)? = null
-
-    var shouldShowDialog = true
+    var onDenied: ((permission: Permission,isPermanentlyDenied: Boolean) -> Unit)? = null
 
     fun withPermission(permission: Permission, callback: () -> Unit) {
         if (EasyPermissions.hasPermissions(activity, permission.name)) {
@@ -38,11 +35,11 @@ class PermissionProvider(private val activity: FragmentActivity) :
     override fun onPermissionsDenied(requestCode: Int, permissions: MutableList<String>) {
         Log.d(PermissionProvider::class.java.name, "onPermissionsDenied")
         when (requestCode) {
-            LOCATION_REQUEST_CODE -> handleIfPermissionPermanentlyDenied(
-                AccessFineLocationPermission()
+            LOCATION_REQUEST_CODE -> onDenied?.invoke( AccessFineLocationPermission(),
+                isPermissionPermanentlyDenied(AccessFineLocationPermission())
             )
-            CALL_PHONE_REQUEST_CODE -> handleIfPermissionPermanentlyDenied(
-                CallPhonePermission()
+            CALL_PHONE_REQUEST_CODE -> onDenied?.invoke( CallPhonePermission(),
+                isPermissionPermanentlyDenied(CallPhonePermission())
             )
         }
     }
@@ -63,19 +60,6 @@ class PermissionProvider(private val activity: FragmentActivity) :
             activity,
             this
         )
-    }
-
-    private fun handleIfPermissionPermanentlyDenied(permission: Permission) {
-        if (isPermissionPermanentlyDenied(permission) && shouldShowDialog)
-            showPermissionPermanentlyDeniedDialog(permission)
-    }
-
-    private fun showPermissionPermanentlyDeniedDialog(permission: Permission) {
-        InfoDialog.show(
-            activity.supportFragmentManager,
-            permission.requiredPermissionDialogTitle,
-            permission.requiredPermissionDialogMessage
-        ) { shouldShowDialog = false }
     }
 
     private fun isPermissionPermanentlyDenied(permission: Permission): Boolean {

@@ -19,6 +19,7 @@ import pub.devrel.easypermissions.AfterPermissionGranted
 import ua.com.cuteteam.cutetaxiproject.permissions.PermissionProvider
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
+import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission
 import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
 import ua.com.cuteteam.cutetaxiproject.ui.TestActivity
 import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
@@ -26,9 +27,21 @@ import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.PassengerV
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    private val permissionProvider =
-        PermissionProvider(this)
+    companion object {
+        private var shouldShowPermissionPermanentlyDeniedDialog = true
+    }
 
+    private val permissionProvider = PermissionProvider(this).apply {
+        onDenied = { permission, isPermanentlyDenied ->
+            if (isPermanentlyDenied && shouldShowPermissionPermanentlyDeniedDialog) {
+                InfoDialog.show(
+                    supportFragmentManager,
+                    permission.requiredPermissionDialogTitle,
+                    permission.requiredPermissionDialogMessage
+                ) { shouldShowPermissionPermanentlyDeniedDialog = false }
+            }
+        }
+    }
 
     private val passengerViewModel by lazy {
         ViewModelProvider(this, PassengerViewModelFactory(PassengerRepository()))
@@ -75,16 +88,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-
     @AfterPermissionGranted(PermissionProvider.LOCATION_REQUEST_CODE)
     private fun addAMarkerAndMoveTheCamera() {
-        GlobalScope.launch(Dispatchers.Main) {
-            val location = passengerViewModel.locationProvider.getLocation()
-            location ?: return@launch
+        permissionProvider.withPermission(AccessFineLocationPermission()) {
+            GlobalScope.launch(Dispatchers.Main) {
+                val location = passengerViewModel.locationProvider.getLocation()
+                location ?: return@launch
 
-            val latLng = LatLng(location.latitude, location.longitude)
-            mMap.addMarker(MarkerOptions().position(latLng).title("My location"))
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+                val latLng = LatLng(location.latitude, location.longitude)
+                mMap.addMarker(MarkerOptions().position(latLng).title("My location"))
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+            }
         }
     }
 
