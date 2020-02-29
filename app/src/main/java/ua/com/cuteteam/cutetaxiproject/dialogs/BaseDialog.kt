@@ -43,7 +43,7 @@ abstract class BaseDialog : DialogFragment() {
     }
 
     override fun onDestroyView() {
-        if (dialog != null && retainInstance) {
+        if (dialog == null && retainInstance) {
             dialog?.cancel()
         }
         super.onDestroyView()
