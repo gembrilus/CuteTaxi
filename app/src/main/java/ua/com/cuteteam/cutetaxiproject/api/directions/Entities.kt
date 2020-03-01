@@ -1,7 +1,7 @@
 package ua.com.cuteteam.cutetaxiproject.api.directions
 
+import com.google.android.gms.maps.model.LatLng
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
 
 /**
  * Data class with route info
@@ -9,7 +9,6 @@ import com.squareup.moshi.JsonClass
  * @param routes  list of routes. If request will be build with enableAlternatives(true)
  * you can receive more as one route.
  */
-@JsonClass(generateAdapter = true)
 data class Route(
     val status: String,
     val routes: List<RouteInfo>
@@ -30,9 +29,9 @@ data class LegInfo(
 
 data class Step(
     @Json(name = "start_location")
-    val startLocation: Location,
+    val startLocation: LatLng,
     @Json(name = "end_location")
-    val endLocation: Location,
+    val endLocation: LatLng,
     val duration: Duration,
     val distance: Distance,
     @Json(name = "html_instructions")
@@ -54,6 +53,9 @@ data class Polyline(
     val points: String
 )
 
+/**
+ * It needs for [LatLngAdapter]
+ */
 data class Location(
     @Json(name = "lat")
     val latitude: Double,
