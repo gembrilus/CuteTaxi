@@ -10,6 +10,8 @@ import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.activities.MainActivity
+import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 
 private var _NOTE_ID = 0
 private val NOTE_ID = _NOTE_ID++
@@ -124,16 +126,57 @@ class NotificationUtils(private val context: Context) {
         /**
          * Creates an action intent for running a dialer and inserting a phone number
          */
-        fun dialerIntent(context: Context, phone: String) = PendingIntent.getActivity(
-            context,
-            0,
-            Intent(Intent.ACTION_DIAL).apply {
-                data = Uri.parse("tel:$phone")
-            },
-            0
-        ).run {
-            NotificationCompat.Action(R.drawable.ct_call_phone, "Call", this)
-        }
+        fun dialerIntent(context: Context, phone: String) =
+            PendingIntent.getActivity(
+                context,
+                0,
+                Intent(Intent.ACTION_DIAL).apply {
+                    data = Uri.parse("tel:$phone")
+                },
+                0
+            ).run {
+                NotificationCompat.Action(
+                    R.drawable.ct_call_phone,
+                    context.getString(R.string.action_name_call),
+                    this
+                )
+            }
+
+
+        /**
+         * Creates an action intent for notification cancel
+         */
+        fun declineOrderIntent(context: Context) =
+            PendingIntent.getActivity(
+                context,
+                0,
+                Intent(),
+                PendingIntent.FLAG_CANCEL_CURRENT
+            ).run {
+                NotificationCompat.Action(
+                    R.drawable.ct_cancel,
+                    context.getString(R.string.action_name_cancel),
+                    this
+                )
+            }
+
+
+        /**
+         * Creates an action intent for accept an order.
+         */
+        fun acceptOrderIntent(context: Context) =
+            PendingIntent.getActivity(
+                context,
+                0,
+                Intent(context, MainActivity::class.java),
+                PendingIntent.FLAG_ONE_SHOT
+            ).run {
+                NotificationCompat.Action(
+                    R.drawable.ct_accept,
+                    context.getString(R.string.action_name_accept),
+                    this
+                )
+            }
 
     }
 
