@@ -5,7 +5,6 @@ import ua.com.cuteteam.cutetaxiproject.api.directions.Maneuver
 
 
 /**
- *
  * Moshi adapter class for enum class [Maneuver]
  */
 class ManeuverAdapter {
