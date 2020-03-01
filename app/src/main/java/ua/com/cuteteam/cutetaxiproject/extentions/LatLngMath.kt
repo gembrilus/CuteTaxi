@@ -49,3 +49,5 @@ infix fun LatLng.distanceTo(latLng: LatLng): Double {
         )
     )
 }
+
+fun LatLng.arrivalTimeTo(to: LatLng, speed: Float = 1000f) = (this distanceTo to)/speed
