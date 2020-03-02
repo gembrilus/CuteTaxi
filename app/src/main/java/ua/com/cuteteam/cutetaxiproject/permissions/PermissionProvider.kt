@@ -1,11 +1,25 @@
 package ua.com.cuteteam.cutetaxiproject.permissions
 
+import android.app.Activity
 import pub.devrel.easypermissions.EasyPermissions
 import android.util.Log
-import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.Fragment
 
-class PermissionProvider(private val activity: FragmentActivity) :
+class PermissionProvider :
     EasyPermissions.PermissionCallbacks {
+
+    private val host: Any
+    private val activity: Activity
+
+    constructor(activity: Activity) {
+        host = activity
+        this.activity = activity
+    }
+
+    constructor(fragment: Fragment) {
+        host = fragment
+        activity = fragment.activity!!
+    }
 
     companion object {
         const val LOCATION_REQUEST_CODE = 101
@@ -16,16 +30,27 @@ class PermissionProvider(private val activity: FragmentActivity) :
     var onDenied: ((permission: Permission,isPermanentlyDenied: Boolean) -> Unit)? = null
 
     fun withPermission(permission: Permission, callback: () -> Unit) {
+
         if (EasyPermissions.hasPermissions(activity, permission.name)) {
             callback()
         } else {
-            requestPermission(permission)
+            if (host is Activity) requestPermission(permission, host)
+            else if (host is Fragment) requestPermission(permission, host)
         }
     }
 
-    private fun requestPermission(permission: Permission) {
+    private fun requestPermission(permission: Permission, host: Activity) {
         EasyPermissions.requestPermissions(
-            activity,
+            host,
+            permission.rationale,
+            permission.requestCode,
+            permission.name
+        )
+    }
+
+    private fun requestPermission(permission: Permission, host: Fragment) {
+        EasyPermissions.requestPermissions(
+            host,
             permission.rationale,
             permission.requestCode,
             permission.name
@@ -57,7 +82,7 @@ class PermissionProvider(private val activity: FragmentActivity) :
             requestCode,
             permissions,
             grantResults,
-            activity,
+            host,
             this
         )
     }
