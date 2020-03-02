@@ -1,14 +1,15 @@
 package ua.com.cuteteam.cutetaxiproject.fragments
 
+import android.content.Context
+import android.location.Address
+import android.location.Location
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -34,8 +35,12 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
 
     private var permissionProvider: PermissionProvider? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private lateinit var currentLocation: Location
+
+    private val accessFineLocationPermission = AccessFineLocationPermission()
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
 
         passengerViewModel = ViewModelProvider(
             activity!!, PassengerViewModelFactory(PassengerRepository())
@@ -61,6 +66,15 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
                     )
             }
         }
+
+
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,19 +85,21 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        val options = GoogleMapOptions().liteMode(true)
+
         addAMarkerAndMoveTheCamera()
     }
 
     @AfterPermissionGranted(PermissionProvider.LOCATION_REQUEST_CODE)
     private fun addAMarkerAndMoveTheCamera() {
-        permissionProvider?.withPermission(AccessFineLocationPermission()) {
+        permissionProvider?.withPermission(accessFineLocationPermission) {
             GlobalScope.launch(Dispatchers.Main) {
-                val location = passengerViewModel.locationProvider.getLocation()
-                location ?: return@launch
+                currentLocation = passengerViewModel.locationProvider.getLocation() ?: return@launch
 
-                val latLng = LatLng(location.latitude, location.longitude)
+                val latLng = LatLng(currentLocation.latitude, currentLocation.longitude)
                 mMap.addMarker(MarkerOptions().position(latLng).title("My location"))
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(10f))
             }
         }
     }
