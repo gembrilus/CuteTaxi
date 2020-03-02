@@ -7,5 +7,7 @@ data class Order (
     var addressStart: Address? = null,
     var addressDestination: Address? = null,
     var distance: Double? = null,
-    var price: Double? = null
+    var price: Double? = null,
+    var arrivingTime: Double,
+    var orderStatus: OrderStatus
 )
