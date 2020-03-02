@@ -8,7 +8,7 @@ sealed class Event {
     class NewOrder(val order: Order): Event()
     class AcceptOrder(val order: Order): Event()
     class ChangedOrder(val order: Order): Event()
-    class Near(val coordinates: LatLng): Event()
+    object Near: Event()
     object Arrived: Event()
 
 }
