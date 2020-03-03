@@ -8,6 +8,8 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
 import java.util.concurrent.TimeUnit
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 interface AuthListener {
     fun onStarted()
@@ -47,7 +49,17 @@ class AuthProvider {
         }
     }
 
-    fun isUserSignedIn() = FirebaseAuth.getInstance().currentUser != null
+    suspend fun isUserSignedIn(): Boolean {
+        return suspendCoroutine {
+            val fireBaseInstance = FirebaseAuth.getInstance()
+            fireBaseInstance.addAuthStateListener(object : FirebaseAuth.AuthStateListener{
+                override fun onAuthStateChanged(firebaseAuth: FirebaseAuth) {
+                    it.resume(firebaseAuth.currentUser != null)
+                    fireBaseInstance.removeAuthStateListener(this)
+                }
+            })
+        }
+    }
 
     fun signOutUser() = auth.signOut()
 

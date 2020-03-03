@@ -4,6 +4,9 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.lifecycle.ViewModelProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.fragments.HeadPieceFragment
 import ua.com.cuteteam.cutetaxiproject.viewmodels.AuthViewModel
@@ -28,8 +31,10 @@ class MainActivity : AppCompatActivity() {
 
         Timer().schedule(object : TimerTask() {
             override fun run() {
-                if (authViewModel.isUserSignedIn()) startMapsActivity()
-                else startAuthorization()
+                GlobalScope.launch(Dispatchers.Main) {
+                    if (authViewModel.isUserSignedIn()) startMapsActivity()
+                    else startAuthorization()
+                }
             }
         }, 500)
     }
