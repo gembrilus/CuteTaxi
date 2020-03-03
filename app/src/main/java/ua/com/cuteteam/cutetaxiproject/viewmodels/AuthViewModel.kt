@@ -40,7 +40,7 @@ class AuthViewModel: ViewModel(), AuthListener {
         authProvider.resendVerificationCode(phoneNumber)
     }
 
-    fun isUserSignedIn() = authProvider.isUserSignedIn()
+    suspend fun isUserSignedIn() = authProvider.isUserSignedIn()
 
     fun signOut() = authProvider.signOutUser()
 
