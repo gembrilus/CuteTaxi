@@ -6,6 +6,11 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.maps.GoogleMapOptions
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.fragments.MapsFragment
 import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
@@ -25,10 +30,18 @@ class MapsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.map_container, MapsFragment())
-            .commit()
+
+        GlobalScope.launch {
+            withContext(Dispatchers.Main) {
+                val options = GoogleMapOptions().liteMode(true)
+                options.camera(passengerViewModel.startCameraPosition())
+
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.map_container, MapsFragment.newInstance(options))
+                    .commit()
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
