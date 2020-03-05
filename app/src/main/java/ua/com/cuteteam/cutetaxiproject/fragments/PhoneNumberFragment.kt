@@ -12,6 +12,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.fragment_phone_number.*
 import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 import ua.com.cuteteam.cutetaxiproject.viewmodels.AuthViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.AuthViewModel.*
 
@@ -51,7 +52,11 @@ class PhoneNumberFragment : Fragment(), View.OnClickListener {
 
     override fun onClick(view: View?) {
         when(view) {
-            continue_btn -> authViewModel.verifyPhoneNumber(phone_number_et.text.toString())
+            continue_btn -> {
+                val phoneNumber = phone_number_et.text.toString()
+                AppSettingsHelper(this.context!!).phone = phoneNumber
+                authViewModel.verifyPhoneNumber(phoneNumber)
+            }
         }
     }
 }

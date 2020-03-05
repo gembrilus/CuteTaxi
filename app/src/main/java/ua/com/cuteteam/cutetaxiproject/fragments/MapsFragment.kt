@@ -1,15 +1,12 @@
 package ua.com.cuteteam.cutetaxiproject.fragments
 
 import android.content.Context
-import android.location.Address
 import android.location.Location
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -27,6 +24,14 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
 
     companion object {
         private var shouldShowPermissionPermanentlyDeniedDialog = true
+
+        fun newInstance(googleMapOptions: GoogleMapOptions?): MapsFragment {
+            val mapsFragment = MapsFragment()
+            var bundle: Bundle?
+            Bundle().also { bundle = it }.putParcelable("MapOptions", googleMapOptions)
+            mapsFragment.arguments = bundle
+            return mapsFragment
+        }
     }
 
     private lateinit var mMap: GoogleMap
@@ -66,15 +71,6 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
                     )
             }
         }
-
-
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -85,8 +81,6 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        val options = GoogleMapOptions().liteMode(true)
-
         addAMarkerAndMoveTheCamera()
     }
 
