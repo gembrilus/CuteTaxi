@@ -2,4 +2,9 @@
 
     <string name="app_name">CuteTaxi</string>
     <string name="title_activity_maps">Map</string>
+
+    // Navigation menu
+    <string name="menu_home">Home</string>
+    <string name="menu_orders">Orders</string>
+
 </resources>

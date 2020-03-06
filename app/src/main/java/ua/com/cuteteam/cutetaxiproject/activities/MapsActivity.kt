@@ -21,7 +21,7 @@ import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
 import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission
 import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
-import ua.com.cuteteam.cutetaxiproject.ui.TestActivity
+import ua.com.cuteteam.cutetaxiproject.ui.main.PassengerActivity
 import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.PassengerViewModelFactory
 
@@ -72,7 +72,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
+        menuInflater.inflate(R.menu.main_menu_pass, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -81,9 +81,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             R.id.home -> startActivity(
                 Intent(
                     this,
-                    TestActivity::class.java
+                    PassengerActivity::class.java
                 )
-            ).run { return true }
+            ).run {
+                finish()
+                return true
+            }
             else -> return super.onOptionsItemSelected(item)
         }
     }

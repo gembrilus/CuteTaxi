@@ -9,11 +9,12 @@
         android:name="ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.MainInfoFragment"
         android:label="MainInfoFragment" />
     <fragment
-        android:id="@+id/additionalInfoFragment"
-        android:name="ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.AdditionalInfoFragment"
+        android:id="@+id/passengerInfoFragment"
+        android:name="ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.PassengerInfoFragment"
         android:label="PassengerInfoFragment" />
     <fragment
         android:id="@+id/systemFragment"
         android:name="ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.SystemFragment"
         android:label="SystemFragment" />
+
 </navigation>

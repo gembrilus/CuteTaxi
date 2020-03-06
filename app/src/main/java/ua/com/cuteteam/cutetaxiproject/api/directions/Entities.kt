@@ -9,7 +9,6 @@ import com.squareup.moshi.JsonClass
  * @param routes  list of routes. If request will be build with enableAlternatives(true)
  * you can receive more as one route.
  */
-@JsonClass(generateAdapter = true)
 data class Route(
     val status: String,
     val routes: List<RouteInfo>

@@ -1,13 +1,13 @@
 package ua.com.cuteteam.cutetaxiproject.shPref
 
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.data.User
 import ua.com.cuteteam.cutetaxiproject.data.entities.ComfortLevel
 import ua.com.cuteteam.cutetaxiproject.data.entities.Driver
 import ua.com.cuteteam.cutetaxiproject.data.entities.Passenger
+import javax.inject.Inject
 
 /**
  * Class helps to write/read header_preferences to/from a file
@@ -15,7 +15,7 @@ import ua.com.cuteteam.cutetaxiproject.data.entities.Passenger
  * @param shPref is a shared header_preferences file where they are stored
  *
  */
-class AppSettingsHelper(
+class AppSettingsHelper (
     private val context: Context
 ) {
 
@@ -27,24 +27,31 @@ class AppSettingsHelper(
      *  First initialisation of shared preferences.
      *  Unpack user info and write it to shared preferences.
      */
-    fun initUser(user: User){
+    fun initUser(user: User) {
 
         name = user.name
         phone = user.phoneNumber
 
-        when(user) {
+        when (user) {
             is Passenger -> {
-                comfortClass = ComfortLevel.STANDARD.ordinal
+                comfortClass = ComfortLevel.STANDARD
             }
             is Driver -> {
                 carBrand = user.car?.brand
                 carModel = user.car?.model
-                carClass = user.car?.comfortLevel?.ordinal ?: ComfortLevel.STANDARD.ordinal
+                carClass = user.car?.comfortLevel
                 carColor = user.car?.color
                 carNumber = user.car?.regNumber
             }
         }
     }
+
+    /**
+     * Property that shows is there an active order or not
+     */
+    var hasActiveOrder: Boolean
+        get() = shPref.getBoolean(spKeys.HAS_ACTIVE_ORDER, false)
+        set(value) = put(spKeys.HAS_ACTIVE_ORDER, value)
 
 
     /**
@@ -60,13 +67,9 @@ class AppSettingsHelper(
     /**
      * Property for the user's role
      */
-    var role: Int
-        get() {
-            val defaultValue = context.resources.getString(R.string.role_passenger)
-            val currentValue = shPref.getString(spKeys.ROLE_KEY, defaultValue)
-            return currentValue?.toInt() ?: defaultValue.toInt()
-        }
-        set(value) = put(spKeys.ROLE_KEY, value.toString())
+    var role: Boolean
+        get() = shPref.getBoolean(spKeys.ROLE_KEY, false)
+        set(value) = put(spKeys.ROLE_KEY, value)
 
 
     /**
@@ -88,9 +91,16 @@ class AppSettingsHelper(
     /**
      * Property for the car comfort class what user selects
      */
-    var comfortClass: Int?
-        get() = shPref.getInt(spKeys.PASSENGER_CAR_CLASS_KEY, ComfortLevel.STANDARD.ordinal)
-        set(value) = put(spKeys.PASSENGER_CAR_CLASS_KEY, value)
+    var comfortClass: ComfortLevel?
+        get() {
+            val ordinal =
+                shPref.getInt(spKeys.PASSENGER_CAR_CLASS_KEY, ComfortLevel.STANDARD.ordinal)
+            return ComfortLevel.values()[ordinal]
+        }
+        set(value) = put(
+            spKeys.PASSENGER_CAR_CLASS_KEY,
+            value?.ordinal ?: ComfortLevel.STANDARD.ordinal
+        )
 
 
     /**
@@ -142,9 +152,12 @@ class AppSettingsHelper(
     /**
      * Property for the car comfort class
      */
-    var carClass: Int
-        get() = shPref.getInt(spKeys.CAR_CLASS_KEY, ComfortLevel.STANDARD.ordinal)
-        set(value) = put(spKeys.CAR_CLASS_KEY, value)
+    var carClass: ComfortLevel?
+        get() {
+            val ordinal = shPref.getInt(spKeys.CAR_CLASS_KEY, ComfortLevel.STANDARD.ordinal)
+            return ComfortLevel.values()[ordinal]
+        }
+        set(value) = put(spKeys.CAR_CLASS_KEY, value?.ordinal ?: ComfortLevel.STANDARD.ordinal)
 
 
     /**
@@ -167,7 +180,10 @@ class AppSettingsHelper(
      * Property for set an app theme
      */
     var appTheme: String?
-        get() = shPref.getString(spKeys.APP_THEME_KEY, context.getString(R.string.value_item_light_theme))
+        get() = shPref.getString(
+            spKeys.APP_THEME_KEY,
+            context.getString(R.string.value_item_light_theme)
+        )
         set(value) = put(spKeys.APP_THEME_KEY, value)
 
 
@@ -176,7 +192,7 @@ class AppSettingsHelper(
             when (value) {
                 is Int -> putInt(key, value)
                 is Boolean -> putBoolean(key, value)
-                is String -> putString(key, value)
+                is String? -> putString(key, value)
                 is Float -> putFloat(key, value)
                 is Long -> putLong(key, value)
             }

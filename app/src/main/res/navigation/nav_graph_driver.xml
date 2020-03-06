@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/home"
-        android:name="ua.com.cuteteam.cutetaxiproject.ui.MapFragment"
-        android:label="MapFragment" />
+        android:name="ua.com.cuteteam.cutetaxiproject.ui.main.fragments.DriverMapFragment"
+        android:label="DriverMapFragment" />
 
-    <include app:graph="@navigation/nav_settings_graph" />
+    <include app:graph="@navigation/nav_settings_graph_driver" />
 
 </navigation>
