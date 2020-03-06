@@ -10,7 +10,6 @@
     <string name="default_role" translatable="false">@string/name_role_passenger</string>
     <string name="name_role_passenger">Passenger</string>
     <string name="name_role_driver">Driver</string>
-    <string name="title_role_preference">Change role</string>
 
     /***************************** Main info category (fragment) ***************************/
 
@@ -146,6 +145,7 @@
     <string name="value_item_light_theme">light</string>
     <string name="value_item_dark_theme">dark</string>
     <string name="default_name_item_theme" translatable="false">@string/value_item_light_theme</string>
+    <string name="key_has_active_order">hasActiveOrder</string>
 
 
     /*******************************************************************************************/
