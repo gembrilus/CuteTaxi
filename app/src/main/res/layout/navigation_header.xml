@@ -2,24 +2,60 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="32dp"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp"
+    android:paddingBottom="8dp"
+    android:background="@color/colorPrimary"
     android:orientation="vertical">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tv_nav_header_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAlignment="gravity"
-        android:gravity="center_horizontal|center_vertical"
-        android:minHeight="128dp"
-        android:text="@string/app_name"/>
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:padding="8dp"
+        android:background="@drawable/ct_transparent_box"
+        android:textSize="12sp"/>
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/role_chooser"
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_nav_header_phone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:checked="false"
-        android:textSize="16sp"
-        android:padding="16dp" />
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:padding="8dp"
+        android:background="@drawable/ct_transparent_box"
+        android:textSize="12sp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:gravity="center"
+        android:background="@drawable/ct_transparent_box"
+        android:orientation="horizontal">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@string/name_role_passenger" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/role_chooser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@string/name_role_driver" />
+
+    </LinearLayout>
 
 </LinearLayout>

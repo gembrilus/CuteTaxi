@@ -34,17 +34,14 @@ class NetHelper(context: Context) {
 
         override fun onLost(network: Network) {
             if (hasWiFi || hasMobileNetwork) return
-            Log.d(TAG, "Network status - LOST")
             netStatus.postValue(NetStatus.LOST)
         }
 
         override fun onUnavailable() {
-            Log.d(TAG, "Network status - UNAVAILABLE")
             netStatus.postValue(NetStatus.UNAVAILABLE)
         }
 
         override fun onAvailable(network: Network) {
-            Log.d(TAG, "Network status - AVAILABLE")
             netStatus.postValue(NetStatus.AVAILABLE)
         }
     }
@@ -94,7 +91,6 @@ class NetHelper(context: Context) {
      *
      */
     fun registerNetworkListener() {
-        Log.d(TAG, "Register a network listener...")
         connectivityManager.registerNetworkCallback(
             networkRequest,
             callback
@@ -107,11 +103,11 @@ class NetHelper(context: Context) {
      *
      */
     fun unregisterNetworkListener() {
-        Log.d(TAG, "Unregister a network listener...")
         connectivityManager.unregisterNetworkCallback(callback)
     }
 
 
+    @Suppress("DEPRECATION")
     private fun hasNetwork(predicate: NetworkCapabilities.() -> Boolean): Boolean =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             connectivityManager

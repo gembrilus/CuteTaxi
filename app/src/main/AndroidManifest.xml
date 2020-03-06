@@ -35,8 +35,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.TestActivity"
+
+        <activity android:name=".ui.main.BaseActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity android:name=".ui.main.PassengerActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity android:name=".ui.main.DriverActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <service android:name=".services.DriverService"
+            android:exported="false"/>
+
     </application>
 
 </manifest>
