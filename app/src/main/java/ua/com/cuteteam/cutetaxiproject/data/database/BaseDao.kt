@@ -8,6 +8,7 @@ import com.google.firebase.ktx.Firebase
 import ua.com.cuteteam.cutetaxiproject.data.User
 import ua.com.cuteteam.cutetaxiproject.data.entities.Driver
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
+import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.data.entities.Trip
 import ua.com.cuteteam.cutetaxiproject.extentions.exists
 import ua.com.cuteteam.cutetaxiproject.extentions.getValue
@@ -41,11 +42,11 @@ abstract class BaseDao(
     }
 
     /**Writes value into user field, specified by entry
-     * @param entry field entry in enum class
-     * @see entry
+     * @param field field entry
+     * @see DbEntries
      */
-    fun <T> writeField(entry: Entry, value: T, uid: String = authUser.uid) {
-        usersRef.child(uid).child(entry.field).setValue(value).addOnFailureListener {
+    fun <T> writeField(field: String, value: T, uid: String = authUser.uid) {
+        usersRef.child(uid).child(field).setValue(value).addOnFailureListener {
             Log.d("Firebase: writeField()", it.message.toString())
         }.addOnCompleteListener {
             Log.d("Firebase: writeField()", "Write is successful")
@@ -74,12 +75,12 @@ abstract class BaseDao(
 
 
     /** Returns value from specified field
-     * @param entry field entry in enum class
-     * @see Entry
+     * @param field field entry
+     * @see DbEntries
      * @return value or null if field doesn't exist
      */
-    suspend fun <T> getField(entry: Entry, uid: String = authUser.uid): T? {
-        val fieldData = usersRef.child(uid).child(entry.field).getValue()
+    suspend fun <T> getField(field: String, uid: String = authUser.uid): T? {
+        val fieldData = usersRef.child(uid).child(field).getValue()
         @Suppress("UNCHECKED_CAST")
         return fieldData.value as T
     }
@@ -112,30 +113,30 @@ abstract class BaseDao(
 
 
     /** Checks if field exist in user entry
-     * @param entry field entry in enum class
-     * @see Entry
+     * @param field field entry
+     * @see DbEntries
      * @return true if field exist in database, else false
      */
-    suspend fun isFieldExist(entry: Entry, uid: String = authUser.uid): Boolean {
-        return usersRef.child(uid).child(entry.field).exists()
+    suspend fun isFieldExist(field: String, uid: String = authUser.uid): Boolean {
+        return usersRef.child(uid).child(field).exists()
     }
 
 
     /** Subscribes for value changes. Updates receives using callbacks in ValueEvenListener.
      * If updates aren't necessary anymore, don't forget to remove callbacks using
      * removeListeners() or removeAllListeners()
-     * @param entry field entry in enum class
-     * @see Entry
+     * @param field field entry
+     * @see DbEntries
      * @see ValueEventListener
      * @see removeAllListeners
      * @see removeListeners
      */
     fun subscribeForChanges(
-        entry: Entry,
+        field: String,
         listener: ValueEventListener,
         uid: String = authUser.uid
     ) {
-        val childRef = usersRef.child(uid).child(entry.field)
+        val childRef = usersRef.child(uid).child(field)
         if (!eventListeners.contains(childRef)) {
             childRef.addValueEventListener(listener)
             eventListeners.put(childRef, listener)
@@ -187,13 +188,13 @@ abstract class BaseDao(
     }
 
     /** Removes listener, specified by entry
-     * @param entry
+     * @param field field entry
+     * @see DbEntries
      * @see ValueEventListener
      * @see subscribeForChanges
-     * @see Entry
      */
-    fun removeListeners(entry: Entry, uid: String = authUser.uid) {
-        removeListeners(usersRef.child(uid).child(entry.field))
+    fun removeListeners(field: String, uid: String = authUser.uid) {
+        removeListeners(usersRef.child(uid).child(field))
     }
 
 

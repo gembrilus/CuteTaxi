@@ -1,8 +1,10 @@
 package ua.com.cuteteam.cutetaxiproject.data.entities
 
-data class Order (
+import com.google.android.gms.maps.model.LatLng
+
+data class Order(
     var orderId: String? = null,
-    var driverLocation: Coordinates? = null,
+    var driverLocation: LatLng? = null,
     var comfortLevel: ComfortLevel = ComfortLevel.STANDARD,
     var addressStart: Address? = null,
     var addressDestination: Address? = null,
