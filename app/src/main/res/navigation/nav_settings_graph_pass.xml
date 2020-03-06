@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/settings"
+    app:startDestination="@id/mainInfoFragment">
+
+    <fragment
+        android:id="@+id/mainInfoFragment"
+        android:name="ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.MainInfoFragment"
+        android:label="MainInfoFragment" />
+    <fragment
+        android:id="@+id/passengerInfoFragment"
+        android:name="ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.PassengerInfoFragment"
+        android:label="PassengerInfoFragment" />
+    <fragment
+        android:id="@+id/systemFragment"
+        android:name="ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.SystemFragment"
+        android:label="SystemFragment" />
+
+</navigation>
