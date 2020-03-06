@@ -1,23 +1,63 @@
 package ua.com.cuteteam.cutetaxiproject.data.database
 
-interface Entry {
-    val field: String
-}
+object DbEntries{
 
-enum class DriverEntry(override val field: String) : Entry {
-    NAME("name"),
-    PHONE_NUMBER("phoneNumber"),
-    RATE("rate"),
-    CAR("car"),
-    LOCATION("location"),
-    STATUS("status"),
-    ORDER_ID("orderId")
-}
+    object Passengers {
+        const val TABLE = "passengers"
 
-enum class PassengerEntry(override val field: String) : Entry {
-    NAME("name"),
-    PHONE_NUMBER("phoneNumber"),
-    RATE("rate"),
-    ADDRESSES("addresses"),
-    ORDER_ID("orderId")
+        object Fields {
+            const val TOKEN = "token"
+            const val NAME = "name"
+            const val PHONE = "phoneNumber"
+            const val RATE = "rate"
+            const val FAVORITE_ADDRESSES = "addresses"
+            const val ORDER_ID = "orderId"
+            const val MESSAGE = "message"
+        }
+    }
+
+    object Drivers {
+        const val TABLE = "drivers"
+
+        object Fields {
+            const val TOKEN = "token"
+            const val NAME = "name"
+            const val PHONE = "phoneNumber"
+            const val RATE = "rate"
+            const val CAR = "car"
+            const val DRIVER_STATUS = "status"
+            const val ORDER_ID = "orderId"
+            const val MESSAGE = "message"
+        }
+    }
+
+    object Orders {
+        const val TABLE = "orders"
+
+        object Fields {
+            const val ORDER_ID = "orderId"
+            const val ORDER_STATUS = "orderStatus"
+            const val COMFORT_LEVEL = "comfortLevel"
+            const val START_ADDRESS = "addressStart"
+            const val DEST_ADDRESS = "addressDestination"
+            const val DISTANCE = "distance"
+            const val PRICE = "price"
+            const val ARRIVAL_TIME = "arrivingTime"
+            const val DRIVER_LOCATION = "driverLocation"
+        }
+    }
+
+    object Car {
+        const val BRAND = "brand"
+        const val MODEL = "model"
+        const val COMFORT_LEVEL = "comfortLevel"
+        const val NUMBER = "regNumber"
+        const val COLOR = "color"
+    }
+
+    object Address {
+        const val LOCATION = "location"
+        const val ADDRESS = "address"
+    }
+
 }
