@@ -5,6 +5,7 @@ import ua.com.cuteteam.cutetaxiproject.R
 
 class SPKeys(context: Context) {
 
+    val HAS_ACTIVE_ORDER = context.getString(R.string.key_has_active_order)
     val IS_FIRST_START_KEY = context.resources.getString(R.string.key_is_first_start_app)
     val ROLE_KEY = context.resources.getString(R.string.key_role_preference)
 

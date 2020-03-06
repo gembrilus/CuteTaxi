@@ -45,27 +45,4 @@
 
     /****************** END  ******************/
 
-    /************** ROLE LIST ***************/
-
-    <string name="role_passenger">0</string>
-    <string name="role_driver">1</string>
-
-    <string-array name="role_entries">
-
-        <item>@string/name_role_passenger</item>
-        <item>@string/name_role_driver</item>
-
-    </string-array>
-
-    <integer-array name="role_entries_values">
-
-        <item>@string/role_passenger</item>
-        <item>@string/role_driver</item>
-
-    </integer-array>
-
-    /****************** END  ******************/
-
-
-
 </resources>
