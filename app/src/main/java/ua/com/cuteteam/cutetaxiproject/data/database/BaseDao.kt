@@ -2,12 +2,12 @@ package ua.com.cuteteam.cutetaxiproject.data.database
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import ua.com.cuteteam.cutetaxiproject.data.User
+import ua.com.cuteteam.cutetaxiproject.data.entities.Driver
+import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.data.entities.Trip
 import ua.com.cuteteam.cutetaxiproject.extentions.exists
 import ua.com.cuteteam.cutetaxiproject.extentions.getValue
@@ -19,13 +19,15 @@ abstract class BaseDao(
 
     protected val authUser = auth.currentUser!!
     protected val rootRef = database.reference.root
-    private val tripsRef = database.reference.root.child("trips")
     protected abstract val usersRef: DatabaseReference
-
-    abstract suspend fun getUser(uid: String = authUser.uid): User?
 
     private val eventListeners = mutableMapOf<DatabaseReference, ValueEventListener>()
 
+    @Suppress("UNCHECKED_CAST")
+    suspend fun <T: User> getUser(uid: String): T? {
+        val userData = usersRef.child(uid).getValue()
+        return userData.getValue(Driver::class.java) as T?
+    }
 
     /**Writes user to realtime database
      * @see User
@@ -143,6 +145,36 @@ abstract class BaseDao(
         }
     }
 
+    fun writeOrder(order: Order?): DatabaseReference {
+        val ref = rootRef.child(DbEntries.Orders.TABLE).push()
+        order?.let {
+            ref.setValue(it)
+        }
+        return ref
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun observeOrders(onSuccess: (List<Order>) -> Unit){
+        rootRef.child(DbEntries.Orders.TABLE)
+            .orderByChild(DbEntries.Orders.Fields.ORDER_STATUS)
+            .equalTo(OrderStatus.NEW.name, DbEntries.Orders.Fields.ORDER_STATUS)
+            .orderByChild(DbEntries.Orders.Fields.START_ADDRESS)
+            .ref
+            .child(DbEntries.Orders.Fields.START_ADDRESS)
+            .child(DbEntries.Address.LOCATION)
+            .startAt(DbEntries.Address.LOCATION)
+            .endAt(DbEntries.Address.LOCATION)
+            .addValueEventListener(object : ValueEventListener{
+                override fun onCancelled(p0: DatabaseError) {
+                    Log.e("CuteDAO", p0.message)
+                }
+                override fun onDataChange(p0: DataSnapshot) {
+                    val result = p0.getValue(List::class.java) as List<Order>
+                    onSuccess.invoke(result)
+                }
+            })
+    }
+
     /** Removes all active listeners
      * @see ValueEventListener
      * @see subscribeForChanges
@@ -175,12 +207,4 @@ abstract class BaseDao(
         }
     }
 
-    // Temporary function for testing table of trips, it will be moved to Firebase functions
-    fun createTrip(trip: Trip) {
-        tripsRef.push().setValue(trip)
-    }
-
-/*    fun getTrips(): List<Trip> {
-        TODO()
-    }*/
 }

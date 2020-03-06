@@ -34,7 +34,7 @@ class AppSettingsHelper (
 
         when (user) {
             is Passenger -> {
-                comfortClass = ComfortLevel.STANDARD
+                comfortClass = user.comfortLevel
             }
             is Driver -> {
                 carBrand = user.car?.brand
