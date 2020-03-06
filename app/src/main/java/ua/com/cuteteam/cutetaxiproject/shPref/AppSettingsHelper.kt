@@ -7,7 +7,6 @@ import ua.com.cuteteam.cutetaxiproject.data.User
 import ua.com.cuteteam.cutetaxiproject.data.entities.ComfortLevel
 import ua.com.cuteteam.cutetaxiproject.data.entities.Driver
 import ua.com.cuteteam.cutetaxiproject.data.entities.Passenger
-import javax.inject.Inject
 
 /**
  * Class helps to write/read header_preferences to/from a file
