@@ -29,6 +29,6 @@
             android:layout_gravity="start"
             android:background="@drawable/ct_nav_background"
             app:headerLayout="@layout/navigation_header"
-            app:menu="@menu/main_menu_driver"/>
+            app:menu="@menu/main_menu"/>
 
     </androidx.drawerlayout.widget.DrawerLayout>
