@@ -33,8 +33,9 @@ class MapsActivity : AppCompatActivity() {
 
         GlobalScope.launch {
             withContext(Dispatchers.Main) {
-                val options = GoogleMapOptions().liteMode(true)
-                options.camera(passengerViewModel.startCameraPosition())
+                val options = GoogleMapOptions()
+                options.camera(passengerViewModel.currentCameraPosition())
+
 
                 supportFragmentManager
                     .beginTransaction()

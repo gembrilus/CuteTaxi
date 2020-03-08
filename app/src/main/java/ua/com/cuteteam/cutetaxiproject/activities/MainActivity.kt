@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         Timer().schedule(object : TimerTask() {
             override fun run() {
                 GlobalScope.launch(Dispatchers.Main) {
-                    if (authViewModel.isUserSignedIn()) startMapsActivity()
+                    if (authViewModel.verifyCurrentUser()) startMapsActivity()
                     else startAuthorization()
                 }
             }

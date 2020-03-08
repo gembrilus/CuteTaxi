@@ -7,11 +7,11 @@ import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import pub.devrel.easypermissions.AfterPermissionGranted
+import ua.com.cuteteam.cutetaxiproject.helpers.GoogleMapsHelper
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
 import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission
@@ -34,7 +34,7 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
         }
     }
 
-    private lateinit var mMap: GoogleMap
+    private lateinit var googleMapHelper: GoogleMapsHelper
 
     private lateinit var passengerViewModel: PassengerViewModel
 
@@ -80,7 +80,8 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
+        googleMapHelper =
+            GoogleMapsHelper(googleMap)
         addAMarkerAndMoveTheCamera()
     }
 
@@ -91,9 +92,12 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
                 currentLocation = passengerViewModel.locationProvider.getLocation() ?: return@launch
 
                 val latLng = LatLng(currentLocation.latitude, currentLocation.longitude)
-                mMap.addMarker(MarkerOptions().position(latLng).title("My location"))
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(10f))
+                googleMapHelper.googleMap.setOnCameraMoveListener {
+                    passengerViewModel.cameraPosition = googleMapHelper.googleMap.cameraPosition
+                }
+                googleMapHelper.addMarker(latLng)
+                if (passengerViewModel.cameraPosition == null)
+                    googleMapHelper.moveCameraToMyLocation(latLng)
             }
         }
     }
