@@ -5,13 +5,16 @@
     <item
         android:id="@+id/home"
         android:icon="@drawable/ct_home"
-        android:title="Test navigation"
-        app:showAsAction="always"/>
+        android:title="@string/menu_home"/>
+
+    <item
+        android:id="@+id/orders"
+        android:icon="@drawable/ct_home"
+        android:title="@string/menu_orders"/>
 
     <item
         android:id="@+id/settings"
         android:icon="@drawable/settings_menu_item"
-        android:title="@string/title_activity_settings"
-        app:showAsAction="always"/>
+        android:title="@string/title_activity_settings"/>
 
 </menu>

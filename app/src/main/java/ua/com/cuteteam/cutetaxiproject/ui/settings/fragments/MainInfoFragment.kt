@@ -3,28 +3,36 @@ package ua.com.cuteteam.cutetaxiproject.ui.settings.fragments
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import androidx.preference.EditTextPreference
+import androidx.preference.Preference
 import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
+import ua.com.cuteteam.cutetaxiproject.data.database.PassengerDao
+import ua.com.cuteteam.cutetaxiproject.shPref.FirebaseSettingsDataStore
 
 class MainInfoFragment : BaseSettingsFragment() {
 
     override val resourceId: Int
         get() = R.xml.main_info_preferences
 
-    private val changedStore by lazy {
-        listOf(
-            spKeys.NAME_KEY,
-            spKeys.PHONE_KEY
+    private val appSettingsToFirebaseStore by lazy {
+        FirebaseSettingsDataStore(
+            shPref,
+            PassengerDao()
         )
     }
 
     override fun setNewDataStore() {
-        setDataStore(changedStore, appSettingsToFirebaseStore)
+        findPreference<Preference>(DbEntries.Passengers.Fields.NAME)
+            ?.preferenceDataStore = appSettingsToFirebaseStore
+
+        findPreference<Preference>(DbEntries.Passengers.Fields.PHONE)
+            ?.preferenceDataStore = appSettingsToFirebaseStore
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         super.onCreatePreferences(savedInstanceState, rootKey)
 
-        findPreference<EditTextPreference>(spKeys.PHONE_KEY)?.setOnBindEditTextListener {
+        findPreference<EditTextPreference>(DbEntries.Passengers.Fields.PHONE)?.setOnBindEditTextListener {
             it.setSingleLine()
             it.inputType = EditorInfo.TYPE_CLASS_PHONE
         }

@@ -2,12 +2,13 @@ package ua.com.cuteteam.cutetaxiproject.data.database
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import ua.com.cuteteam.cutetaxiproject.data.User
+import ua.com.cuteteam.cutetaxiproject.data.entities.Driver
+import ua.com.cuteteam.cutetaxiproject.data.entities.Order
+import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.data.entities.Trip
 import ua.com.cuteteam.cutetaxiproject.extentions.exists
 import ua.com.cuteteam.cutetaxiproject.extentions.getValue
@@ -19,13 +20,15 @@ abstract class BaseDao(
 
     protected val authUser = auth.currentUser!!
     protected val rootRef = database.reference.root
-    private val tripsRef = database.reference.root.child("trips")
     protected abstract val usersRef: DatabaseReference
-
-    abstract suspend fun getUser(uid: String = authUser.uid): User?
 
     private val eventListeners = mutableMapOf<DatabaseReference, ValueEventListener>()
 
+    @Suppress("UNCHECKED_CAST")
+    suspend fun <T: User> getUser(uid: String): T? {
+        val userData = usersRef.child(uid).getValue()
+        return userData.getValue(Driver::class.java) as T?
+    }
 
     /**Writes user to realtime database
      * @see User
@@ -39,11 +42,11 @@ abstract class BaseDao(
     }
 
     /**Writes value into user field, specified by entry
-     * @param entry field entry in enum class
-     * @see entry
+     * @param field field entry
+     * @see DbEntries
      */
-    fun <T> writeField(entry: Entry, value: T, uid: String = authUser.uid) {
-        usersRef.child(uid).child(entry.field).setValue(value).addOnFailureListener {
+    fun <T> writeField(field: String, value: T, uid: String = authUser.uid) {
+        usersRef.child(uid).child(field).setValue(value).addOnFailureListener {
             Log.d("Firebase: writeField()", it.message.toString())
         }.addOnCompleteListener {
             Log.d("Firebase: writeField()", "Write is successful")
@@ -72,12 +75,12 @@ abstract class BaseDao(
 
 
     /** Returns value from specified field
-     * @param entry field entry in enum class
-     * @see Entry
+     * @param field field entry
+     * @see DbEntries
      * @return value or null if field doesn't exist
      */
-    suspend fun <T> getField(entry: Entry, uid: String = authUser.uid): T? {
-        val fieldData = usersRef.child(uid).child(entry.field).getValue()
+    suspend fun <T> getField(field: String, uid: String = authUser.uid): T? {
+        val fieldData = usersRef.child(uid).child(field).getValue()
         @Suppress("UNCHECKED_CAST")
         return fieldData.value as T
     }
@@ -110,30 +113,30 @@ abstract class BaseDao(
 
 
     /** Checks if field exist in user entry
-     * @param entry field entry in enum class
-     * @see Entry
+     * @param field field entry
+     * @see DbEntries
      * @return true if field exist in database, else false
      */
-    suspend fun isFieldExist(entry: Entry, uid: String = authUser.uid): Boolean {
-        return usersRef.child(uid).child(entry.field).exists()
+    suspend fun isFieldExist(field: String, uid: String = authUser.uid): Boolean {
+        return usersRef.child(uid).child(field).exists()
     }
 
 
     /** Subscribes for value changes. Updates receives using callbacks in ValueEvenListener.
      * If updates aren't necessary anymore, don't forget to remove callbacks using
      * removeListeners() or removeAllListeners()
-     * @param entry field entry in enum class
-     * @see Entry
+     * @param field field entry
+     * @see DbEntries
      * @see ValueEventListener
      * @see removeAllListeners
      * @see removeListeners
      */
     fun subscribeForChanges(
-        entry: Entry,
+        field: String,
         listener: ValueEventListener,
         uid: String = authUser.uid
     ) {
-        val childRef = usersRef.child(uid).child(entry.field)
+        val childRef = usersRef.child(uid).child(field)
         if (!eventListeners.contains(childRef)) {
             childRef.addValueEventListener(listener)
             eventListeners.put(childRef, listener)
@@ -141,6 +144,36 @@ abstract class BaseDao(
         } else {
             Log.e("Database Error", "Listener $childRef is already set")
         }
+    }
+
+    fun writeOrder(order: Order?): DatabaseReference {
+        val ref = rootRef.child(DbEntries.Orders.TABLE).push()
+        order?.let {
+            ref.setValue(it)
+        }
+        return ref
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun observeOrders(onSuccess: (List<Order>) -> Unit){
+        rootRef.child(DbEntries.Orders.TABLE)
+            .orderByChild(DbEntries.Orders.Fields.ORDER_STATUS)
+            .equalTo(OrderStatus.NEW.name, DbEntries.Orders.Fields.ORDER_STATUS)
+            .orderByChild(DbEntries.Orders.Fields.START_ADDRESS)
+            .ref
+            .child(DbEntries.Orders.Fields.START_ADDRESS)
+            .child(DbEntries.Address.LOCATION)
+            .startAt(DbEntries.Address.LOCATION)
+            .endAt(DbEntries.Address.LOCATION)
+            .addValueEventListener(object : ValueEventListener{
+                override fun onCancelled(p0: DatabaseError) {
+                    Log.e("CuteDAO", p0.message)
+                }
+                override fun onDataChange(p0: DataSnapshot) {
+                    val result = p0.getValue(List::class.java) as List<Order>
+                    onSuccess.invoke(result)
+                }
+            })
     }
 
     /** Removes all active listeners
@@ -155,13 +188,13 @@ abstract class BaseDao(
     }
 
     /** Removes listener, specified by entry
-     * @param entry
+     * @param field field entry
+     * @see DbEntries
      * @see ValueEventListener
      * @see subscribeForChanges
-     * @see Entry
      */
-    fun removeListeners(entry: Entry, uid: String = authUser.uid) {
-        removeListeners(usersRef.child(uid).child(entry.field))
+    fun removeListeners(field: String, uid: String = authUser.uid) {
+        removeListeners(usersRef.child(uid).child(field))
     }
 
 
@@ -175,12 +208,4 @@ abstract class BaseDao(
         }
     }
 
-    // Temporary function for testing table of trips, it will be moved to Firebase functions
-    fun createTrip(trip: Trip) {
-        tripsRef.push().setValue(trip)
-    }
-
-/*    fun getTrips(): List<Trip> {
-        TODO()
-    }*/
 }
