@@ -1,9 +1,10 @@
 package ua.com.cuteteam.cutetaxiproject.ui.passenger.activities
 
 import android.annotation.SuppressLint
+import android.net.sip.SipSession
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import android.view.ViewTreeObserver
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -11,14 +12,12 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.activity_passenger.*
 import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.ui.passenger.fragments.MakeOrderBottomSheet
 import ua.com.cuteteam.cutetaxiproject.ui.passenger.fragments.MakeOrderFragment
 import ua.com.cuteteam.cutetaxiproject.ui.passenger.fragments.OrderStatusBottomSheet
 
 class PassengerActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    private val orderTaxiFragment by lazy { MakeOrderFragment() }
-    private val orderBottomFragment by lazy { MakeOrderBottomSheet() }
+    private val makeOrderFragment by lazy { MakeOrderFragment() }
     private val orderStatusFragment by lazy { OrderStatusBottomSheet() }
     private val mapFragment by lazy { SupportMapFragment.newInstance() }
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
@@ -28,9 +27,6 @@ class PassengerActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(R.layout.activity_passenger)
 
         bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet_container)
-        bottomSheetBehavior.peekHeight = 500
-        showTaxiOrderCollapsed()
-        val layoutParams = bottom_sheet_container.layoutParams
 
         bottomSheetBehavior.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
@@ -71,6 +67,21 @@ class PassengerActivity : AppCompatActivity(), OnMapReadyCallback {
                 .commit()
             mapFragment.getMapAsync(this)
         }
+
+        if (bottom_sheet_container != null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.bottom_sheet_container, makeOrderFragment)
+                .commit()
+
+            bottom_sheet_container.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    bottom_sheet_container.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    makeOrderFragment.showCollapsed()
+                    bottomSheetBehavior.peekHeight = makeOrderFragment.bottomViewHeight ?: BottomSheetBehavior.PEEK_HEIGHT_AUTO
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                }
+            })
+        }
     }
 
     override fun onMapReady(gMap: GoogleMap) {
@@ -78,22 +89,12 @@ class PassengerActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun showTaxiOrderCollapsed() {
-        if (!orderBottomFragment.isAdded) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.bottom_sheet_container, orderBottomFragment)
-                .commit()
-            Log.d("BottomSheet:", "Called Collapsed")
-        }
-//        showOrderStatus()
+        makeOrderFragment.showCollapsed()
+        bottomSheetBehavior.peekHeight = makeOrderFragment.bottomViewHeight ?: BottomSheetBehavior.PEEK_HEIGHT_AUTO
     }
 
     private fun showTaxiOrderExpanded() {
-        if (!orderTaxiFragment.isAdded) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.bottom_sheet_container, orderTaxiFragment)
-                .commit()
-            Log.d("BottomSheet:", "Called Expanded")
-        }
+        makeOrderFragment.showExpanded()
     }
 
     private fun showOrderStatus() {

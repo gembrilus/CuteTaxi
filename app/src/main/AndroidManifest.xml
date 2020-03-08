@@ -24,7 +24,7 @@
 
         <activity
             android:name=".ui.passenger.activities.PassengerActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/Theme.MaterialComponents.Light.NoActionBar"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
