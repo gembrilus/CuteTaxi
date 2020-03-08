@@ -56,7 +56,18 @@ abstract class BaseActivity : AppCompatActivity() {
 
     private val onNavigationListener = NavigationView.OnNavigationItemSelectedListener { item ->
         item.isChecked = true
-        drawerLayout.closeDrawers()
+        when(item.itemId){
+            R.id.settings -> {
+                navigationView.menu.clear()
+                navigationView.inflateMenu(menuResId)
+            }
+            R.id.backToHome -> {
+                navigationView.menu.clear()
+                navigationView.inflateMenu(R.menu.main_menu)
+                onBackPressed()
+            }
+            else -> drawerLayout.closeDrawers()
+        }
         item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
     }
 
