@@ -1,8 +1,8 @@
-package ua.com.cuteteam.cutetaxiproject
+package ua.com.cuteteam.cutetaxiproject.helpers
 
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 
-class PhoneNumberValidator {
+class PhoneNumberHelper {
 
     private val phoneUtil = PhoneNumberUtil.getInstance()
 

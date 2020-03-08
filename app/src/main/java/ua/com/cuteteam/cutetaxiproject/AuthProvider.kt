@@ -3,10 +3,7 @@ package ua.com.cuteteam.cutetaxiproject
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.TaskExecutors
 import com.google.firebase.FirebaseException
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.auth.*
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -25,39 +22,39 @@ class AuthProvider {
     private lateinit var verificationId: String
     private lateinit var resendingToken: PhoneAuthProvider.ForceResendingToken
     var authListener: AuthListener? = null
+    private val firebaseAuth = FirebaseAuth.getInstance()
 
-    private val verificationStateChangedCallbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+    private val verificationStateChangedCallbacks =
+        object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
-        override fun onCodeSent(id: String, token: PhoneAuthProvider.ForceResendingToken) {
-            super.onCodeSent(id, token)
-            authListener?.onStarted()
-            verificationId = id
-            resendingToken = token
+            override fun onCodeSent(id: String, token: PhoneAuthProvider.ForceResendingToken) {
+                super.onCodeSent(id, token)
+                authListener?.onStarted()
+                verificationId = id
+                resendingToken = token
+            }
+
+            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                signInWithPhoneAuthCredential(credential)
+            }
+
+            override fun onVerificationFailed(exception: FirebaseException) {
+                authListener?.onFailure((exception as FirebaseAuthInvalidCredentialsException).errorCode)
+            }
+
+            override fun onCodeAutoRetrievalTimeOut(p0: String) {
+                super.onCodeAutoRetrievalTimeOut(p0)
+                authListener?.onTimeOut()
+            }
         }
 
-        override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-            signInWithPhoneAuthCredential(credential)
-        }
+    fun isUserSignedIn() = firebaseAuth.currentUser != null
 
-        override fun onVerificationFailed(exception: FirebaseException) {
-            authListener?.onFailure((exception as FirebaseAuthInvalidCredentialsException).errorCode)
-        }
-
-        override fun onCodeAutoRetrievalTimeOut(p0: String) {
-            super.onCodeAutoRetrievalTimeOut(p0)
-            authListener?.onTimeOut()
-        }
-    }
-
-    suspend fun isUserSignedIn(): Boolean {
+    suspend fun verifyCurrentUser(): Boolean {
         return suspendCoroutine {
-            val fireBaseInstance = FirebaseAuth.getInstance()
-            fireBaseInstance.addAuthStateListener(object : FirebaseAuth.AuthStateListener{
-                override fun onAuthStateChanged(firebaseAuth: FirebaseAuth) {
-                    it.resume(firebaseAuth.currentUser != null)
-                    fireBaseInstance.removeAuthStateListener(this)
-                }
-            })
+            firebaseAuth.currentUser?.reload()
+                ?.addOnCompleteListener { task -> it.resume(task.isSuccessful) }
+                ?: it.resume(false)
         }
     }
 
@@ -87,15 +84,16 @@ class AuthProvider {
     }
 
     fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
-        auth.signInWithCredential(credential).addOnCompleteListener(TaskExecutors.MAIN_THREAD, OnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val user = task.result?.user
-                authListener?.onSuccess()
-            } else {
-                if (task.exception is FirebaseAuthInvalidCredentialsException) {
-                    authListener?.onFailure((task.exception as FirebaseAuthInvalidCredentialsException).errorCode)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(TaskExecutors.MAIN_THREAD, OnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val user = task.result?.user
+                    authListener?.onSuccess()
+                } else {
+                    if (task.exception is FirebaseAuthInvalidCredentialsException) {
+                        authListener?.onFailure((task.exception as FirebaseAuthInvalidCredentialsException).errorCode)
+                    }
                 }
-            }
-        } )
+            })
     }
 }
