@@ -13,7 +13,7 @@ class DriverActivity : BaseActivity() {
             .get(DriverViewModel::class.java)
     }
 
-    override val menuResId: Int get() = R.menu.main_menu_driver
+    override val menuResId: Int get() = R.menu.nav_menu_settings_driver
     override val layoutResId: Int get() = R.layout.activity_driver
 
 }

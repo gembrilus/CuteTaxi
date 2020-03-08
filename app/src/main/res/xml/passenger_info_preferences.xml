@@ -16,7 +16,7 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory
+<!--    <PreferenceCategory
         app:iconSpaceReserved="false"
         app:title="@string/title_additional_facilities_category"
         app:key="@string/key_additional_facilities_category">
@@ -35,6 +35,6 @@
             app:summary="@string/summary_blacklist"
             app:title="@string/title_blacklist_preference" />
 
-    </PreferenceCategory>
+    </PreferenceCategory>-->
 
 </PreferenceScreen>
