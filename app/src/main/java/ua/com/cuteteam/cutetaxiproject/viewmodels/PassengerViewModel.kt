@@ -1,24 +1,22 @@
 package ua.com.cuteteam.cutetaxiproject.viewmodels
 
-import android.content.Context
-import androidx.lifecycle.ViewModel
 import ua.com.cuteteam.cutetaxiproject.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.LocationProvider
-import ua.com.cuteteam.cutetaxiproject.application.AppClass
 import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
+import ua.com.cuteteam.cutetaxiproject.ui.main.models.BaseViewModel
 
-class PassengerViewModel(private val passengerRepository: PassengerRepository, private val context: Context = AppClass.appContext()) : ViewModel() {
+class PassengerViewModel(private val repository: PassengerRepository) : BaseViewModel(repository) {
 
     private var dialogShowed = false
 
     val observableLocation: LocationLiveData
-        get() = passengerRepository.observableLocation
+        get() = repository.observableLocation
 
     val locationProvider: LocationProvider
-        get() = passengerRepository.locationProvider
+        get() = repository.locationProvider
 
     fun shouldShowGPSRationale(): Boolean {
-        if (dialogShowed || passengerRepository.locationProvider.isGPSEnabled()) return false
+        if (dialogShowed || repository.locationProvider.isGPSEnabled()) return false
 
         dialogShowed = true
         return true
