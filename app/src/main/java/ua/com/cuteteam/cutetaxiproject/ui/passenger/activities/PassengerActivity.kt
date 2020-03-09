@@ -1,5 +1,6 @@
 package ua.com.cuteteam.cutetaxiproject.ui.passenger.activities
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -12,11 +13,13 @@ import kotlinx.android.synthetic.main.activity_passenger.*
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.ui.passenger.fragments.MakeOrderBottomSheet
 import ua.com.cuteteam.cutetaxiproject.ui.passenger.fragments.MakeOrderFragment
+import ua.com.cuteteam.cutetaxiproject.ui.passenger.fragments.OrderStatusBottomSheet
 
 class PassengerActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private val orderTaxiFragment by lazy { MakeOrderFragment() }
     private val orderBottomFragment by lazy { MakeOrderBottomSheet() }
+    private val orderStatusFragment by lazy { OrderStatusBottomSheet() }
     private val mapFragment by lazy { SupportMapFragment.newInstance() }
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
 
@@ -27,6 +30,7 @@ class PassengerActivity : AppCompatActivity(), OnMapReadyCallback {
         bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet_container)
         bottomSheetBehavior.peekHeight = 500
         showTaxiOrderCollapsed()
+        val layoutParams = bottom_sheet_container.layoutParams
 
         bottomSheetBehavior.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
@@ -40,24 +44,22 @@ class PassengerActivity : AppCompatActivity(), OnMapReadyCallback {
                             showTaxiOrderExpanded()
                             isExtendedCalled = true
                             isCollapsedCalled = false
-//                            Log.d("BottomSheet:", "OnSlide Called Expanded")
                         } else if ((slideOffset < prevOffset) && !isCollapsedCalled) {
                             showTaxiOrderCollapsed()
                             isCollapsedCalled = true
                             isExtendedCalled = false
-//                            Log.d("BottomSheet:", "OnSlide Called Collapsed")
                         }
                     }
                 }
                 prevOffset = slideOffset
             }
 
+            @SuppressLint("SwitchIntDef")
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 when (newState) {
                     BottomSheetBehavior.STATE_EXPANDED -> showTaxiOrderExpanded()
                     BottomSheetBehavior.STATE_COLLAPSED -> showTaxiOrderCollapsed()
                 }
-
             }
         })
 
@@ -69,12 +71,10 @@ class PassengerActivity : AppCompatActivity(), OnMapReadyCallback {
                 .commit()
             mapFragment.getMapAsync(this)
         }
-
     }
 
     override fun onMapReady(gMap: GoogleMap) {
         gMap.uiSettings.isZoomControlsEnabled = true
-
     }
 
     private fun showTaxiOrderCollapsed() {
@@ -84,6 +84,7 @@ class PassengerActivity : AppCompatActivity(), OnMapReadyCallback {
                 .commit()
             Log.d("BottomSheet:", "Called Collapsed")
         }
+//        showOrderStatus()
     }
 
     private fun showTaxiOrderExpanded() {
@@ -94,5 +95,10 @@ class PassengerActivity : AppCompatActivity(), OnMapReadyCallback {
             Log.d("BottomSheet:", "Called Expanded")
         }
     }
-}
 
+    private fun showOrderStatus() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.bottom_sheet_container, orderStatusFragment)
+            .commit()
+    }
+}
