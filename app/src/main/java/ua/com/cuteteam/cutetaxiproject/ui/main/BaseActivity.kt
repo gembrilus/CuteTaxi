@@ -20,6 +20,7 @@ import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.activities.AuthActivity
 import ua.com.cuteteam.cutetaxiproject.common.network.NetStatus
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
+import ua.com.cuteteam.cutetaxiproject.extentions.createNotificationChannel
 import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission
 import ua.com.cuteteam.cutetaxiproject.permissions.PermissionProvider
 import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
@@ -74,6 +75,7 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(layoutResId)
+        createNotificationChannel()
         initNavigation()
         initUI()
         setObservers()

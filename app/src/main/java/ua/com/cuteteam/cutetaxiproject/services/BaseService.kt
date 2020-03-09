@@ -1,96 +1,66 @@
 package ua.com.cuteteam.cutetaxiproject.services
 
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.net.Uri
 import android.os.IBinder
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import ua.com.cuteteam.cutetaxiproject.activities.MainActivity
+import androidx.core.app.NotificationCompat
+import ua.com.cuteteam.cutetaxiproject.LocationLiveData
+import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.common.notifications.NotificationUtils
-import ua.com.cuteteam.cutetaxiproject.data.database.BaseDao
-import ua.com.cuteteam.cutetaxiproject.data.entities.Order
-import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
+import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
+
+const val ACCEPTED_ORDER_ID = "AcceptedOrderId"
 
 abstract class BaseService : Service() {
 
-    private val db = FirebaseDatabase.getInstance()
-    private val listeners = mutableListOf<ValueEventListener>()
-
-    private fun createOrderListener(block: (Order?) -> Unit): ValueEventListener {
-
-        val listener = object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
-                p0.toException().printStackTrace()
-            }
-
-            override fun onDataChange(p0: DataSnapshot) {
-                block.invoke(p0.getValue(Order::class.java))
-            }
-        }
-
-        listeners.add(listener)
-        return listener
+    protected val notificationUtils by lazy {
+        NotificationUtils(applicationContext)
+    }
+    protected val appSettingsHelper by lazy {
+        AppSettingsHelper(applicationContext)
     }
 
-    private val notificationUtils by lazy { NotificationUtils(applicationContext) }
+    protected val locationLiveData by lazy {
+        LocationLiveData()
+    }
 
-        protected fun subscribeToOrder(orderId: String, block: (Order?) -> Unit) {
-            db.getReference("orders").child(orderId).addValueEventListener(
-                createOrderListener {
-                    block.invoke(it)
-                }
-            )
+    private val dialerIntent =
+        PendingIntent.getActivity(
+            applicationContext,
+            0,
+            Intent(Intent.ACTION_DIAL).apply {
+                data = Uri.parse("tel:${appSettingsHelper.phone}")
+            },
+            0
+        ).run {
+            NotificationCompat.Action(
+                R.drawable.ct_call_phone,
+                applicationContext.getString(R.string.action_name_call),
+                this)
         }
 
-    protected fun sendNotification(event: Event) {
+/*    protected fun sendNotification(event: Event) {
 
         fun notify(title: String, text: String) =
             notificationUtils.sendNotification(title, text)
 
         when (event) {
-            is Event.NewOrder -> {
-
-                val from = event.order.addressStart?.address
-                val to = event.order.addressDestination?.address
-                val distance = event.order.distance
-                val price = event.order.price
-
-                notificationUtils
-                    .addAction(NotificationUtils.acceptOrderIntent(applicationContext))
-                    .addAction(NotificationUtils.declineOrderIntent(applicationContext))
-                    .sendNotification(
-                        "You have a new order!",
-                        "From: $from\n" +
-                                "To: $to\n" +
-                                "Distance: $distance\n" +
-                                "Price: $price"
-                    )
-            }
             is Event.AcceptOrder -> {
 
-                val time = "5 min"                          // Change later
+                val time = event.order.arrivingTime
                 val car = "тачка на прокачку"               // Change later
 
                 notificationUtils
-                    .setStartActivityIntent(MainActivity::class.java)    // Change later
+                    .setStartActivityIntent(PassengerActivity::class.java)
                     .sendNotification(
                         "Your order is accepted!",
                         "In $time expect $car"
                     )
 
             }
-            is Event.ChangedOrder -> {
 
-                val orderStatus = event.order.orderStatus
-                if (orderStatus == OrderStatus.CANCEL) {
-                    notify(
-                        "Order was changed!",
-                        "You order is canceled"
-                    )
-                }
-            }
             is Event.Near -> {
 
                 notify(
@@ -108,7 +78,7 @@ abstract class BaseService : Service() {
 
             }
         }
-    }
+    }*/
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
