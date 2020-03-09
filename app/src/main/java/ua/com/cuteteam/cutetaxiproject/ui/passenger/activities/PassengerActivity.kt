@@ -26,9 +26,9 @@ class PassengerActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_passenger)
 
-        bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet_container)
+//        bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet_container)
 
-        bottomSheetBehavior.addBottomSheetCallback(object :
+/*        bottomSheetBehavior.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
             var prevOffset = 0.0f
             var isCollapsedCalled = false
@@ -57,18 +57,18 @@ class PassengerActivity : AppCompatActivity(), OnMapReadyCallback {
                     BottomSheetBehavior.STATE_COLLAPSED -> showTaxiOrderCollapsed()
                 }
             }
-        })
+        })*/
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.map, SupportMapFragment())
 
-        if (map != null) {
+/*        if (map != null) {
             supportFragmentManager.beginTransaction().replace(R.id.map, mapFragment)
                 .commit()
             mapFragment.getMapAsync(this)
-        }
+        */}
 
-        if (bottom_sheet_container != null) {
+/*        if (bottom_sheet_container != null) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.bottom_sheet_container, makeOrderFragment)
                 .commit()
@@ -82,13 +82,13 @@ class PassengerActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             })
         }
-    }
+    }*/
 
     override fun onMapReady(gMap: GoogleMap) {
         gMap.uiSettings.isZoomControlsEnabled = true
     }
 
-    private fun showTaxiOrderCollapsed() {
+/*    private fun showTaxiOrderCollapsed() {
         makeOrderFragment.showCollapsed()
         bottomSheetBehavior.peekHeight = makeOrderFragment.bottomViewHeight ?: BottomSheetBehavior.PEEK_HEIGHT_AUTO
     }
@@ -101,5 +101,5 @@ class PassengerActivity : AppCompatActivity(), OnMapReadyCallback {
         supportFragmentManager.beginTransaction()
             .replace(R.id.bottom_sheet_container, orderStatusFragment)
             .commit()
-    }
+    }*/
 }

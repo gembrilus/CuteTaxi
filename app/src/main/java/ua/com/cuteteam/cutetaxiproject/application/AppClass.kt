@@ -19,8 +19,8 @@ class AppClass: Application() {
         }
     }
 
-/*    override fun onCreate() {
+    override fun onCreate() {
         super.onCreate()
         this.setTheme(R.style.AppTheme)
-    }*/
+    }
 }

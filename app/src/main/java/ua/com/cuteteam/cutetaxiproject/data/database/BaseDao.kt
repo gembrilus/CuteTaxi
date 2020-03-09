@@ -9,7 +9,6 @@ import ua.com.cuteteam.cutetaxiproject.data.User
 import ua.com.cuteteam.cutetaxiproject.data.entities.Driver
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
-import ua.com.cuteteam.cutetaxiproject.data.entities.Trip
 import ua.com.cuteteam.cutetaxiproject.extentions.exists
 import ua.com.cuteteam.cutetaxiproject.extentions.getValue
 
@@ -25,7 +24,7 @@ abstract class BaseDao(
     private val eventListeners = mutableMapOf<DatabaseReference, ValueEventListener>()
 
     @Suppress("UNCHECKED_CAST")
-    suspend fun <T: User> getUser(uid: String): T? {
+    suspend fun <T : User> getUser(uid: String): T? {
         val userData = usersRef.child(uid).getValue()
         return userData.getValue(Driver::class.java) as T?
     }
@@ -139,7 +138,38 @@ abstract class BaseDao(
         val childRef = usersRef.child(uid).child(field)
         if (!eventListeners.contains(childRef)) {
             childRef.addValueEventListener(listener)
-            eventListeners.put(childRef, listener)
+            eventListeners[childRef] = listener
+            Log.d("Realtime database", "Set to listen for $childRef")
+        } else {
+            Log.e("Database Error", "Listener $childRef is already set")
+        }
+    }
+
+    fun subscribeForChanges(
+        table: String,
+        entry: String,
+        listener: ValueEventListener
+    ) {
+        val childRef = rootRef.child(table).child(entry)
+        if (!eventListeners.contains(childRef)) {
+            childRef.addValueEventListener(listener)
+            eventListeners[childRef] = listener
+            Log.d("Realtime database", "Set to listen for $childRef")
+        } else {
+            Log.e("Database Error", "Listener $childRef is already set")
+        }
+    }
+
+    fun subscribeForChanges(
+        table: String,
+        entry: String,
+        field: String,
+        listener: ValueEventListener
+    ) {
+        val childRef = rootRef.child(table).child(entry).child(field)
+        if (!eventListeners.contains(childRef)) {
+            childRef.addValueEventListener(listener)
+            eventListeners[childRef] = listener
             Log.d("Realtime database", "Set to listen for $childRef")
         } else {
             Log.e("Database Error", "Listener $childRef is already set")
@@ -155,8 +185,8 @@ abstract class BaseDao(
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun observeOrders(onSuccess: (List<Order>) -> Unit){
-        rootRef.child(DbEntries.Orders.TABLE)
+    fun observeOrders(onSuccess: (List<Order>) -> Unit) {
+        val ref = rootRef.child(DbEntries.Orders.TABLE)
             .orderByChild(DbEntries.Orders.Fields.ORDER_STATUS)
             .equalTo(OrderStatus.NEW.name, DbEntries.Orders.Fields.ORDER_STATUS)
             .orderByChild(DbEntries.Orders.Fields.START_ADDRESS)
@@ -165,15 +195,18 @@ abstract class BaseDao(
             .child(DbEntries.Address.LOCATION)
             .startAt(DbEntries.Address.LOCATION)
             .endAt(DbEntries.Address.LOCATION)
-            .addValueEventListener(object : ValueEventListener{
-                override fun onCancelled(p0: DatabaseError) {
-                    Log.e("CuteDAO", p0.message)
-                }
-                override fun onDataChange(p0: DataSnapshot) {
-                    val result = p0.getValue(List::class.java) as List<Order>
-                    onSuccess.invoke(result)
-                }
-            })
+        ref.addValueEventListener(object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("CuteDAO", error.message)
+                ref.removeEventListener(this)
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val result = snapshot.getValue(List::class.java) as List<Order>
+                onSuccess.invoke(result)
+                ref.removeEventListener(this)
+            }
+        })
     }
 
     /** Removes all active listeners
