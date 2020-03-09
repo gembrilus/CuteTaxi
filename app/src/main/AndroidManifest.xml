@@ -47,6 +47,7 @@
 
         <service android:name=".services.DriverService"
             android:exported="false"/>
+        <service android:name=".services.PassengerService" />
 
     </application>
 
