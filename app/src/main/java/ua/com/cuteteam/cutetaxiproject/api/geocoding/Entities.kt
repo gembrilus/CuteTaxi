@@ -31,5 +31,5 @@ data class Results(
 )
 
 data class Geometry(
-    val location: Location
+    val location: LatLng
 )

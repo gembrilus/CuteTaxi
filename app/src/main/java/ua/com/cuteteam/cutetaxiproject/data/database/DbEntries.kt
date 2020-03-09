@@ -27,6 +27,7 @@ object DbEntries{
             const val RATE = "rate"
             const val CAR = "car"
             const val DRIVER_STATUS = "status"
+            const val LOCATION = "location"
             const val ORDER_ID = "orderId"
             const val MESSAGE = "message"
         }

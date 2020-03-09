@@ -1,5 +1,6 @@
 package ua.com.cuteteam.cutetaxiproject.extentions
 
+import android.location.Location
 import com.google.android.gms.maps.model.LatLng
 import kotlin.math.asin
 import kotlin.math.cos
@@ -49,3 +50,7 @@ infix fun LatLng.distanceTo(latLng: LatLng): Double {
         )
     )
 }
+
+fun LatLng.arrivalTimeTo(to: LatLng, speed: Float = 1000f) = (this distanceTo to)/speed
+
+val Location.toLatLng: LatLng get() = LatLng(latitude, longitude)
