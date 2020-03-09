@@ -7,8 +7,10 @@ import com.google.android.gms.maps.SupportMapFragment
 abstract class MapFragment : SupportMapFragment(),
     OnMapReadyCallback {
 
-    override fun onMapReady(p0: GoogleMap?) {
-
+    override fun onMapReady(map: GoogleMap?) {
+        getMapAsync(this)
     }
+
+
 
 }
