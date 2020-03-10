@@ -10,7 +10,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
-import ua.com.cuteteam.cutetaxiproject.extentions.getOrAwaitValue
+import ua.com.cuteteam.cutetaxiproject.getOrAwaitValue
 import java.util.concurrent.TimeoutException
 
 @RunWith(AndroidJUnit4::class)
