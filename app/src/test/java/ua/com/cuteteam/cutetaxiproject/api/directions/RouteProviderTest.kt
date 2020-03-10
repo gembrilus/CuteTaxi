@@ -1,20 +1,32 @@
-
 package ua.com.cuteteam.cutetaxiproject.api.directions
-/*
+
 import com.google.android.gms.maps.model.LatLng
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.junit.MockitoJUnitRunner
 import ua.com.cuteteam.cutetaxiproject.api.RouteProvider
+import ua.com.cuteteam.cutetaxiproject.api.roads.RoadNode
+import ua.com.cuteteam.cutetaxiproject.api.roads.Roads
+import ua.com.cuteteam.cutetaxiproject.api.roads.RoadsRequest
 
+
+@ExperimentalCoroutinesApi
+@RunWith(MockitoJUnitRunner::class)
 class RouteProviderTest {
 
-
-    private var routeProvider: RouteProvider? = null
+    private var routeBuilder: RouteProvider.Builder? = null
     private var route: Route? = null
-
+    private var directionRequest: DirectionRequest? = null
+    private var roadsRequest: RoadsRequest? = null
 
     @Before
     fun init() {
@@ -34,15 +46,9 @@ class RouteProviderTest {
                                 text = "1 km"
                             ),
                             steps = listOf(
-                                StepInfo(
-                                    startLocation = Location(
-                                        latitude = 12.0,
-                                        longitude = 12.0
-                                    ),
-                                    endLocation = Location(
-                                        latitude = 15.0,
-                                        longitude = 14.0
-                                    ),
+                                Step(
+                                    startLocation = LatLng(12.0, 12.0),
+                                    endLocation = LatLng(15.0, 14.0),
                                     duration = Duration(
                                         value = 60.0,
                                         text = "1 min"
@@ -56,6 +62,9 @@ class RouteProviderTest {
                                 )
                             )
                         )
+                    ),
+                    polyline = Polyline(
+                        points = ""
                     )
                 ),
 
@@ -72,15 +81,9 @@ class RouteProviderTest {
                                 text = "1 km"
                             ),
                             steps = listOf(
-                                StepInfo(
-                                    startLocation = Location(
-                                        latitude = 12.0,
-                                        longitude = 12.0
-                                    ),
-                                    endLocation = Location(
-                                        latitude = 15.0,
-                                        longitude = 14.0
-                                    ),
+                                Step(
+                                    startLocation = LatLng(12.0, 12.0),
+                                    endLocation = LatLng(15.0, 14.0),
                                     duration = Duration(
                                         value = 58.0,
                                         text = "1 min"
@@ -94,6 +97,9 @@ class RouteProviderTest {
                                 )
                             )
                         )
+                    ),
+                    polyline = Polyline(
+                        points = ""
                     )
                 ),
 
@@ -110,15 +116,9 @@ class RouteProviderTest {
                                 text = "1 km"
                             ),
                             steps = listOf(
-                                StepInfo(
-                                    startLocation = Location(
-                                        latitude = 12.0,
-                                        longitude = 12.0
-                                    ),
-                                    endLocation = Location(
-                                        latitude = 15.0,
-                                        longitude = 14.0
-                                    ),
+                                Step(
+                                    startLocation = LatLng(12.0, 12.0),
+                                    endLocation = LatLng(15.0, 14.0),
                                     duration = Duration(
                                         value = 60.0,
                                         text = "1 min"
@@ -132,28 +132,47 @@ class RouteProviderTest {
                                 )
                             )
                         )
+                    ),
+                    polyline = Polyline(
+                        points = ""
                     )
                 )
             )
         )
-        routeProvider = route?.let {
-            RouteProvider(
-                it
+
+        directionRequest = mock {
+            on { runBlocking { requestDirection(any()) } } doReturn route!!
+        }
+
+        roadsRequest = mock {
+            on {
+                runBlocking {
+                    getRoads(any())
+                }
+            } doReturn Roads(
+                snappedPoints = listOf(
+                    RoadNode(any(), any())
+                )
             )
+        }
+
+        routeBuilder = route?.let {
+            RouteProvider.Builder()
         }
     }
 
     @After
     fun close() {
         route = null
-        routeProvider = null
+        directionRequest = null
+        routeBuilder = null
     }
 
-    @Test
+  /*  @Test
     fun findTheFastest() {
 
         val actual = listOf(
-            routeProvider!!.RouteSummary(
+            routeBuilder?.build()?.RouteSummary(
                 distance = 1000.0,
                 time = 58.0,
                 polyline = arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
@@ -161,7 +180,7 @@ class RouteProviderTest {
                 instructions = arrayListOf("bla bla car")
             )
         )
-        val result =  routeProvider!!.findTheFastest().build()
+        val result = routeBuilder!!.findTheFastest().build()
 
         assertThat(actual, Matchers.equalTo(result))
     }
@@ -170,7 +189,7 @@ class RouteProviderTest {
     fun findTheShortest() {
 
         val actual = listOf(
-            RouteProvider.RouteSummary(
+            routeBuilder?.build()?.RouteSummary(
                 distance = 999.0,
                 time = 60.0,
                 polyline = arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
@@ -178,7 +197,7 @@ class RouteProviderTest {
                 instructions = arrayListOf("bla bla car")
             )
         )
-        val result =  routeProvider!!.findTheShortest().build()
+        val result = routeBuilder?.findTheShortest()?.build()
 
         assertThat(actual, Matchers.equalTo(result))
 
@@ -187,14 +206,14 @@ class RouteProviderTest {
     @Test
     fun findTheFastestAndTheShortestWays() {
         val actual = listOf(
-            RouteProvider.RouteSummary(
+            routeBuilder?.build()?.RouteSummary(
                 distance = 1000.0,
                 time = 58.0,
                 polyline = arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
                 maneuvers = arrayListOf(Maneuver.STRAIGHT),
                 instructions = arrayListOf("bla bla car")
             ),
-            RouteProvider.RouteSummary(
+            routeBuilder?.build()?.RouteSummary(
                 distance = 999.0,
                 time = 60.0,
                 polyline = arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
@@ -202,10 +221,10 @@ class RouteProviderTest {
                 instructions = arrayListOf("bla bla car")
             )
         )
-        val result =  routeProvider!!
-            .findTheShortest()
-            .findTheFastest()
-            .build()
+        val result = routeBuilder
+            ?.findTheShortest()
+            ?.findTheFastest()
+            ?.build()
 
         assertThat(actual, Matchers.equalTo(result))
     }
@@ -214,21 +233,21 @@ class RouteProviderTest {
     fun build() {
 
         val actual = listOf(
-            RouteProvider.RouteSummary(
+            routeBuilder?.build()?.RouteSummary(
                 distance = 999.0,
                 time = 60.0,
                 polyline = arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
                 maneuvers = arrayListOf(Maneuver.STRAIGHT),
                 instructions = arrayListOf("bla bla car")
             ),
-            RouteProvider.RouteSummary(
+            routeBuilder?.build()?.RouteSummary(
                 distance = 1000.0,
                 time = 58.0,
                 polyline = arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
                 maneuvers = arrayListOf(Maneuver.STRAIGHT),
                 instructions = arrayListOf("bla bla car")
             ),
-            RouteProvider.RouteSummary(
+            routeBuilder?.build()?.RouteSummary(
                 distance = 1001.0,
                 time = 60.0,
                 polyline = arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
@@ -236,7 +255,7 @@ class RouteProviderTest {
                 instructions = arrayListOf("bla bla car")
             )
         )
-        val result =  routeProvider!!.build()
+        val result = routeBuilder!!.build()
 
         assertThat(actual, Matchers.equalTo(result))
     }
@@ -245,16 +264,24 @@ class RouteProviderTest {
     fun testThatBuildAllPolylines() {
 
         val actual: List<Array<LatLng>> = arrayListOf(
-                arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
-                arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
-                arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0))
+            arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
+            arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
+            arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0))
         )
-        val result =  routeProvider!!.buildPolylines()
+        val result = mutableListOf(
+            *routeBuilder?.build()?.getManeuverPoints(route!!.routes[0])?.toTypedArray()!!,
+            *routeBuilder?.build()?.getManeuverPoints(route!!.routes[1])?.toTypedArray()!!,
+            *routeBuilder?.build()?.getManeuverPoints(route!!.routes[2])?.toTypedArray()!!
+        )
 
-        val transformActual = actual.flatMap { latlng -> latlng.toList() }.map { "${it.latitude}, ${it.longitude}" }
-        val transformResult = result.flatMap { latlng -> latlng.toList() }.map { "${it.latitude}, ${it.longitude}" }
+        val transformActual = actual
+            .flatMap { latlng -> latlng.toList() }
+            .map { "${it.latitude}, ${it.longitude}" }
+
+        val transformResult =
+            result.map { "${it.latitude}, ${it.longitude}" }
 
         assertThat(transformActual, Matchers.equalTo(transformResult))
     }
-
-}*/
+*/
+}
