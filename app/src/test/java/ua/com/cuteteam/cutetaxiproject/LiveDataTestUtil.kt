@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.extentions
+package ua.com.cuteteam.cutetaxiproject
 
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
