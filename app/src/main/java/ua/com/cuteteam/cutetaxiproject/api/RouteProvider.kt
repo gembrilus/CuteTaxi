@@ -17,8 +17,8 @@ import kotlin.math.min
  *
  */
 class RouteProvider private constructor(
-    private val directionRequest: DirectionRequest = DirectionRequest(),
-    private val roadsRequest: RoadsRequest = RoadsRequest()
+    private val directionRequest: DirectionRequest,
+    private val roadsRequest: RoadsRequest
 ) {
 
     private lateinit var map: Map<String, String>
@@ -154,7 +154,10 @@ class RouteProvider private constructor(
             .sumByDouble { it }
 
 
-    class Builder {
+    class Builder(
+        private val directionRequest: DirectionRequest = DirectionRequest(),
+        private val roadsRequest: RoadsRequest = RoadsRequest()
+    ) {
         private lateinit var origin: String
         private lateinit var destination: String
         private var wayPoints: MutableList<String> = mutableListOf()
@@ -286,7 +289,7 @@ class RouteProvider private constructor(
                 map[RequestParameters.REGION] = region
             }
 
-            return RouteProvider().apply {
+            return RouteProvider(directionRequest, roadsRequest).apply {
                 this.map = map
                 this.fastest = this@Builder.fastest
                 this.shortest = this@Builder.shortest
