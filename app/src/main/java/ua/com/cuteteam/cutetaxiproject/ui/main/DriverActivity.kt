@@ -15,5 +15,15 @@ class DriverActivity : BaseActivity() {
 
     override val menuResId: Int get() = R.menu.nav_menu_settings_driver
     override val layoutResId: Int get() = R.layout.activity_driver
+    override fun onHasActiveOrder(orderId: String?) {
 
+    }
+
+    override fun onNetworkAvailable() {
+
+    }
+
+    override fun onNetworkLost() {
+
+    }
 }

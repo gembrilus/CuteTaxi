@@ -18,6 +18,7 @@ open class BaseViewModel(private val repository: PassengerRepository) : ViewMode
 
     val netStatus: LiveData<NetStatus> = repository.netHelper.netStatus
 
+    val activeOrderId: LiveData<String?> = MutableLiveData(repository.spHelper.activeOrderId)
 
     /**
      * Return location as Address class with coordinates and an address name
