@@ -18,6 +18,10 @@ class PassengerService : BaseService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
 
+        // Listen for order accept
+        // OR
+        // Listen for arriving of the driver when is have an active order
+
         return START_STICKY
     }
 

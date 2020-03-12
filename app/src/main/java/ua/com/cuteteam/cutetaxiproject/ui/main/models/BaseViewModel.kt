@@ -18,6 +18,10 @@ open class BaseViewModel(private val repository: PassengerRepository) : ViewMode
 
     val netStatus: LiveData<NetStatus> = repository.netHelper.netStatus
 
+
+    /**
+     * Return location as Address class with coordinates and an address name
+     */
     fun getSingleLocation() = liveData {
         val loc = repository.locationProvider.getLocation()
         if (loc != null) {
@@ -30,6 +34,9 @@ open class BaseViewModel(private val repository: PassengerRepository) : ViewMode
         }
     }
 
+    /**
+     * Return address name by LatLng argument or string of "latitude,longitude"
+     */
     fun geocodeLocation(param: Any) = liveData {
         val address = when (param) {
             is String -> {
@@ -47,6 +54,10 @@ open class BaseViewModel(private val repository: PassengerRepository) : ViewMode
         emit(address)
     }
 
+    /**
+     * Build route by origin and destination addresses. It can be a name or string of "latitude,longitude"
+     * Return only the one smallest route
+     */
     fun buildRoute(orig: String, dest: String, wayPoints: List<LatLng>? = null) = liveData {
         val points = repository.routeBuilder.apply {
                 addDestination(orig)
