@@ -9,18 +9,11 @@ import kotlin.coroutines.CoroutineContext
 
 private const val ORDER_ID_NAME = "DriverService_orderId"
 
-class PassengerService : BaseService(), CoroutineScope {
+class PassengerService : BaseService() {
 
     private val dao by lazy {
         PassengerDao()
     }
-
-    private val handler
-        get() = CoroutineExceptionHandler { coroutineContext, throwable ->
-            throwable.printStackTrace()
-        }
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Default + handler
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
