@@ -67,6 +67,8 @@ abstract class BaseActivity :
             .get(BaseViewModel::class.java)
     }
 
+    private val appSettingsHelper by lazy { AppSettingsHelper(this) }
+
     private val onNavigationListener = NavigationView.OnNavigationItemSelectedListener { item ->
         item.isChecked = true
         when(item.itemId){
@@ -85,6 +87,7 @@ abstract class BaseActivity :
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        initTheme()
         super.onCreate(savedInstanceState)
         setContentView(layoutResId)
         createNotificationChannel()
@@ -131,12 +134,6 @@ abstract class BaseActivity :
                 header.tv_nav_header_phone.text = phone
             }
             getString(R.string.key_app_theme_preference) -> {
-                val theme = sharedPreferences?.getString(key, null)
-                if (theme == getString(R.string.value_item_light_theme)){
-                    setTheme(R.style.AppTheme_NoActionBar)
-                } else {
-                    setTheme(R.style.AppTheme_NoActionBar_Dark)
-                }
                 recreate()
             }
         }
@@ -161,7 +158,7 @@ abstract class BaseActivity :
         val headerPhone = header.findViewById<MaterialTextView>(R.id.tv_nav_header_phone)
         val roleChooser = header.findViewById<SwitchMaterial>(R.id.role_chooser)
 
-        with(AppSettingsHelper(this)) {
+        with(appSettingsHelper) {
             headerName.text = name
             headerPhone.text = phone
         }
@@ -190,7 +187,7 @@ abstract class BaseActivity :
             when(it){
                 NetStatus.AVAILABLE -> onNetworkAvailable()
                 NetStatus.LOST, NetStatus.UNAVAILABLE -> onNetworkLost()
-                else -> throw IllegalArgumentException("No such internet status! It is NULL")
+                else -> {}
             }
         })
 
@@ -203,6 +200,13 @@ abstract class BaseActivity :
     private fun onRoleChanged() {
         startActivity(Intent(this, AuthActivity::class.java))
         finish()
+    }
+
+    private fun initTheme() {
+        when (appSettingsHelper.appTheme) {
+            getString(R.string.value_item_light_theme) -> setTheme(R.style.AppTheme_NoActionBar)
+            getString(R.string.value_item_dark_theme) -> setTheme(R.style.AppTheme_NoActionBar_Dark)
+        }
     }
 
 }

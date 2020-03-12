@@ -35,13 +35,13 @@
 
     </string-array>
 
-    <integer-array name="car_class_entries_values">
+    <string-array name="car_class_entries_values">
 
         <item>@string/standart_class</item>
         <item>@string/comfort_class</item>
         <item>@string/eco_class</item>
 
-    </integer-array>
+    </string-array>
 
     /****************** END  ******************/
 
