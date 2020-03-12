@@ -5,6 +5,7 @@ import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
 import ua.com.cuteteam.cutetaxiproject.data.database.DriverDao
 import ua.com.cuteteam.cutetaxiproject.shPref.FirebaseSettingsDataStore
+import ua.com.cuteteam.cutetaxiproject.ui.settings.sum_providers.ComfortLevelSumProvider
 
 private const val TAG = "CuteTaxi.AddInfoFrag"
 
@@ -29,7 +30,10 @@ class DriverInfoFragment : BaseSettingsFragment() {
             ?.preferenceDataStore = appSettingsToFirebaseStore
         findPreference<Preference>(DbEntries.Car.COLOR)
             ?.preferenceDataStore = appSettingsToFirebaseStore
-        findPreference<Preference>(DbEntries.Car.COMFORT_LEVEL)
-            ?.preferenceDataStore = appSettingsToFirebaseStore
+        findPreference<Preference>(DbEntries.Car.COMFORT_LEVEL)?.apply {
+            preferenceDataStore = appSettingsToFirebaseStore
+            summaryProvider =
+                ComfortLevelSumProvider()
+        }
     }
 }

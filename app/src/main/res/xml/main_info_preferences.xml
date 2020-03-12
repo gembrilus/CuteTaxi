@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="Personal info">
+
     <EditTextPreference
         app:dialogTitle="@string/dialog_title_name_preference"
         app:key="@string/key_user_name_preference"
@@ -16,5 +20,7 @@
         app:allowDividerAbove="true"
         app:persistent="true"
         app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
 
 </PreferenceScreen>
