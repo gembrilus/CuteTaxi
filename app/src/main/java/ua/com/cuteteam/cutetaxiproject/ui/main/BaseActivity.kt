@@ -1,9 +1,12 @@
 package ua.com.cuteteam.cutetaxiproject.ui.main
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -13,9 +16,12 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.onNavDestinationSelected
+import androidx.preference.PreferenceManager
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
+import kotlinx.android.synthetic.main.fragment_phone_number.*
+import kotlinx.android.synthetic.main.navigation_header.view.*
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.activities.AuthActivity
 import ua.com.cuteteam.cutetaxiproject.common.network.NetStatus
@@ -27,7 +33,10 @@ import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 import ua.com.cuteteam.cutetaxiproject.ui.main.models.BaseViewModel
 
-abstract class BaseActivity : AppCompatActivity() {
+abstract class BaseActivity :
+    AppCompatActivity(),
+    SharedPreferences.OnSharedPreferenceChangeListener
+{
 
     protected abstract val menuResId: Int
     protected abstract val layoutResId: Int
@@ -84,6 +93,20 @@ abstract class BaseActivity : AppCompatActivity() {
         setObservers()
     }
 
+    override fun onResume() {
+        super.onResume()
+        PreferenceManager
+            .getDefaultSharedPreferences(this)
+            .registerOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        PreferenceManager
+            .getDefaultSharedPreferences(this)
+            .unregisterOnSharedPreferenceChangeListener(this)
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -95,6 +118,29 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onSupportNavigateUp(): Boolean =
         navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        when(key){
+            getString(R.string.key_user_name_preference) -> {
+                val name = sharedPreferences?.getString(key, null)
+                header.tv_nav_header_name.text = name
+            }
+            getString(R.string.key_user_phone_number_preference) -> {
+                val phone = sharedPreferences?.getString(key, null)
+                header.tv_nav_header_phone.text = phone
+            }
+            getString(R.string.key_app_theme_preference) -> {
+                val theme = sharedPreferences?.getString(key, null)
+                if (theme == getString(R.string.value_item_light_theme)){
+                    setTheme(R.style.AppTheme_NoActionBar)
+                } else {
+                    setTheme(R.style.AppTheme_NoActionBar_Dark)
+                }
+                recreate()
+            }
+        }
+    }
 
     private fun initNavigation() {
 
