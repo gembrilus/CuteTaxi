@@ -8,24 +8,22 @@ import androidx.lifecycle.Observer
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
 import ua.com.cuteteam.cutetaxiproject.data.database.DriverDao
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
+import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
+import ua.com.cuteteam.cutetaxiproject.extentions.distanceTo
 import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
 import ua.com.cuteteam.cutetaxiproject.ui.main.DriverActivity
-import kotlin.coroutines.CoroutineContext
 
 private const val ORDER_ID_NAME = "DriverService_orderId"
 
 class DriverService : BaseService(), CoroutineScope {
 
     private val orders = mutableListOf<Order>()
-    private val removed = mutableListOf<Order>()
     private var orderId: String? = null
     private val fbDao by lazy {
         DriverDao()
@@ -37,31 +35,28 @@ class DriverService : BaseService(), CoroutineScope {
         }
     }
 
-    private val orderListener = object : ValueEventListener {
-        override fun onCancelled(p0: DatabaseError) {
-            p0.toException().printStackTrace()
-        }
+    private val orderListener by lazy {
+        object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+                p0.toException().printStackTrace()
+            }
 
-        override fun onDataChange(snapshot: DataSnapshot) {
-            val order = snapshot.getValue(Order::class.java) ?: return
-            notifyOrderCancelled(order)
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val order = snapshot.getValue(Order::class.java) ?: return
+                if (order.orderStatus == OrderStatus.CANCELLED) {
+                    notifyOrderCancelled(order)
+                }
+            }
         }
-
     }
-
-    private val handler
-        get() = CoroutineExceptionHandler { coroutineContext, throwable ->
-            throwable.printStackTrace()
-        }
-
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Default + handler
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-        orderId = intent?.getStringExtra(ORDER_ID_NAME)
-
         launch {
+
+            orderId = intent?.getStringExtra(ORDER_ID_NAME) ?: appSettingsHelper.activeOrderId
+
+            val location = locationProvider.getLocation()?.toLatLng
 
             if (orderId != null) {
 //                dao.subscribeForChanges(DbEntries.Orders.TABLE, orderId, orderListener)
@@ -71,15 +66,20 @@ class DriverService : BaseService(), CoroutineScope {
             fbDao.observeOrders { list ->
                 if (orderId == null && list.isNotEmpty()) {
                     val filteredList =
-                        list.filter { !orders.contains(it) && !removed.contains(it) }
+                        list
+                            .filter {
+                                val startLocation = it.addressStart?.location
+                                if (location != null && startLocation != null) {
+                                    (location distanceTo startLocation) < 5000.0
+                                } else false
+                            }
+                            .filter { !orders.contains(it) }
+                    orders.clear()
                     orders.addAll(filteredList)
-                    orders.forEach {
-                        notifyForNewOrder(it)
-                    }
+                    orders.forEach(this@DriverService::notifyForNewOrder)
                 }
             }
         }
-
 
         return START_STICKY
     }
@@ -135,6 +135,7 @@ class DriverService : BaseService(), CoroutineScope {
         )
         orders.remove(order)
         orderId = null
+        appSettingsHelper.activeOrderId = null
     }
 
 }
