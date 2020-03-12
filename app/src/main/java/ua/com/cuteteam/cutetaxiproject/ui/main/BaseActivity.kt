@@ -33,7 +33,10 @@ import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 import ua.com.cuteteam.cutetaxiproject.ui.main.models.BaseViewModel
 
-abstract class BaseActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
+abstract class BaseActivity :
+    AppCompatActivity(),
+    SharedPreferences.OnSharedPreferenceChangeListener
+{
 
     protected abstract val menuResId: Int
     protected abstract val layoutResId: Int
@@ -195,12 +198,6 @@ abstract class BaseActivity : AppCompatActivity(), SharedPreferences.OnSharedPre
             onHasActiveOrder(it)
         })
 
-    }
-
-    override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)){
-            drawerLayout.closeDrawers()
-        } else super.onBackPressed()
     }
 
     private fun onRoleChanged() {
