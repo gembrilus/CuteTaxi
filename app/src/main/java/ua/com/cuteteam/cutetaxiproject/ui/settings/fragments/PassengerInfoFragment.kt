@@ -4,6 +4,8 @@ import androidx.preference.Preference
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
 import ua.com.cuteteam.cutetaxiproject.data.database.PassengerDao
+import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreference
+import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreferenceDialogFragmentCompat
 import ua.com.cuteteam.cutetaxiproject.shPref.FirebaseSettingsDataStore
 import ua.com.cuteteam.cutetaxiproject.ui.settings.sum_providers.ComfortLevelSumProvider
 
@@ -24,10 +26,23 @@ class PassengerInfoFragment : BaseSettingsFragment() {
     override fun setNewDataStore() {
         findPreference<Preference>(DbEntries.Passengers.Fields.COMFORT_LEVEL)?.apply {
             preferenceDataStore = appSettingsToFirebaseStore
-            summaryProvider =
-                ComfortLevelSumProvider()
+            summaryProvider = ComfortLevelSumProvider()
         }
-        /*findPreference<Preference>(DbEntries.Passengers.Fields.FAVORITE_ADDRESSES)
-            ?.preferenceDataStore = appSettingsToFirebaseStore*/
+        findPreference<Preference>(getString(R.string.key_black_list_preference))
+            ?.preferenceDataStore = appSettingsToFirebaseStore
+    }
+
+    override fun onDisplayPreferenceDialog(preference: Preference?) {
+        when(preference){
+            is ListBoxPreference -> {
+                ListBoxPreferenceDialogFragmentCompat.newInstance(preference.key).apply {
+                    setTargetFragment(this@PassengerInfoFragment, 0)
+                    targetFragment?.parentFragmentManager?.let {
+                        show(it, "ua.com.cuteteam.cutetaxiproject.ListBoxPreference")
+                    }
+                }
+            }
+            else -> super.onDisplayPreferenceDialog(preference)
+        }
     }
 }

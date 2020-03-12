@@ -113,15 +113,15 @@ class AppSettingsHelper (
         }*/
 
 
-/*    *//**
+    /**
      * Property of the user's favorite addresses
-     *//*
+     */
     var favoriteAddresses: Set<String>?
-        get() = shPref.getStringSet(DbEntries.Passengers.Fields., null)
+        get() = shPref.getStringSet(context.getString(R.string.key_black_list_preference), null)
         set(value) = with(shPref.edit()) {
-            putStringSet(spKeys.FAVORITE_ADDRESSES_KEY, value)
+            putStringSet(context.getString(R.string.key_black_list_preference), value)
             apply()
-        }*/
+        }
 
 
     /**
