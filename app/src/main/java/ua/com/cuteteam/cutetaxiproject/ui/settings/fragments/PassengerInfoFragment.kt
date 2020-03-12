@@ -5,6 +5,7 @@ import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
 import ua.com.cuteteam.cutetaxiproject.data.database.PassengerDao
 import ua.com.cuteteam.cutetaxiproject.shPref.FirebaseSettingsDataStore
+import ua.com.cuteteam.cutetaxiproject.ui.settings.sum_providers.ComfortLevelSumProvider
 
 private const val TAG = "CuteTaxi.PassInfoFrag"
 
@@ -21,9 +22,12 @@ class PassengerInfoFragment : BaseSettingsFragment() {
     }
 
     override fun setNewDataStore() {
-        findPreference<Preference>(DbEntries.Passengers.Fields.COMFORT_LEVEL)
-            ?.preferenceDataStore = appSettingsToFirebaseStore
-        findPreference<Preference>(DbEntries.Passengers.Fields.FAVORITE_ADDRESSES)
-            ?.preferenceDataStore = appSettingsToFirebaseStore
+        findPreference<Preference>(DbEntries.Passengers.Fields.COMFORT_LEVEL)?.apply {
+            preferenceDataStore = appSettingsToFirebaseStore
+            summaryProvider =
+                ComfortLevelSumProvider()
+        }
+        /*findPreference<Preference>(DbEntries.Passengers.Fields.FAVORITE_ADDRESSES)
+            ?.preferenceDataStore = appSettingsToFirebaseStore*/
     }
 }

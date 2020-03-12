@@ -146,6 +146,7 @@
     <string name="value_item_light_theme" translatable="false">light</string>
     <string name="value_item_dark_theme" translatable="false">dark</string>
     <string name="default_name_item_theme" translatable="false">@string/value_item_light_theme</string>
+    <string name="not_set">not set</string>
 
     /*******************************************************************************************/
 
