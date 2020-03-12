@@ -42,10 +42,7 @@ class DriverService : BaseService(), CoroutineScope {
             }
 
             override fun onDataChange(snapshot: DataSnapshot) {
-                val order = snapshot.getValue(Order::class.java) ?: return
-                if (order.orderStatus == OrderStatus.CANCELLED) {
-                    notifyOrderCancelled(order)
-                }
+                snapshot.getValue(Order::class.java)?.let { onOrderCancel(it) }
             }
         }
     }
@@ -53,13 +50,11 @@ class DriverService : BaseService(), CoroutineScope {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
         launch {
-
             orderId = intent?.getStringExtra(ORDER_ID_NAME) ?: appSettingsHelper.activeOrderId
-
             val location = locationProvider.getLocation()?.toLatLng
 
             if (orderId != null) {
-//                dao.subscribeForChanges(DbEntries.Orders.TABLE, orderId, orderListener)
+//                dao.subscribeForChanges(DbEntries.Orders.TABLE, orderId, orderListener)               //Uncomment when a method FbDao appears
                 locationLiveData.observeForever(locationObserver)
             }
 
@@ -89,9 +84,18 @@ class DriverService : BaseService(), CoroutineScope {
         locationLiveData.removeObserver(locationObserver)
     }
 
+    private fun onOrderCancel(order: Order) {
+        if (order.orderStatus == OrderStatus.CANCELLED) {
+            notifyOrderCancelled(order)
+        }
+    }
+
     private fun postCoordinates(location: Location) {
         val path = "${DbEntries.Orders.TABLE}/${DbEntries.Orders.Fields.DRIVER_LOCATION}"
-        fbDao.writeField(DbEntries.Orders.TABLE, location.toLatLng)                             //Change later
+        fbDao.writeField(
+            DbEntries.Orders.TABLE,
+            location.toLatLng
+        )                             //Change later with correct method FbDao
     }
 
     private fun getAcceptOrderIntent(order: Order): NotificationCompat.Action {
@@ -128,7 +132,7 @@ class DriverService : BaseService(), CoroutineScope {
             )
     }
 
-    private fun notifyOrderCancelled(order: Order){
+    private fun notifyOrderCancelled(order: Order) {
         notificationUtils.sendNotification(
             title = "ORDER IS CANCELLED!",
             text = "Sorry, but current order was cancelled by client"
