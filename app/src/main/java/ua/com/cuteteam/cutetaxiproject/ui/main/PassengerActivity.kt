@@ -15,5 +15,15 @@ class PassengerActivity : BaseActivity() {
 
     override val menuResId: Int get() = R.menu.nav_menu_settings_pass
     override val layoutResId: Int get() = R.layout.activity_passenger
+    override fun onHasActiveOrder(orderId: String?) {
 
+    }
+
+    override fun onNetworkAvailable() {
+
+    }
+
+    override fun onNetworkLost() {
+
+    }
 }
