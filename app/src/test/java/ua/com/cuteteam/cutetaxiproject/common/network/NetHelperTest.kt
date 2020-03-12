@@ -16,6 +16,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 
+@Suppress("DEPRECATION")
 @RunWith(MockitoJUnitRunner.Silent::class)
 class NetHelperTest {
 
