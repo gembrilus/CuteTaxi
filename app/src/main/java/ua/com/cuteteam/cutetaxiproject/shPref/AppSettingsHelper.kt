@@ -44,13 +44,14 @@ class AppSettingsHelper (
         }
     }
 
-    /**
-     * Property that shows is there an active order or not
-     */
-    var hasActiveOrder: Boolean
-        get() = shPref.getBoolean(context.getString(R.string.key_has_active_order), false)
-        set(value) = put(context.getString(R.string.key_has_active_order), value)
 
+    /**
+     * Property that stores an active order ID
+     */
+    var activeOrderId: String?
+        get() = shPref.getString(context.getString(R.string.key_active_order_id), null)
+        set(value) = put(context.getString(R.string.key_active_order_id), value)
+    
 
     /**
      * Property that shows is a first start of the app

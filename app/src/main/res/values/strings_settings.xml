@@ -2,7 +2,8 @@
 <resources>
     <string name="title_activity_settings">Settings</string>
 
-    <string name="key_is_first_start_app">isFirstStart</string>
+    <string name="key_is_first_start_app" translatable="false">isFirstStart</string>
+    <string name="key_active_order_id" translatable="false">active_order_id</string>
 
     /******************************* Header settings fragment ******************************/
 
@@ -142,11 +143,9 @@
     <string name="title_app_theme_preference">App theme</string>
     <string name="name_item_light_theme">Light</string>
     <string name="name_item_dark_theme">Dark</string>
-    <string name="value_item_light_theme">light</string>
-    <string name="value_item_dark_theme">dark</string>
+    <string name="value_item_light_theme" translatable="false">light</string>
+    <string name="value_item_dark_theme" translatable="false">dark</string>
     <string name="default_name_item_theme" translatable="false">@string/value_item_light_theme</string>
-    <string name="key_has_active_order">hasActiveOrder</string>
-
 
     /*******************************************************************************************/
 

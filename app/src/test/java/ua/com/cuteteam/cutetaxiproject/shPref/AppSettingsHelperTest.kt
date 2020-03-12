@@ -214,59 +214,59 @@ class AppSettingsHelperTest {
     }
 
     @Test
-    fun check_that_is_read_property_has_active_order(){
+    fun check_that_is_read_property__active_order_id(){
 
         //setup
-        val key = "hasActiveOrder"
-        val expected = true
+        val key = "active_order_id"
+        val expected = "1111"
 
-        doReturn(key).whenever(context).getString(R.string.key_has_active_order)
-        doReturn(expected).whenever(sharedPreferences).getBoolean(key, false)
+        doReturn(key).whenever(context).getString(R.string.key_active_order_id)
+        doReturn(expected).whenever(sharedPreferences).getString(key, null)
 
         //Assertion
-        assertEquals(expected, appSettingsHelper.hasActiveOrder)
+        assertEquals(expected, appSettingsHelper.activeOrderId)
 
         //Verify
-        verify(context).getString(R.string.key_has_active_order)
-        verify(sharedPreferences).getBoolean(key, false)
+        verify(context).getString(R.string.key_active_order_id)
+        verify(sharedPreferences).getString(key, null)
         verifyNoMoreInteractions(sharedPreferences, context)
     }
 
     @Test
-    fun check_that_is_written_property_has_active_order() {
+    fun check_that_is_written_property_active_order_id() {
 
         //setup
-        var newValue = false
-        val key = "hasActiveOrder"
-        val expected = true
-        val inOrder = inOrder(sharedPreferences, context, editor)
+        var newValue = ""
+        val oldValue = "1111"
+        val expected = "2222"
+        val key = "active_order_id"
+        val inOrder = inOrder(sharedPreferences, editor)
 
-        doReturn(key).whenever(context).getString(R.string.key_has_active_order)
-        whenever(editor.putBoolean(key, expected)).doAnswer {
-            newValue = it.getArgument(1) as Boolean
+        doReturn(key).whenever(context).getString(R.string.key_active_order_id)
+        whenever(editor.putString(key, expected)).doAnswer {
+            newValue = it.getArgument(1) as String
             editor
         }
-        doReturn(false).whenever(sharedPreferences).getBoolean(key, false)
+        doReturn(oldValue).whenever(sharedPreferences).getString(key, null)
         doNothing().whenever(editor).apply()
 
         //Assertion1
-        assertEquals(false, appSettingsHelper.hasActiveOrder)
+        assertEquals(oldValue, appSettingsHelper.activeOrderId)
 
         //Setup
-        appSettingsHelper.hasActiveOrder = expected
+        appSettingsHelper.activeOrderId = expected
+        doReturn(newValue).whenever(sharedPreferences).getString(key, null)
 
-        doReturn(newValue).whenever(sharedPreferences).getBoolean(key, false)
-
-        //Assertion
-        assertEquals(expected, appSettingsHelper.hasActiveOrder)
+        //Assertion2
+        assertEquals(expected, appSettingsHelper.activeOrderId)
 
         //Verify
-        verify(context, atLeastOnce()).getString(R.string.key_has_active_order)
-        verify(sharedPreferences, times(2)).getBoolean(key, false)
+        verify(context, atLeastOnce()).getString(R.string.key_active_order_id)
+        verify(sharedPreferences, times(2)).getString(key, null)
         inOrder.verify(sharedPreferences).edit()
-        inOrder.verify(editor).putBoolean(key, expected)
+        inOrder.verify(editor).putString(key, expected)
         inOrder.verify(editor).apply()
-        verifyNoMoreInteractions(sharedPreferences, context)
+        verifyNoMoreInteractions(sharedPreferences)
 
     }
 

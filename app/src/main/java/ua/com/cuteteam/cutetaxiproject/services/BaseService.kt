@@ -6,14 +6,22 @@ import android.content.Intent
 import android.net.Uri
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import ua.com.cuteteam.cutetaxiproject.LocationLiveData
+import ua.com.cuteteam.cutetaxiproject.LocationProvider
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.common.notifications.NotificationUtils
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
+import kotlin.coroutines.CoroutineContext
 
 const val ACCEPTED_ORDER_ID = "AcceptedOrderId"
 
-abstract class BaseService : Service() {
+abstract class BaseService : Service(), CoroutineScope {
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + handler
 
     protected val notificationUtils by lazy {
         NotificationUtils(applicationContext)
@@ -25,6 +33,15 @@ abstract class BaseService : Service() {
     protected val locationLiveData by lazy {
         LocationLiveData()
     }
+
+    protected val locationProvider by lazy {
+        LocationProvider()
+    }
+
+    private val handler
+        get() = CoroutineExceptionHandler { coroutineContext, throwable ->
+            throwable.printStackTrace()
+        }
 
     private val dialerIntent =
         PendingIntent.getActivity(
