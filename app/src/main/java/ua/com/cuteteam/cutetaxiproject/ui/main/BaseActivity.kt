@@ -31,6 +31,9 @@ abstract class BaseActivity : AppCompatActivity() {
 
     protected abstract val menuResId: Int
     protected abstract val layoutResId: Int
+    protected abstract fun onHasActiveOrder(orderId: String?)
+    protected abstract fun onNetworkAvailable()
+    protected abstract fun onNetworkLost()
 
     protected val permissionProvider get() = PermissionProvider(this).apply {
         onDenied = { permission, isPermanentlyDenied ->
@@ -144,10 +147,12 @@ abstract class BaseActivity : AppCompatActivity() {
                 else -> throw IllegalArgumentException("No such internet status! It is NULL")
             }
         })
-    }
 
-    protected fun onNetworkAvailable(){}
-    protected fun onNetworkLost(){}
+        model.activeOrderId.observe(this, Observer {
+            onHasActiveOrder(it)
+        })
+
+    }
 
     private fun onRoleChanged() {
         startActivity(Intent(this, AuthActivity::class.java))
