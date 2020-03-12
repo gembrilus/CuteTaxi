@@ -29,8 +29,8 @@ import ua.com.cuteteam.cutetaxiproject.ui.main.models.BaseViewModel
 
 abstract class BaseActivity : AppCompatActivity() {
 
-    abstract val menuResId: Int
-    abstract val layoutResId: Int
+    protected abstract val menuResId: Int
+    protected abstract val layoutResId: Int
 
     protected val permissionProvider get() = PermissionProvider(this).apply {
         onDenied = { permission, isPermanentlyDenied ->
@@ -139,12 +139,15 @@ abstract class BaseActivity : AppCompatActivity() {
 
         model.netStatus.observe(this, Observer {
             when(it){
-                NetStatus.AVAILABLE -> {}
-                NetStatus.LOST, NetStatus.UNAVAILABLE -> {}
+                NetStatus.AVAILABLE -> onNetworkAvailable()
+                NetStatus.LOST, NetStatus.UNAVAILABLE -> onNetworkLost()
                 else -> throw IllegalArgumentException("No such internet status! It is NULL")
             }
         })
     }
+
+    protected fun onNetworkAvailable(){}
+    protected fun onNetworkLost(){}
 
     private fun onRoleChanged() {
         startActivity(Intent(this, AuthActivity::class.java))
