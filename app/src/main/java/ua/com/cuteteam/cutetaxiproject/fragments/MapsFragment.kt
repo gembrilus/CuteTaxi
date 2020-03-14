@@ -2,11 +2,16 @@ package ua.com.cuteteam.cutetaxiproject.fragments
 
 import android.content.Context
 import android.location.Location
+import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -34,13 +39,13 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
         }
     }
 
-    private lateinit var googleMapHelper: GoogleMapsHelper
-
     private lateinit var passengerViewModel: PassengerViewModel
 
     private var permissionProvider: PermissionProvider? = null
 
     private lateinit var currentLocation: Location
+
+    private lateinit var googleMapsHelper: GoogleMapsHelper
 
     private val accessFineLocationPermission = AccessFineLocationPermission()
 
@@ -80,7 +85,7 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        googleMapHelper =
+        googleMapsHelper =
             GoogleMapsHelper(googleMap)
         addAMarkerAndMoveTheCamera()
     }
@@ -89,15 +94,34 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
     private fun addAMarkerAndMoveTheCamera() {
         permissionProvider?.withPermission(accessFineLocationPermission) {
             GlobalScope.launch(Dispatchers.Main) {
+                passengerViewModel.markers.observe(this@MapsFragment, Observer {
+                    googleMapsHelper.addMarkers(passengerViewModel.markers.value!!)
+                })
+
                 currentLocation = passengerViewModel.locationProvider.getLocation() ?: return@launch
 
                 val latLng = LatLng(currentLocation.latitude, currentLocation.longitude)
-                googleMapHelper.googleMap.setOnCameraMoveListener {
-                    passengerViewModel.cameraPosition = googleMapHelper.googleMap.cameraPosition
+                googleMapsHelper.googleMap.setOnCameraMoveListener {
+                    passengerViewModel.cameraPosition = googleMapsHelper.googleMap.cameraPosition
                 }
-                googleMapHelper.addMarker(latLng)
+
+                if (passengerViewModel.markers.value?.isEmpty() != false) {
+                    val marker =
+                        googleMapsHelper.createMarker(latLng, "A", R.drawable.marker_a_icon)
+                    passengerViewModel.markers.value?.put(R.drawable.marker_a_icon, marker)
+                }
+
+                googleMapsHelper.createOrUpdateMarkerByClick(
+                    passengerViewModel.markers.value!!,
+                    "B",
+                    R.drawable.marker_b_icon
+                ) {
+                    passengerViewModel.markers.value?.put(R.drawable.marker_b_icon, it)
+                    googleMapsHelper.addMarkers(passengerViewModel.markers.value!!)
+                }
+
                 if (passengerViewModel.cameraPosition == null)
-                    googleMapHelper.moveCameraToMyLocation(latLng)
+                    googleMapsHelper.moveCameraToLocation(latLng)
             }
         }
     }

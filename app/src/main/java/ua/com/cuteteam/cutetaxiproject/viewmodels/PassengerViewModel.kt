@@ -1,11 +1,13 @@
 package ua.com.cuteteam.cutetaxiproject.viewmodels
 
+import android.content.Context
+import androidx.lifecycle.MutableLiveData
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import ua.com.cuteteam.cutetaxiproject.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.LocationProvider
 import ua.com.cuteteam.cutetaxiproject.ui.main.models.BaseViewModel
-import com.google.android.gms.maps.model.CameraPosition
-import android.content.Context
-import com.google.android.gms.maps.model.LatLng
 import ua.com.cuteteam.cutetaxiproject.helpers.PhoneNumberHelper
 import ua.com.cuteteam.cutetaxiproject.api.geocoding.GeocodeRequest
 import ua.com.cuteteam.cutetaxiproject.application.AppClass
@@ -27,6 +29,8 @@ class PassengerViewModel(
         get() = repository.locationProvider
 
     var cameraPosition: CameraPosition? = null
+
+    var markers = MutableLiveData(mutableMapOf<Int, Marker?>())
 
     fun shouldShowGPSRationale(): Boolean {
         if (dialogShowed || repository.locationProvider.isGPSEnabled()) return false
