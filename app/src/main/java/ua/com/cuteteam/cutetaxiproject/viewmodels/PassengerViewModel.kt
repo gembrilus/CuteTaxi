@@ -32,6 +32,19 @@ class PassengerViewModel(
 
     var markers = MutableLiveData(mutableMapOf<Int, Marker?>())
 
+    fun setMarkers(newMarkers: Map<Int, Marker?>) {
+        markers.value = newMarkers.toMutableMap()
+    }
+
+    fun setMarker(key: Int, value: Marker?) {
+        markers.value = markers.value?.plus(key to value)?.toMutableMap()
+    }
+
+    fun replaceMarkers(newMarkers: Map<Int, Marker?>) {
+        markers.value?.clear()
+        markers.value?.plusAssign(newMarkers)
+    }
+
     fun shouldShowGPSRationale(): Boolean {
         if (dialogShowed || repository.locationProvider.isGPSEnabled()) return false
 
