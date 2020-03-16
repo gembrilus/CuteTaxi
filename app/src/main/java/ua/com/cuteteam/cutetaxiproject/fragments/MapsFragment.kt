@@ -2,16 +2,12 @@ package ua.com.cuteteam.cutetaxiproject.fragments
 
 import android.content.Context
 import android.location.Location
-import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -45,8 +41,8 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
 
     private lateinit var currentLocation: Location
 
-    private lateinit var googleMapsHelper: GoogleMapsHelper
-
+    private lateinit var mMap: GoogleMap
+    
     private val accessFineLocationPermission = AccessFineLocationPermission()
 
     override fun onAttach(context: Context) {
@@ -85,30 +81,37 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        googleMapsHelper =
-            GoogleMapsHelper(googleMap)
+        mMap = googleMap
         addAMarkerAndMoveTheCamera()
     }
 
     @AfterPermissionGranted(PermissionProvider.LOCATION_REQUEST_CODE)
     private fun addAMarkerAndMoveTheCamera() {
+        ::mMap.isInitialized || return
+        val googleMapsHelper = GoogleMapsHelper(mMap)
         permissionProvider?.withPermission(accessFineLocationPermission) {
             GlobalScope.launch(Dispatchers.Main) {
                 passengerViewModel.markers.observe(this@MapsFragment, Observer {
-                    googleMapsHelper.addMarkers(passengerViewModel.markers.value!!)
+                    googleMapsHelper
+                        .addMarkers(passengerViewModel.markers.value ?: emptyMap())
+                        .also { passengerViewModel.replaceMarkers(it) }
                 })
 
                 currentLocation = passengerViewModel.locationProvider.getLocation() ?: return@launch
 
-                val latLng = LatLng(currentLocation.latitude, currentLocation.longitude)
-                googleMapsHelper.googleMap.setOnCameraMoveListener {
-                    passengerViewModel.cameraPosition = googleMapsHelper.googleMap.cameraPosition
+                val latLng = latLng(currentLocation)
+                googleMapsHelper.onCameraMove { position ->
+                    passengerViewModel.cameraPosition = position
                 }
 
-                if (passengerViewModel.markers.value?.isEmpty() != false) {
+                if (passengerViewModel.markers.value?.isEmpty() == true) {
                     val marker =
                         googleMapsHelper.createMarker(latLng, "A", R.drawable.marker_a_icon)
-                    passengerViewModel.markers.value?.put(R.drawable.marker_a_icon, marker)
+                    passengerViewModel.setMarker(R.drawable.marker_a_icon, marker)
+
+                    passengerViewModel.markers.value = passengerViewModel.markers.value?.plus(
+                        R.drawable.marker_a_icon to marker
+                    )?.toMutableMap()
                 }
 
                 googleMapsHelper.createOrUpdateMarkerByClick(
@@ -116,8 +119,7 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
                     "B",
                     R.drawable.marker_b_icon
                 ) {
-                    passengerViewModel.markers.value?.put(R.drawable.marker_b_icon, it)
-                    googleMapsHelper.addMarkers(passengerViewModel.markers.value!!)
+                    passengerViewModel.setMarker(R.drawable.marker_b_icon, it)
                 }
 
                 if (passengerViewModel.cameraPosition == null)
@@ -125,6 +127,9 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
             }
         }
     }
+
+    private fun latLng(currentLocation: Location) =
+        LatLng(currentLocation.latitude, currentLocation.longitude)
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
