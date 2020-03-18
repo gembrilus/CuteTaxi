@@ -8,9 +8,9 @@ import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
 class FirebaseSettingsDataStore(
     private val shPref: SharedPreferences,
     private val fbDao: BaseDao
-) : PreferenceDataStore(){
+) : PreferenceDataStore() {
 
-    private val paths = mapOf(
+    val paths = mapOf(
         DbEntries.Passengers.Fields.NAME to DbEntries.Passengers.Fields.NAME,
         DbEntries.Passengers.Fields.PHONE to DbEntries.Passengers.Fields.PHONE,
         DbEntries.Passengers.Fields.COMFORT_LEVEL to DbEntries.Passengers.Fields.COMFORT_LEVEL,
@@ -21,15 +21,11 @@ class FirebaseSettingsDataStore(
         DbEntries.Car.COMFORT_LEVEL to "${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.COMFORT_LEVEL}"
     )
 
-    override fun getString(key: String?, defValue: String?): String? {
-        return shPref.getString(key, defValue)
-            ?: defValue
-    }
+    override fun getString(key: String?, defValue: String?): String? =
+        shPref.getString(key, defValue) ?: defValue
 
     override fun putString(key: String?, value: String?) {
         shPref.edit().putString(key, value).apply()
-
-        val path = paths[key] ?: return
-        fbDao.writeField(path, value)
+        paths[key]?.let { fbDao.writeField(it, value) }
     }
 }
