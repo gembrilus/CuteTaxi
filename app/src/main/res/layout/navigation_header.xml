@@ -1,24 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="32dp"
-    android:paddingStart="8dp"
-    android:paddingEnd="8dp"
-    android:paddingBottom="8dp"
-    android:background="@color/colorPrimary"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:theme="@style/AppTheme.NoActionBar.NavHeader">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tv_nav_header_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:padding="8dp"
+        android:layout_margin="@dimen/margin_8dp"
         android:background="@drawable/ct_transparent_box"
-        android:textSize="12sp"/>
+        android:padding="@dimen/margin_8dp"
+        android:textSize="@dimen/normal_text_16sp" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tv_nav_header_phone"
@@ -26,23 +20,23 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:padding="8dp"
         android:background="@drawable/ct_transparent_box"
-        android:textSize="12sp"/>
+        android:padding="@dimen/margin_8dp"
+        android:textSize="@dimen/normal_text_16sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:gravity="center"
+        android:layout_margin="@dimen/margin_8dp"
         android:background="@drawable/ct_transparent_box"
+        android:gravity="center"
         android:orientation="horizontal">
 
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:text="@string/name_role_passenger" />
+            android:text="@string/name_role_passenger"
+            android:textSize="@dimen/normal_text_16sp" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/role_chooser"
@@ -53,8 +47,8 @@
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:text="@string/name_role_driver" />
+            android:text="@string/name_role_driver"
+            android:textSize="@dimen/normal_text_16sp" />
 
     </LinearLayout>
 
