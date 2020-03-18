@@ -79,7 +79,7 @@ abstract class BaseActivity :
             R.id.backToHome -> {
                 navigationView.menu.clear()
                 navigationView.inflateMenu(R.menu.main_menu)
-                onBackPressed()
+                navController.navigateUp()
             }
             else -> drawerLayout.closeDrawers()
         }
@@ -133,9 +133,7 @@ abstract class BaseActivity :
                 val phone = sharedPreferences?.getString(key, null)
                 header.tv_nav_header_phone.text = phone
             }
-            getString(R.string.key_app_theme_preference) -> {
-                recreate()
-            }
+            getString(R.string.key_app_theme_preference) -> recreate()
         }
     }
 
