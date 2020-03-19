@@ -1,24 +1,20 @@
 package ua.com.cuteteam.cutetaxiproject.ui.passenger.activities
 
-import android.annotation.SuppressLint
-import android.net.sip.SipSession
 import android.os.Bundle
 import android.view.View
-import android.view.ViewTreeObserver
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.android.synthetic.main.activity_passenger.*
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.ui.passenger.fragments.MakeOrderFragment
-import ua.com.cuteteam.cutetaxiproject.ui.passenger.fragments.OrderStatusBottomSheet
+import ua.com.cuteteam.cutetaxiproject.ui.passenger.fragments.OrderStatusFragment
 
 class PassengerActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private val makeOrderFragment by lazy { MakeOrderFragment() }
-    private val orderStatusFragment by lazy { OrderStatusBottomSheet() }
+    private val orderStatusFragment by lazy { OrderStatusFragment() }
     private val mapFragment by lazy { SupportMapFragment.newInstance() }
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
 
