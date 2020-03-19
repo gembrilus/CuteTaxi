@@ -1,13 +1,27 @@
 package ua.com.cuteteam.cutetaxiproject.viewmodels
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.google.firebase.auth.FirebaseAuth
 import ua.com.cuteteam.cutetaxiproject.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.LocationProvider
+import ua.com.cuteteam.cutetaxiproject.data.entities.Address
+import ua.com.cuteteam.cutetaxiproject.data.entities.ComfortLevel
+import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
 import ua.com.cuteteam.cutetaxiproject.ui.main.models.BaseViewModel
 
 class PassengerViewModel(private val repository: PassengerRepository) : BaseViewModel(repository) {
 
     private var dialogShowed = false
+
+    val userId = FirebaseAuth.getInstance().currentUser!!.uid
+
+    var isOrderAccepted = MutableLiveData<Boolean>()
+
+    val addressStart: Address = Address()
+    val addressFinish: Address = Address()
+    var comfortLevel = ComfortLevel.STANDARD
 
     val observableLocation: LocationLiveData
         get() = repository.observableLocation
@@ -22,5 +36,23 @@ class PassengerViewModel(private val repository: PassengerRepository) : BaseView
         return true
     }
 
+    fun makeOrder() {
+        val order = Order(
+            passengerId = userId,
+            comfortLevel = comfortLevel,
+            addressStart = addressStart,
+            addressDestination = addressFinish
+        )
 
+        if (order.isReady()) {
+            repository.writeOrder(order)
+            addressStart.location.toString()
+        }
+    }
+
+    private fun Order.isReady(): Boolean {
+        return (this.passengerId != null &&
+                this.addressStart?.location != null &&
+                this.addressDestination?.location != null)
+    }
 }

@@ -21,7 +21,7 @@ abstract class BaseDao(
     protected val rootRef = database.reference.root
     protected abstract val usersRef: DatabaseReference
 
-    private val eventListeners = mutableMapOf<DatabaseReference, ValueEventListener>()
+    protected val eventListeners = mutableMapOf<DatabaseReference, ValueEventListener>()
 
     @Suppress("UNCHECKED_CAST")
     suspend fun <T : User> getUser(uid: String): T? {
@@ -182,31 +182,6 @@ abstract class BaseDao(
             ref.setValue(it)
         }
         return ref
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    fun observeOrders(onSuccess: (List<Order>) -> Unit) {
-        val ref = rootRef.child(DbEntries.Orders.TABLE)
-            .orderByChild(DbEntries.Orders.Fields.ORDER_STATUS)
-            .equalTo(OrderStatus.NEW.name, DbEntries.Orders.Fields.ORDER_STATUS)
-            .orderByChild(DbEntries.Orders.Fields.START_ADDRESS)
-            .ref
-            .child(DbEntries.Orders.Fields.START_ADDRESS)
-            .child(DbEntries.Address.LOCATION)
-            .startAt(DbEntries.Address.LOCATION)
-            .endAt(DbEntries.Address.LOCATION)
-        ref.addValueEventListener(object : ValueEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                Log.e("CuteDAO", error.message)
-                ref.removeEventListener(this)
-            }
-
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val result = snapshot.getValue(List::class.java) as List<Order>
-                onSuccess.invoke(result)
-                ref.removeEventListener(this)
-            }
-        })
     }
 
     /** Removes all active listeners

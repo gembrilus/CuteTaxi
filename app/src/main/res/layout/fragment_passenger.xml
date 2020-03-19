@@ -11,9 +11,15 @@
         android:layout_height="match_parent"
         android:tag="PassengerMapFragment" />
 
-    <FrameLayout
-        android:id="@+id/bottom_sheet_container"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent" >
 
+        <FrameLayout
+            android:id="@+id/bottom_sheet_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"/>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </FrameLayout>
