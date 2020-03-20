@@ -7,6 +7,12 @@
         app:key="@string/key_car_category">
 
         <EditTextPreference
+            app:dialogTitle="@string/dialog_title_car_brand_preference"
+            app:key="@string/key_car_brand_preference"
+            app:title="@string/title_car_brand_preference"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
             app:dialogTitle="@string/dialog_title_car_model_preference"
             app:key="@string/key_car_model_preference"
             app:title="@string/title_car_model_preference"
