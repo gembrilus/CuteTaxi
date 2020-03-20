@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_make_order.*
 import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.extentions.getObservedHeight
 
 class MakeOrderFragment : Fragment(), BottomSheetFragment {
 
@@ -22,7 +23,7 @@ class MakeOrderFragment : Fragment(), BottomSheetFragment {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        showCollapsed()
+     git add    showCollapsed()
     }
 
     fun showCollapsed() {

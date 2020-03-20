@@ -14,6 +14,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.fragment_passenger.*
 import kotlinx.coroutines.launch
 import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.extentions.getObservedHeight
 import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
 
 class PassengerFragment() : Fragment() {

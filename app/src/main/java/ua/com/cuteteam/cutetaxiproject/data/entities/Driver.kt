@@ -14,17 +14,4 @@ data class Driver(
     var location: Coordinates? = null,
     var orderId: String? = null,
     var message: String? = null
-) : User {
-
-    @Exclude
-    fun toMap(): Map<String, Any?> = mapOf(
-        "NAME" to name,
-        "PHONE" to phoneNumber,
-        "CAR" to car,
-        "RATE" to rate,
-        "STATUS" to status,
-        "LOCATION" to location,
-        "ORDER_ID" to orderId,
-        "MESSAGE" to message
-    )
-}
+) : User

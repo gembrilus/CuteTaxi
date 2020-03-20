@@ -54,8 +54,9 @@ class DriverDao : BaseDao() {
 
             override fun onChildAdded(snapshot: DataSnapshot, prevName: String?) {
                 val newOrder = snapshot.getValue(Order::class.java) as Order
-                if (newOrder.addressStart!!.location!!.distanceTo(driver.location!!) <= 10000 &&
-                    newOrder.comfortLevel == driver.car?.comfortLevel
+                if (newOrder.addressStart!!.location!!.toLatLng()!!
+                        .distanceTo(driver.location!!.toLatLng()!!) <= 10000 &&
+                    newOrder.comfortLevel == driver.car?.carClass
                 ) {
                     onSuccess.invoke(newOrder)
                 }
@@ -65,7 +66,23 @@ class DriverDao : BaseDao() {
 
             }
         })
-
     }
+
+    fun writeOrder(id: String, order: Order) {
+        ordersRef.child(id).setValue(order).addOnFailureListener {
+            Log.e("Firebase: writeOrder()", it.message.toString())
+        }.addOnCompleteListener {
+            Log.d("Firebase: writeOrder()", "Write is successful")
+        }
+    }
+
+    fun updateOrder(id: String, field: String, value: Any) {
+        ordersRef.child(id).child(field).setValue(value).addOnFailureListener {
+            Log.e("Firebase: updateOrder()", it.message.toString())
+        }.addOnCompleteListener {
+            Log.d("Firebase: updateOrder()", "Write is successful")
+        }
+    }
+
 
 }
