@@ -57,10 +57,10 @@ class InfoDialog : BaseDialog() {
             fm: FragmentManager,
             title: String,
             message: String,
-            run: ((Dialog?) ->  Unit)? = null) = InfoDialog().apply {
+            onClose: ((Dialog?) ->  Unit)? = null) = InfoDialog().apply {
             this.title = title
             this.message = message
-            this.onClose = run
+            this.onClose = onClose
         }.show(fm, TAG)
 
     }

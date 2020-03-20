@@ -5,6 +5,7 @@ import android.content.Intent
 import android.location.Location
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.Observer
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -54,7 +55,7 @@ class DriverService : BaseService(), CoroutineScope {
             val location = locationProvider.getLocation()?.toLatLng
 
             if (orderId != null) {
-//                dao.subscribeForChanges(DbEntries.Orders.TABLE, orderId, orderListener)               //Uncomment when a method FbDao appears
+//                dao.subscribeForChanges(DbEntries.Orders.TABLE, orderId, orderListener)               //TODO:Uncomment when a method FbDao appears
                 locationLiveData.observeForever(locationObserver)
             }
 
@@ -63,7 +64,13 @@ class DriverService : BaseService(), CoroutineScope {
                     val filteredList =
                         list
                             .filter {
-                                val startLocation = it.addressStart?.location
+                                val startLocation = it.addressStart?.location.run {
+                                    this?.latitude?.let { lat ->
+                                        longitude?.let { lon ->
+                                            LatLng(lat, lon)
+                                        }
+                                    }
+                                }
                                 if (location != null && startLocation != null) {
                                     (location distanceTo startLocation) < 5000.0
                                 } else false
@@ -95,7 +102,7 @@ class DriverService : BaseService(), CoroutineScope {
         fbDao.writeField(
             DbEntries.Orders.TABLE,
             location.toLatLng
-        )                             //Change later with correct method FbDao
+        )                             //TODO:Change later with correct method FbDao
     }
 
     private fun getAcceptOrderIntent(order: Order): NotificationCompat.Action {

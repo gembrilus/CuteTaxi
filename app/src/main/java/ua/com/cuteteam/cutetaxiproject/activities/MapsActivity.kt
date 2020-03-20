@@ -21,6 +21,8 @@ import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
 import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission
 import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
+import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
+import ua.com.cuteteam.cutetaxiproject.ui.main.DriverActivity
 import ua.com.cuteteam.cutetaxiproject.ui.main.PassengerActivity
 import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.PassengerViewModelFactory
@@ -78,14 +80,28 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.home -> startActivity(
-                Intent(
-                    this,
-                    PassengerActivity::class.java
-                )
-            ).run {
-                finish()
-                return true
+            R.id.home -> {
+                val role = AppSettingsHelper(this).role
+                if (role) {
+                    startActivity(
+                        Intent(
+                            this,
+                            DriverActivity::class.java
+                        )
+                    ).run {
+                        finish()
+                        return true
+                    }
+                } else
+                startActivity(
+                    Intent(
+                        this,
+                        PassengerActivity::class.java
+                    )
+                ).run {
+                    finish()
+                    return true
+                }
             }
             else -> return super.onOptionsItemSelected(item)
         }
