@@ -5,6 +5,10 @@
     app:startDestination="@id/mainInfoFragment">
 
     <fragment
+        android:id="@+id/backToHome"
+        android:name="ua.com.cuteteam.cutetaxiproject.ui.main.fragments.DriverMapFragment"
+        android:label="DriverMapFragment"/>
+    <fragment
         android:id="@+id/mainInfoFragment"
         android:name="ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.MainInfoFragment"
         android:label="MainInfoFragment" />
