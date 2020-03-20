@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.bs_order_status.*
 import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.extentions.getObservedHeight
 
 class OrderStatusFragment : Fragment(), BottomSheetFragment {
 

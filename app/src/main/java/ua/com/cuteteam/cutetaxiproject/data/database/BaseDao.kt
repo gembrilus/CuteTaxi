@@ -5,6 +5,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.coroutineScope
 import ua.com.cuteteam.cutetaxiproject.data.User
 import ua.com.cuteteam.cutetaxiproject.data.entities.Driver
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
@@ -17,8 +21,10 @@ abstract class BaseDao(
     database: FirebaseDatabase = Firebase.database
 ) {
 
+    protected val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     protected val authUser = auth.currentUser!!
     protected val rootRef = database.reference.root
+    protected val ordersRef = database.reference.root.child(DbEntries.Orders.TABLE)
     protected abstract val usersRef: DatabaseReference
 
     protected val eventListeners = mutableMapOf<DatabaseReference, ValueEventListener>()
@@ -174,14 +180,6 @@ abstract class BaseDao(
         } else {
             Log.e("Database Error", "Listener $childRef is already set")
         }
-    }
-
-    fun writeOrder(order: Order?): DatabaseReference {
-        val ref = rootRef.child(DbEntries.Orders.TABLE).push()
-        order?.let {
-            ref.setValue(it)
-        }
-        return ref
     }
 
     /** Removes all active listeners

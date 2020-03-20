@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.ui.passenger.fragments
+package ua.com.cuteteam.cutetaxiproject.extentions
 
 import android.view.View
 import android.view.ViewTreeObserver
