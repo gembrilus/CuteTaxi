@@ -2,11 +2,13 @@ package ua.com.cuteteam.cutetaxiproject.ui.main.models
 
 import androidx.lifecycle.*
 import com.google.android.gms.maps.model.LatLng
+import ua.com.cuteteam.cutetaxiproject.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.common.network.NetStatus
-import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
+import ua.com.cuteteam.cutetaxiproject.livedata.SingleLiveEvent
+import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
 
-open class BaseViewModel(private val repository: PassengerRepository) : ViewModel() {
+open class BaseViewModel(private val repository: Repository) : ViewModel() {
 
     var shouldShowPermissionPermanentlyDeniedDialog = true
 
@@ -18,7 +20,9 @@ open class BaseViewModel(private val repository: PassengerRepository) : ViewMode
 
     val netStatus: LiveData<NetStatus> = repository.netHelper.netStatus
 
-    val activeOrderId: LiveData<String?> = MutableLiveData(repository.spHelper.activeOrderId)
+    val activeOrderId: LiveData<String?> = SingleLiveEvent<String?>().apply {
+        value = repository.spHelper.activeOrderId
+    }
 
     /**
      * Return location as Address class with coordinates and an address name
@@ -34,6 +38,16 @@ open class BaseViewModel(private val repository: PassengerRepository) : ViewMode
             emit(address)
         }
     }
+
+    private val _currentLocation = LocationLiveData()
+
+    /**
+     * Periodical observable location in [LatLng]
+     */
+    val currentLocation
+        get() = Transformations.map(_currentLocation) {
+            LatLng(it.latitude, it.longitude)
+        }
 
     /**
      * Return address name by LatLng argument or string of "latitude,longitude"
@@ -91,7 +105,7 @@ open class BaseViewModel(private val repository: PassengerRepository) : ViewMode
     companion object {
 
         @Suppress("UNCHECKED_CAST")
-        fun getViewModelFactory(repository: PassengerRepository) = object : ViewModelProvider.Factory {
+        fun getViewModelFactory(repository: Repository) = object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T =
                 when {
                     modelClass.isAssignableFrom(BaseViewModel::class.java) -> {
