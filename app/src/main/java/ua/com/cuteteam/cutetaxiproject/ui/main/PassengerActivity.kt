@@ -19,6 +19,10 @@ class PassengerActivity : BaseActivity() {
 
     }
 
+    override fun onNoActiveOrder() {
+
+    }
+
     override fun onNetworkAvailable() {
 
     }
