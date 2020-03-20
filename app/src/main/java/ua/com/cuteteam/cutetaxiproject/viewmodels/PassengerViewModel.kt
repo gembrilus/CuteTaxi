@@ -2,10 +2,10 @@ package ua.com.cuteteam.cutetaxiproject.viewmodels
 
 import ua.com.cuteteam.cutetaxiproject.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.LocationProvider
-import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
+import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 import ua.com.cuteteam.cutetaxiproject.ui.main.models.BaseViewModel
 
-class PassengerViewModel(private val repository: PassengerRepository) : BaseViewModel(repository) {
+class PassengerViewModel(private val repository: Repository) : BaseViewModel(repository) {
 
     private var dialogShowed = false
 
