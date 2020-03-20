@@ -13,7 +13,7 @@
         android:title="@string/menu_orders"/>
 
     <item
-        android:id="@+id/settings"
+        android:id="@+id/pass_settings"
         android:icon="@drawable/settings_menu_item"
         android:title="@string/title_activity_settings"/>
 

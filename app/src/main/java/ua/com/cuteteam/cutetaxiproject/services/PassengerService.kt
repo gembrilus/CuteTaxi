@@ -52,13 +52,13 @@ class PassengerService : BaseService() {
             notifyThatOrderWasAccepted(order)
             isAlreadyWillShownNotification = true
         }
-        verifyIsDriverClose(order.arrivingTime)
+        order.arrivingTime?.let { verifyIsDriverClose(it) }
 
     }
 
-    private fun verifyIsDriverClose(arrivingTime: Double) = when (arrivingTime) {
-        in 0.0..1.0 -> notifyThatDriverIsArrived()
-        in 1.0..3.0 -> notifyThatDriverIsClose()
+    private fun verifyIsDriverClose(arrivingTime: Long) = when (arrivingTime) {
+        in 0..1 -> notifyThatDriverIsArrived()
+        in 1..3 -> notifyThatDriverIsClose()
         else -> Unit
     }
 
