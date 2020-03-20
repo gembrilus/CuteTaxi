@@ -42,7 +42,7 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
     private lateinit var currentLocation: Location
 
     private lateinit var mMap: GoogleMap
-    
+
     private val accessFineLocationPermission = AccessFineLocationPermission()
 
     override fun onAttach(context: Context) {
@@ -95,6 +95,9 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
                     googleMapsHelper
                         .addMarkers(passengerViewModel.markers.value ?: emptyMap())
                         .also { passengerViewModel.replaceMarkers(it) }
+                    GlobalScope.launch(Dispatchers.Main) {
+                        googleMapsHelper.buildRoute(passengerViewModel.markers.value!!)
+                    }
                 })
 
                 currentLocation = passengerViewModel.locationProvider.getLocation() ?: return@launch
