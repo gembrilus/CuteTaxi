@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/map_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/order_info_price"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:minWidth="120dp"
+            android:elevation="1dp"
+            android:background="@drawable/ct_left_top_corner"
+            android:layout_alignParentStart="true"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/order_info_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:minWidth="120dp"
+            android:padding="@dimen/padding_8dp"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/ct_right_top_corner"
+            tools:ignore="RelativeOverlap" />
+
+    </RelativeLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/cart_badge"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:background="@drawable/badge_background"
+        android:padding="3dp"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/very_small_text_10dp"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="@id/btn_orders_list"
+        app:layout_constraintTop_toTopOf="@id/btn_orders_list"
+        android:elevation="10dp"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_orders_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
+        android:layout_margin="@dimen/margin_24dp"
+        android:src="@drawable/ct_list"
+        android:backgroundTint="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
