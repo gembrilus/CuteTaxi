@@ -3,10 +3,8 @@ package ua.com.cuteteam.cutetaxiproject.ui.main
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.view.Gravity
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -20,7 +18,6 @@ import androidx.preference.PreferenceManager
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
-import kotlinx.android.synthetic.main.fragment_phone_number.*
 import kotlinx.android.synthetic.main.navigation_header.view.*
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.activities.AuthActivity
@@ -29,7 +26,7 @@ import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
 import ua.com.cuteteam.cutetaxiproject.extentions.createNotificationChannel
 import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission
 import ua.com.cuteteam.cutetaxiproject.permissions.PermissionProvider
-import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
+import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 import ua.com.cuteteam.cutetaxiproject.ui.main.models.BaseViewModel
 
@@ -41,6 +38,7 @@ abstract class BaseActivity :
     protected abstract val menuResId: Int
     protected abstract val layoutResId: Int
     protected abstract fun onHasActiveOrder(orderId: String?)
+    protected abstract fun onNoActiveOrder()
     protected abstract fun onNetworkAvailable()
     protected abstract fun onNetworkLost()
 
@@ -63,7 +61,7 @@ abstract class BaseActivity :
     protected lateinit var header: View
 
     private val model by lazy {
-        ViewModelProvider(this, BaseViewModel.getViewModelFactory(PassengerRepository()))
+        ViewModelProvider(this, BaseViewModel.getViewModelFactory(Repository()))
             .get(BaseViewModel::class.java)
     }
 
@@ -164,8 +162,7 @@ abstract class BaseActivity :
         with(roleChooser) {
             isChecked = model.isChecked
             setOnCheckedChangeListener { _, isChecked ->
-                model.changeRole(isChecked)
-                onRoleChanged()
+                onRoleChanged(isChecked)
             }
         }
     }
@@ -190,12 +187,14 @@ abstract class BaseActivity :
         })
 
         model.activeOrderId.observe(this, Observer {
-            onHasActiveOrder(it)
+            if (it != null) onHasActiveOrder(it)
+            else onNoActiveOrder()
         })
 
     }
 
-    private fun onRoleChanged() {
+    private fun onRoleChanged(isDriver: Boolean) {
+        model.changeRole(isDriver)
         startActivity(Intent(this, AuthActivity::class.java))
         finish()
     }
