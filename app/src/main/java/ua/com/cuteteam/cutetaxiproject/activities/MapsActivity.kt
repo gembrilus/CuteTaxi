@@ -36,7 +36,6 @@ class MapsActivity : AppCompatActivity() {
                 val options = GoogleMapOptions()
                 options.camera(passengerViewModel.currentCameraPosition())
 
-
                 supportFragmentManager
                     .beginTransaction()
                     .replace(R.id.map_container, MapsFragment.newInstance(options))

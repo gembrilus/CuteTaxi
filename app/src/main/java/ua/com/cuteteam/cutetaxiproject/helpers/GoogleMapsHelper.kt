@@ -1,8 +1,13 @@
 package ua.com.cuteteam.cutetaxiproject.helpers
 
+import android.graphics.Color
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.api.RouteProvider
 
 class GoogleMapsHelper(private val googleMap: GoogleMap) {
 
@@ -61,6 +66,59 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
         }
     }
 
+    suspend fun buildRoute(markers: MutableMap<Int, Marker?>) {
+        if (markers.count() < 2) return
+        val routeProvider = buildRouteProvider(markers) ?: return
+        withContext(Dispatchers.Main) {
+            val routeSummary = routeProvider.routes()[0]
+            googleMap.addPolyline(PolylineOptions()
+                .clickable(true)
+                .add(*routeSummary.polyline)
+                .color(Color.parseColor("#0288d1"))
+                .width(15f)
+                .startCap(CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.circular_shape_silhouette), 300f))
+                .endCap(CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.circular_shape_silhouette), 300f))
+            )
+            updateCameraForBounds(markers)
+        }
+    }
+
+    fun removeOnMapClickListener() {
+        googleMap.setOnMapClickListener(null)
+    }
+
+    private suspend fun updateCameraForBounds(markers: MutableMap<Int, Marker?>) {
+        val routeProvider = buildRouteProvider(markers) ?: return
+        withContext(Dispatchers.Main) {
+            val routeSummary = routeProvider.routes()[0]
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(buildBoundaryForRoute(routeSummary), 100))
+        }
+    }
+
+    private fun buildBoundaryForRoute(routeSummary: RouteProvider.RouteSummary): LatLngBounds {
+        return LatLngBounds.Builder()
+            .include(routeSummary.polyline.minBy { it.longitude })
+            .include(routeSummary.polyline.minBy { it.latitude })
+            .include(routeSummary.polyline.maxBy { it.latitude })
+            .include(routeSummary.polyline.maxBy { it.longitude })
+            .build()
+    }
+
+    private fun stringListOfPoints(markers: MutableMap<Int, Marker?>): List<String> {
+        return markers.values
+            .filterNotNull()
+            .map { "${it.position?.latitude}, ${it.position?.longitude}" }
+    }
+
+    private fun buildRouteProvider(markers: MutableMap<Int, Marker?>): RouteProvider? {
+        val pointCoordinates = stringListOfPoints(markers)
+        if (pointCoordinates.isEmpty()) return null
+        return RouteProvider.Builder()
+            .addOrigin(pointCoordinates[0])
+            .addDestination(pointCoordinates[1])
+            .build()
+    }
+
     private fun updateMarkerByClick(
         marker: Marker,
         icon: Int,
@@ -89,9 +147,5 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
             val marker = createMarker(latLng, tag, icon)
             callback?.invoke(marker)
         }
-    }
-
-    fun removeOnMapClickListener() {
-        googleMap.setOnMapClickListener(null)
     }
 }
