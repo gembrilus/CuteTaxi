@@ -23,7 +23,7 @@ class MakeOrderFragment : Fragment(), BottomSheetFragment {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-     git add    showCollapsed()
+        showCollapsed()
     }
 
     fun showCollapsed() {
