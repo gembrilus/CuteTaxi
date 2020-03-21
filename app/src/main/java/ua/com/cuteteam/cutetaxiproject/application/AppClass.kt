@@ -2,6 +2,7 @@ package ua.com.cuteteam.cutetaxiproject.application
 
 import android.app.Application
 import android.content.Context
+import ua.com.cuteteam.cutetaxiproject.R
 
 class AppClass: Application() {
 
@@ -18,7 +19,8 @@ class AppClass: Application() {
         }
     }
 
-/*    override fun onCreate() {
+    override fun onCreate() {
         super.onCreate()
-    }*/
+        this.setTheme(R.style.AppTheme)
+    }
 }

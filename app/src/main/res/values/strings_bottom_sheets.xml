@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="order_details_title">Order details</string>
+
+    // Tittles for car classes:
+    <string name="standard_title">Standard</string>
+    <string name="comfort_title">Comfort</string>
+    <string name="eco_title">Eco</string>
+
+    <string name="comfort_level_title">Comfort level:</string>
+    <string name="your_destination_address">Your destination address...</string>
+    <string name="tv_start_address_hint">Your start address...</string>
+    <string name="order_summary">This trip will be cost %d UAH</string>
+    <string name="make_order">Make order</string>
+    <string name="error_start_address_empty">Enter your departure address</string>
+
+</resources>
