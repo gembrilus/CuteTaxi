@@ -1,48 +1,50 @@
 package ua.com.cuteteam.cutetaxiproject.api.geocoding
 
+import com.google.android.gms.maps.model.LatLng
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers
 import org.junit.Test
-import kotlin.reflect.KVariance
-import kotlin.reflect.KVisibility
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.defaultType
-import kotlin.reflect.full.primaryConstructor
+import ua.com.cuteteam.cutetaxiproject.data.entities.Address
+import ua.com.cuteteam.cutetaxiproject.data.entities.Coordinates
 
 class GeocodeTest {
 
+    private val location get() = Coordinates(1.0, 1.0)
+    private val location2 get() = LatLng(1.0, 1.0)
+    private val name get() = "Address 10-1"
+
+    private val address
+        get() = Address(
+            location = location,
+            address = name
+        )
+
+    private val geocode
+        get() = Geocode(
+            results = listOf(
+                Results(
+                    formattedAddress = name,
+                    geometry = Geometry(
+                        location = location2
+                    )
+                )
+            ),
+            status = "OK"
+        )
+
 
     @Test
-    fun classGeocodeTest() {
-
-
-        assert(Geocode::class.isData)
-        assert(Geocode::class.isFinal)
-        assert(Geocode::class.constructors.size == 1)
-        assert(Geocode::class.primaryConstructor != null)
-        assert(Geocode::class.primaryConstructor?.visibility == KVisibility.PUBLIC)
-        assert(Geocode::class.declaredMemberProperties.size == 2)
-
+    fun toLatLng() {
+        assertThat(location2, Matchers.`is`(geocode.toLatLng()))
     }
 
     @Test
-    fun getResults() {
-
-        assert(Geocode::results.isFinal)
-        assert(Geocode::results.returnType.arguments.size == 1)
-        assert(Geocode::results.returnType.arguments[0].variance == KVariance.INVARIANT)
-        assert(Geocode::results.returnType.arguments[0].type == Results::class.defaultType)
-        assert(Geocode::results.visibility == KVisibility.PUBLIC)
-        assert(Geocode::results.returnType.classifier == List::class)
-        assert(!Geocode::results.returnType.isMarkedNullable)
-
+    fun toName() {
+        assertThat(name, Matchers.`is`(geocode.toName()))
     }
 
     @Test
-    fun getStatus() {
-
-        assert(Geocode::status.isFinal)
-        assert(Geocode::status.returnType.classifier == String::class)
-        assert(Geocode::status.visibility == KVisibility.PUBLIC)
-        assert(!Geocode::status.returnType.isMarkedNullable)
-
+    fun toAddress() {
+        assertThat(address, Matchers.`is`(geocode.toAddress()))
     }
 }

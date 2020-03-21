@@ -9,10 +9,17 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.preference.PreferenceManager
 import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.activities.MainActivity
+import ua.com.cuteteam.cutetaxiproject.data.entities.Order
+import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
+import ua.com.cuteteam.cutetaxiproject.ui.main.DriverActivity
 
-private var _NOTE_ID = 0
+private const val UPDATABLE_ID = 0
+private var _NOTE_ID = 1
 private val NOTE_ID = _NOTE_ID++
+private const val GROUP_KEY = "ua.com.cuteteam.cutetaxiproject.CuteTeamGroup"
 
 
 /**
@@ -88,12 +95,12 @@ class NotificationUtils(private val context: Context) {
     fun sendNotification(
         title: String,
         text: String,
-        bigText: String? = null
+        bigText: String? = null,
+        updatable: Boolean = false
     ) = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
         .apply {
 
             setSmallIcon(R.drawable.cute_taxi_headpiece)
-            setTicker(title)
             setContentTitle(title)
             setContentText(text)
             priority = NotificationCompat.PRIORITY_DEFAULT
@@ -105,11 +112,13 @@ class NotificationUtils(private val context: Context) {
             setAutoCancel(true)
             setWhen(System.currentTimeMillis())
             setDefaults(Notification.DEFAULT_ALL)
-
+            setGroup(GROUP_KEY)
         }
+        .build()
         .run {
+            val id = if (updatable) UPDATABLE_ID else NOTE_ID
             NotificationManagerCompat.from(context)
-                .notify(NOTE_ID, build())
+                .notify(id, this)
         }
 
 
@@ -118,23 +127,5 @@ class NotificationUtils(private val context: Context) {
      *
      */
     fun cancelAll() = NotificationManagerCompat.from(context).cancelAll()
-
-    companion object {
-
-        /**
-         * Creates an action intent for running a dialer and inserting a phone number
-         */
-        fun dialerIntent(context: Context, phone: String) = PendingIntent.getActivity(
-            context,
-            0,
-            Intent(Intent.ACTION_DIAL).apply {
-                data = Uri.parse("tel:$phone")
-            },
-            0
-        ).run {
-            NotificationCompat.Action(R.drawable.ct_call_phone, "Call", this)
-        }
-
-    }
 
 }

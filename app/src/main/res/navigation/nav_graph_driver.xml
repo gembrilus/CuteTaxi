@@ -8,7 +8,20 @@
     <fragment
         android:id="@+id/home"
         android:name="ua.com.cuteteam.cutetaxiproject.ui.main.fragments.DriverMapFragment"
-        android:label="DriverMapFragment" />
+        android:label="DriverMapFragment" >
+        <action
+            android:id="@+id/action_home_to_new_orders"
+            app:destination="@id/new_orders" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/new_orders"
+        android:name="ua.com.cuteteam.cutetaxiproject.ui.main.fragments.DriverOrdersFragment"
+        android:label="DriverOrdersFragment" >
+        <action
+            android:id="@+id/action_new_orders_to_home"
+            app:popUpTo="@id/home"/>
+    </fragment>
 
     <include app:graph="@navigation/nav_settings_graph_driver" />
 

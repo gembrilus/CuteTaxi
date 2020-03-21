@@ -7,12 +7,13 @@
         app:key="@string/key_improvements_category">
 
         <ListPreference
-            app:defaultValue="@string/default_name_item_car_class"
+            app:defaultValue="@string/standart_class"
             app:entries="@array/car_class_entries"
-            app:entryValues="@array/car_class_entries"
+            app:entryValues="@array/car_class_entries_values"
             app:key="@string/key_passenger_car_class_preference"
             app:summary="@string/summary_car_class_preference"
-            app:title="@string/title_car_class_preference" />
+            app:title="@string/title_car_class_preference"
+            app:useSimpleSummaryProvider="true"/>
 
     </PreferenceCategory>
 
@@ -21,12 +22,12 @@
         app:title="@string/title_additional_facilities_category"
         app:key="@string/key_additional_facilities_category">
 
-        <ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreference
+<!--        <ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreference
             app:dialogLayout="@layout/preference_dialog_listbox"
             app:dialogTitle="@string/dialog_title_list_addresses_preference"
             app:key="@string/key_favorite_addresses_preference"
             app:summary="@string/summary_of_favorite_addresses_preference"
-            app:title="@string/title_favorite_addresses_preference" />
+            app:title="@string/title_favorite_addresses_preference" />-->
 
         <ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreference
             app:dialogLayout="@layout/preference_dialog_listbox"

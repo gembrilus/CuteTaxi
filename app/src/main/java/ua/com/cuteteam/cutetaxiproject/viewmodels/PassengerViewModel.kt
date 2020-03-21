@@ -34,7 +34,7 @@ class PassengerViewModel(private val repository: PassengerRepository) : BaseView
         return true
     }
 
-    fun makeOrder() {
+/*    fun makeOrder() {
         val order = Order(
             passengerId = userId,
             comfortLevel = comfortLevel,
@@ -45,7 +45,7 @@ class PassengerViewModel(private val repository: PassengerRepository) : BaseView
         if (order.isReady()) {
             repository.writeOrder(order)
         }
-    }
+    }*/
 
     private fun Order.isReady(): Boolean {
         return (this.passengerId != null &&

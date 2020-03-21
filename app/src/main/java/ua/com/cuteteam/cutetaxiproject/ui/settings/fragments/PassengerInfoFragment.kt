@@ -1,6 +1,13 @@
 package ua.com.cuteteam.cutetaxiproject.ui.settings.fragments
 
+import androidx.preference.Preference
 import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
+import ua.com.cuteteam.cutetaxiproject.data.database.PassengerDao
+import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreference
+import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreferenceDialogFragmentCompat
+import ua.com.cuteteam.cutetaxiproject.shPref.FirebaseSettingsDataStore
+import ua.com.cuteteam.cutetaxiproject.ui.settings.sum_providers.ComfortLevelSumProvider
 
 private const val TAG = "CuteTaxi.PassInfoFrag"
 
@@ -9,14 +16,33 @@ class PassengerInfoFragment : BaseSettingsFragment() {
     override val resourceId: Int
         get() = R.xml.passenger_info_preferences
 
-    val changedStore by lazy {
-        listOf(
-            spKeys.FAVORITE_ADDRESSES_KEY,
-            spKeys.BLACK_LIST_DRIVERS_KEY
+    private val appSettingsToFirebaseStore by lazy {
+        FirebaseSettingsDataStore(
+            shPref,
+            PassengerDao()
         )
     }
 
     override fun setNewDataStore() {
-        setDataStore(changedStore, appSettingsToFirebaseStore)
+        findPreference<Preference>(DbEntries.Passengers.Fields.COMFORT_LEVEL)?.apply {
+            preferenceDataStore = appSettingsToFirebaseStore
+            summaryProvider = ComfortLevelSumProvider()
+        }
+        findPreference<Preference>(getString(R.string.key_black_list_preference))
+            ?.preferenceDataStore = appSettingsToFirebaseStore
+    }
+
+    override fun onDisplayPreferenceDialog(preference: Preference?) {
+        when(preference){
+            is ListBoxPreference -> {
+                ListBoxPreferenceDialogFragmentCompat.newInstance(preference.key).apply {
+                    setTargetFragment(this@PassengerInfoFragment, 0)
+                    targetFragment?.parentFragmentManager?.let {
+                        show(it, "ua.com.cuteteam.cutetaxiproject.ListBoxPreference")
+                    }
+                }
+            }
+            else -> super.onDisplayPreferenceDialog(preference)
+        }
     }
 }

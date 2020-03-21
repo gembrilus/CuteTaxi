@@ -4,6 +4,7 @@ import com.google.android.gms.maps.model.LatLng
 import ua.com.cuteteam.cutetaxiproject.BuildConfig
 import ua.com.cuteteam.cutetaxiproject.api.APIRequest
 import ua.com.cuteteam.cutetaxiproject.api.RequestParameters
+import ua.com.cuteteam.cutetaxiproject.api.adapters.LatLngAdapter
 import java.util.*
 
 
@@ -14,18 +15,6 @@ import java.util.*
  */
 class GeocodeRequest private constructor(private val map: Map<String, String>) : APIRequest<GeocodeService>() {
 
-/*    internal constructor(map: Map<String, String>) : this() {
-        _map = map
-    }
-
-    private var _map: Map<String, String>? = null
-    private val map
-        get() = _map
-            ?: throw IllegalArgumentException(
-                "You need to use Builder for building a request" +
-                        "or use parametrized constructor GeocodeRequest(map: Map<String, String>)"
-            )*/
-
     /**
      * Base url for API request. Used by Retrofit
      *
@@ -33,6 +22,12 @@ class GeocodeRequest private constructor(private val map: Map<String, String>) :
     override val url: String
         get() = BuildConfig.GOOGLE_GEO_API_URL
 
+    /**
+     * Moshi adapter for convert Location to LatLng
+     *
+     */
+    override val adapter: Any?
+        get() = LatLngAdapter()
 
     /**
      * Method receives human-readable name of map objects by coordinates.
