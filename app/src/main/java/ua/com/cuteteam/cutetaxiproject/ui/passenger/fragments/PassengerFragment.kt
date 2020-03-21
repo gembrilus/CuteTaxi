@@ -37,13 +37,13 @@ class PassengerFragment() : Fragment() {
 
         initOrderStatusBottomSheet()
 
-        viewModel.isOrderAccepted.observe(viewLifecycleOwner, Observer { orderState ->
+/*        viewModel.isOrderAccepted.observe(viewLifecycleOwner, Observer { orderState ->
             if (orderState) {
                 initOrderStatusBottomSheet()
             } else {
                 initMakeOrderBottomSheet()
             }
-        })
+        })*/
     }
 
     private fun setMakeOrderBehaviour(fragment: MakeOrderFragment) {
