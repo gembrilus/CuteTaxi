@@ -11,7 +11,6 @@ object DbEntries {
             const val COMFORT_LEVEL = "comfortLevel"
             const val RATE = "rate"
             const val FAVORITE_ADDRESSES = "addresses"
-            const val COMFORT_LEVEL = "comfortLevel"
             const val ORDER_ID = "orderId"
             const val MESSAGE = "message"
         }
