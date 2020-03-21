@@ -17,8 +17,6 @@ class PassengerViewModel(private val repository: PassengerRepository) : BaseView
 
     val userId = FirebaseAuth.getInstance().currentUser!!.uid
 
-    var isOrderAccepted = MutableLiveData<Boolean>()
-
     val addressStart: Address = Address()
     val addressFinish: Address = Address()
     var comfortLevel = ComfortLevel.STANDARD
@@ -46,7 +44,6 @@ class PassengerViewModel(private val repository: PassengerRepository) : BaseView
 
         if (order.isReady()) {
             repository.writeOrder(order)
-            addressStart.location.toString()
         }
     }
 
