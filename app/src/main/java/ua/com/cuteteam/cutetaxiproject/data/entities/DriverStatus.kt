@@ -1,6 +1,6 @@
 package ua.com.cuteteam.cutetaxiproject.data.entities
 
-enum class Status {
+enum class DriverStatus {
     ONLINE,
     OFFLINE,
     BUSY

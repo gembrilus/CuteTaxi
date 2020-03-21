@@ -8,5 +8,7 @@ data class Passenger(
     var comfortLevel: ComfortLevel = ComfortLevel.STANDARD,
     override var rate: Double? = 0.0,
     var addresses: List<Address> = emptyList(),
-    var orderId: String? = null
+    var orderId: String? = null,
+    var message: String? = null
 ) : User
+
