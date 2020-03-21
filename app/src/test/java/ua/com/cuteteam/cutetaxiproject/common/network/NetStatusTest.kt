@@ -16,29 +16,6 @@ class NetStatusTest{
         "LOST"
     )
 
-
-    @Test
-    fun classNetStatusTest() {
-
-        assert(!NetStatus::class.isData)
-        assert(NetStatus::class.isFinal)
-        assert(NetStatus::class.constructors.size == 1)
-        assert(NetStatus::class.primaryConstructor != null)
-        MatcherAssert.assertThat(
-            NetStatus::class.primaryConstructor?.visibility,
-            Matchers.equalTo(KVisibility.PRIVATE)
-        )
-        MatcherAssert.assertThat(
-            NetStatus::class.isSubclassOf(Enum::class),
-            Matchers.equalTo(true)
-        )
-        MatcherAssert.assertThat(
-            NetStatus::class.declaredMemberProperties.size,
-            Matchers.equalTo(0)
-        )
-
-    }
-
     @Test
     fun getManeuver() {
 
@@ -49,8 +26,6 @@ class NetStatusTest{
         val result2 = statusNames.toTypedArray()
 
         MatcherAssert.assertThat(actual2, Matchers.contains(*result2))
-
-        assert(NetStatus.values().all { it::class == NetStatus::class })
 
     }
 

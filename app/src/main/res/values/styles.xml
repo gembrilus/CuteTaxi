@@ -24,4 +24,22 @@
         <item name="android:windowTranslucentStatus">true</item>
     </style>
 
+    <style name="AppTheme.NoActionBar.Dark" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary_DarkTheme</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark_DarkTheme</item>
+        <item name="colorAccent">@color/colorPrimaryDarkHeadPiece_DarkTheme</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.NavHeader">
+
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:paddingTop">@dimen/padding_24dp</item>
+        <item name="android:paddingBottom">@dimen/padding_8dp</item>
+        <item name="android:paddingStart">@dimen/padding_8dp</item>
+        <item name="android:paddingEnd">@dimen/padding_8dp</item>
+
+
+    </style>
+
 </resources>

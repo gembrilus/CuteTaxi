@@ -1,68 +1,82 @@
 package ua.com.cuteteam.cutetaxiproject.common.network
 
 import android.content.Context
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import org.hamcrest.CoreMatchers
-import org.hamcrest.MatcherAssert.assertThat
-import org.junit.After
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkCapabilities.TRANSPORT_CELLULAR
+import android.net.NetworkCapabilities.TRANSPORT_WIFI
+import android.net.NetworkInfo
+import android.os.Build
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.annotation.Config
-import ua.com.cuteteam.cutetaxiproject.extentions.getOrAwaitValue
-import java.util.concurrent.TimeoutException
+import org.mockito.junit.MockitoJUnitRunner
 
-@RunWith(AndroidJUnit4::class)
-@Config(sdk = [Config.OLDEST_SDK])
-@Deprecated("Rewrite NetHelper test when app will ready!!")
+@Suppress("DEPRECATION")
+@RunWith(MockitoJUnitRunner.Silent::class)
 class NetHelperTest {
 
-    private var context: Context? =  null
-    private var netHelper: NetHelper? = null
+    private lateinit var context: Context
+    private lateinit var netHelper: NetHelper
+    private lateinit var connectivityManager: ConnectivityManager
+    private lateinit var networkCallback: ConnectivityManager.NetworkCallback
+    private lateinit var network: Network
 
     @Before
     fun setUp() {
 
-        context = InstrumentationRegistry.getInstrumentation().targetContext
-        netHelper = context?.let { NetHelper(it) }
-        netHelper?.registerNetworkListener()
+        network = mock()
+
+        val netInfo: NetworkInfo = mock{
+            on { isConnected } doReturn true
+        }
+
+        val networkCapabilities: NetworkCapabilities = mock {
+            on { hasTransport(TRANSPORT_CELLULAR) } doReturn false
+            on { hasTransport(TRANSPORT_WIFI) } doReturn true
+        }
+
+        networkCallback = mock()
+
+        connectivityManager = mock{
+            on { activeNetworkInfo } doReturn netInfo
+            on { getNetworkCapabilities(activeNetwork) } doReturn networkCapabilities
+        }
+
+        context = mock{
+            on { getSystemService(Context.CONNECTIVITY_SERVICE) } doReturn connectivityManager
+        }
+
+        netHelper = NetHelper(context)
     }
 
-    @After
-    fun tearDown() {
-
-        netHelper?.unregisterNetworkListener()
-        context = null
-        netHelper = null
-
-    }
-
-    @Test(expected = TimeoutException::class)
-    fun getNetStatus() {
-        val value = netHelper?.netStatus?.getOrAwaitValue()
-        assertThat(value, CoreMatchers.nullValue())
-
-    }
 
     @Test
     fun getHasMobileNetwork() {
 
-        assertThat(netHelper?.hasMobileNetwork, CoreMatchers.`is`(true))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            assertEquals(netHelper.hasMobileNetwork, false)
+        } else {
+            assertEquals(netHelper.hasMobileNetwork, true)
+        }
 
     }
 
     @Test
     fun getHasWiFi() {
 
-        assertThat(netHelper?.hasWiFi, CoreMatchers.`is`(true))
+        assertEquals(netHelper.hasWiFi, true)
 
     }
 
     @Test
     fun getHasInternet() {
 
-        assertThat(netHelper?.hasInternet, CoreMatchers.`is`(true))
+        assertEquals(netHelper.hasInternet, true)
 
     }
 

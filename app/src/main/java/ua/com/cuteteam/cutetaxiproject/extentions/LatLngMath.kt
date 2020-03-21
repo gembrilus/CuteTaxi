@@ -1,51 +1,31 @@
 package ua.com.cuteteam.cutetaxiproject.extentions
 
+import android.location.Location
 import com.google.android.gms.maps.model.LatLng
-import kotlin.math.asin
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.math.sqrt
-
-
-operator fun LatLng.times(number: Int) =
-    LatLng(latitude * number, longitude * number)
-
-operator fun LatLng.times(number: Double) =
-    LatLng(latitude * number, longitude * number)
-
-operator fun Int.times(latLng: LatLng) =
-    LatLng(latLng.latitude * this, latLng.longitude * this)
-
-operator fun Double.times(latLng: LatLng) =
-    LatLng(latLng.latitude * this, latLng.longitude * this)
-
-operator fun LatLng.times(latLng: LatLng) =
-    LatLng(latitude * latLng.latitude, longitude * latLng.longitude)
-
-operator fun LatLng.plus(latLng: LatLng) =
-    LatLng(latitude + latLng.latitude, longitude + latLng.longitude)
-
-
-operator fun LatLng.minus(latLng: LatLng) =
-    LatLng(latitude - latLng.latitude, longitude - latLng.longitude)
-
-operator fun LatLng.div(number: Int) =
-    LatLng(latitude / number, longitude / number)
-
-operator fun LatLng.dec() = LatLng(latitude - 1, longitude - 1)
-operator fun LatLng.inc() = LatLng(latitude + 1, longitude + 1)
-
-fun sin(latLng: LatLng) = LatLng(sin(latLng.latitude), sin(latLng.longitude))
+import java.lang.Math.pow
+import kotlin.math.*
 
 infix fun LatLng.distanceTo(latLng: LatLng): Double {
-    val earthRadius = 6371000
-    val delta = latLng - this
 
-    val gaverSinus = sin(delta / 2) * sin(delta / 2)
+    val lat1 = latitude * PI / 180
+    val lat2 = latLng.latitude * PI / 180
+    val lon1 = longitude * PI / 180
+    val lon2 = latLng.longitude * PI / 180
 
-    return 2 * earthRadius * asin(
-        sqrt(
-            gaverSinus.latitude + cos(latitude) * cos(latLng.latitude) * gaverSinus.longitude
-        )
-    )
+
+    val earthRadius = 6372795.0
+    val delta = lon2 - lon1
+    val cosL1 = cos(lat1)
+    val cosL2 = cos(lat2)
+    val sinL1 = sin(lat1)
+    val sinL2 = sin(lat2)
+    val cosDelta = cos(delta)
+    val sinDelta = sin(delta)
+
+    val y = sqrt((cosL2 * sinDelta).pow(2) + (cosL1 * sinL2 - sinL1 * cosL2 * cosDelta).pow(2))
+    val x = sinL1 * sinL2 + cosL1 * cosL2 * cosDelta
+
+    return earthRadius * atan2(y, x)
 }
+
+val Location.toLatLng: LatLng get() = LatLng(latitude, longitude)

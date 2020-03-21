@@ -17,8 +17,8 @@ import kotlin.math.min
  *
  */
 class RouteProvider private constructor(
-    private val directionRequest: DirectionRequest = DirectionRequest(),
-    private val roadsRequest: RoadsRequest = RoadsRequest()
+    private val directionRequest: DirectionRequest,
+    private val roadsRequest: RoadsRequest
 ) {
 
     private lateinit var map: Map<String, String>
@@ -154,7 +154,10 @@ class RouteProvider private constructor(
             .sumByDouble { it }
 
 
-    class Builder {
+    class Builder(
+        private val directionRequest: DirectionRequest = DirectionRequest(),
+        private val roadsRequest: RoadsRequest = RoadsRequest()
+    ) {
         private lateinit var origin: String
         private lateinit var destination: String
         private var wayPoints: MutableList<String> = mutableListOf()
@@ -169,7 +172,7 @@ class RouteProvider private constructor(
 
         /**
          * Add an origin place to the request parameters
-         * @param origin Destination. It can be human readable text or coordinates
+         * @param origin is a origin place. It can be human readable text or coordinates
          * (by example, "12.23123, 13.121231") or Object ID from Google Maps
          */
         fun addOrigin(origin: String) = apply {
@@ -177,13 +180,29 @@ class RouteProvider private constructor(
         }
 
         /**
+         * Add an origin place to the request parameters
+         * @param origin is a origin place coordinates in [LatLng]
+         */
+        fun addOrigin(origin: LatLng) =
+            addOrigin("${origin.latitude},${origin.longitude}")
+
+
+        /**
          * Add a destination place to the request parameters
-         * @param dest Destination. It can be human readable text or coordinates
+         * @param dest is a destination place. It can be human readable text or coordinates
          * (by example, "12.23123, 13.121231") or Object ID from Google Maps
          */
         fun addDestination(dest: String) = apply {
             destination = dest
         }
+
+
+        /**
+         * Add a destination place to the request parameters
+         * @param dest is a destination place coordinates in [LatLng]
+         */
+        fun addDestination(dest: LatLng) =
+            addDestination("${dest.latitude},${dest.longitude}")
 
 
         /**
@@ -205,13 +224,23 @@ class RouteProvider private constructor(
 
 
         /**
+         * Add way points if need
+         * @param point in [LatLng] format
+         */
+        fun addWayPoint(point: LatLng) = apply {
+            wayPoints.add("${point.latitude},${point.longitude}")
+        }
+
+
+        /**
          * Add an avoid if you need.
          * If you won't to use highways, by example, set value HIGHWAYS
-         * @param _avoid Possible values: TOLLS, HIGHWAYS, FERRIES
+         * @param _avoid Possible values: [RequestParameters.AVOID.TOLLS], [RequestParameters.AVOID.HIGHWAYS], [RequestParameters.AVOID.FERRIES]
          */
         fun addAvoid(_avoid: String) = apply {
             avoid.add(_avoid)
         }
+
 
         /**
          * Set a language of  response(by example, "ru", "en").
@@ -238,6 +267,7 @@ class RouteProvider private constructor(
         fun setRegion(country: String) = apply {
             region = country
         }
+
 
         /**
          * Builder-function - Search for the fastest route
@@ -286,7 +316,7 @@ class RouteProvider private constructor(
                 map[RequestParameters.REGION] = region
             }
 
-            return RouteProvider().apply {
+            return RouteProvider(directionRequest, roadsRequest).apply {
                 this.map = map
                 this.fastest = this@Builder.fastest
                 this.shortest = this@Builder.shortest

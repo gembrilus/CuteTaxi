@@ -5,33 +5,34 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="48dp"
-    android:layout_marginBottom="48dp"
-    android:paddingStart="20dp"
-    android:paddingEnd="20dp">
+    android:background="@drawable/ct_rounded_box"
+    android:layout_marginTop="@dimen/margin_48dp"
+    android:layout_marginBottom="@dimen/margin_48dp"
+    android:paddingStart="@dimen/padding_16dp"
+    android:paddingEnd="@dimen/padding_16dp">
 
     <TextView
         android:id="@android:id/message"
-        style="?android:attr/textAppearanceSmall"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="8dp"
+        android:textAlignment="center"
+        android:layout_marginBottom="@dimen/margin_8dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="?android:attr/textColorSecondary"/>
+        android:layout_height="wrap_content"/>
 
     <EditText
         android:id="@+id/edit"
-        android:layout_marginBottom="8dp"
+        android:background="@drawable/ct_transparent_box"
+        android:layout_marginBottom="@dimen/margin_8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="@dimen/padding_8dp"
         android:hint="@string/listbox_hint_your_favorite_address"/>
 
     <ListView
         android:id="@+id/list_addresses"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:divider="#2196F3"
-        android:dividerHeight="1dp"/>
+        android:divider="@color/colorPrimary"
+        android:background="@drawable/ct_transparent_box"
+        android:dividerHeight="@dimen/divider_tickness"/>
 
 </LinearLayout>
