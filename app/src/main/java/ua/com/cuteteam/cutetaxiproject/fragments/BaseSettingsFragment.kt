@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.ui.settings.fragments
+package ua.com.cuteteam.cutetaxiproject.fragments
 
 import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat

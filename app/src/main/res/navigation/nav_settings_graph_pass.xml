@@ -10,15 +10,15 @@
         android:label="PassengerMapFragment"/>
     <fragment
         android:id="@+id/mainInfoFragment"
-        android:name="ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.MainInfoFragment"
+        android:name="ua.com.cuteteam.cutetaxiproject.fragments.MainInfoFragment"
         android:label="MainInfoFragment" />
     <fragment
         android:id="@+id/passengerInfoFragment"
-        android:name="ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.PassengerInfoFragment"
+        android:name="ua.com.cuteteam.cutetaxiproject.fragments.PassengerInfoFragment"
         android:label="PassengerInfoFragment" />
     <fragment
         android:id="@+id/systemFragment"
-        android:name="ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.SystemFragment"
+        android:name="ua.com.cuteteam.cutetaxiproject.fragments.SystemFragment"
         android:label="SystemFragment" />
 
 </navigation>

@@ -18,7 +18,7 @@ import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.extentions.distanceTo
 import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
-import ua.com.cuteteam.cutetaxiproject.ui.main.DriverActivity
+import ua.com.cuteteam.cutetaxiproject.activities.DriverActivity
 
 private const val ORDER_ID_NAME = "DriverService_orderId"
 
@@ -63,6 +63,7 @@ class DriverService : BaseService(), CoroutineScope {
                 if (orderId == null && list.isNotEmpty()) {
                     val filteredList =
                         list
+                            .filter { it.comfortLevel == appSettingsHelper.carClass }
                             .filter {
                                 val startLocation = it.addressStart?.location.run {
                                     this?.latitude?.let { lat ->
@@ -99,10 +100,13 @@ class DriverService : BaseService(), CoroutineScope {
 
     private fun postCoordinates(location: Location) {
         val path = "${DbEntries.Orders.TABLE}/${DbEntries.Orders.Fields.DRIVER_LOCATION}"
-        fbDao.writeField(
-            DbEntries.Orders.TABLE,
-            location.toLatLng
-        )                             //TODO:Change later with correct method FbDao
+        orderId?.let {
+            fbDao.updateOrder(
+                it,
+                DbEntries.Orders.Fields.DRIVER_LOCATION,
+                location.toLatLng
+            )
+        }
     }
 
     private fun getAcceptOrderIntent(order: Order): NotificationCompat.Action {

@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.ui.main.models
+package ua.com.cuteteam.cutetaxiproject.viewmodels
 
 import androidx.lifecycle.*
 import com.google.android.gms.maps.model.LatLng
@@ -40,9 +40,9 @@ class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
     }
 
     private val locationObserver by lazy {
-        Observer<LatLng>{
-            mOrder?.driverLocation = Coordinates(it.latitude, it.longitude)
-            repo.dao.writeOrder(mOrder)
+        Observer<LatLng>{latLng ->
+            mOrder?.driverLocation = Coordinates(latLng.latitude, latLng.longitude)
+                mOrder?.let { repo.dao.writeOrder(it) }
         }
     }
 

@@ -7,7 +7,6 @@ import ua.com.cuteteam.cutetaxiproject.data.entities.Address
 import ua.com.cuteteam.cutetaxiproject.data.entities.ComfortLevel
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
-import ua.com.cuteteam.cutetaxiproject.ui.main.models.BaseViewModel
 
 class PassengerViewModel(private val repository: Repository) : BaseViewModel(repository) {
 
