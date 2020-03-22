@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.ui.settings.sum_providers
+package ua.com.cuteteam.cutetaxiproject.fragments.sum_providers
 
 import androidx.preference.ListPreference
 import androidx.preference.Preference

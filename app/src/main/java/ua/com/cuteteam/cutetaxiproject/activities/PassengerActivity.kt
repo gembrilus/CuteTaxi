@@ -1,9 +1,9 @@
-package ua.com.cuteteam.cutetaxiproject.ui.main
+package ua.com.cuteteam.cutetaxiproject.activities
 
 import androidx.lifecycle.ViewModelProvider
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
-import ua.com.cuteteam.cutetaxiproject.ui.main.models.BaseViewModel
+import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
 
 class PassengerActivity : BaseActivity() {

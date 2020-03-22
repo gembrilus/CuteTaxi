@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.ui.settings.fragments
+package ua.com.cuteteam.cutetaxiproject.fragments
 
 import androidx.preference.Preference
 import ua.com.cuteteam.cutetaxiproject.R
@@ -7,7 +7,7 @@ import ua.com.cuteteam.cutetaxiproject.data.database.PassengerDao
 import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreference
 import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreferenceDialogFragmentCompat
 import ua.com.cuteteam.cutetaxiproject.shPref.FirebaseSettingsDataStore
-import ua.com.cuteteam.cutetaxiproject.ui.settings.sum_providers.ComfortLevelSumProvider
+import ua.com.cuteteam.cutetaxiproject.fragments.sum_providers.ComfortLevelSumProvider
 
 private const val TAG = "CuteTaxi.PassInfoFrag"
 

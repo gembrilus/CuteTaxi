@@ -37,7 +37,7 @@ class AppSettingsHelper (
             is Driver -> {
                 carBrand = user.car?.brand
                 carModel = user.car?.model
-                carClass = user.car?.comfortLevel
+                carClass = user.car?.carClass ?: ComfortLevel.STANDARD
                 carColor = user.car?.color
                 carNumber = user.car?.regNumber
             }
@@ -90,7 +90,7 @@ class AppSettingsHelper (
     /**
      * Property for the car comfort class what user selects
      */
-    var comfortClass: ComfortLevel?
+    var comfortClass: ComfortLevel
         get() {
             val ordinal =
                 shPref.getString(DbEntries.Passengers.Fields.COMFORT_LEVEL, null)?.toInt() ?: ComfortLevel.STANDARD.ordinal
@@ -98,7 +98,7 @@ class AppSettingsHelper (
         }
         set(value) = put(
             DbEntries.Passengers.Fields.COMFORT_LEVEL,
-            value?.ordinal ?: ComfortLevel.STANDARD.ordinal
+            value.ordinal
         )
 
 
@@ -151,12 +151,12 @@ class AppSettingsHelper (
     /**
      * Property for the car comfort class
      */
-    var carClass: ComfortLevel?
+    var carClass: ComfortLevel
         get() {
-            val ordinal = shPref.getString(DbEntries.Car.COMFORT_LEVEL, null)?.toInt() ?: ComfortLevel.STANDARD.ordinal
+            val ordinal = shPref.getString(DbEntries.Car.CAR_CLASS, null)?.toInt() ?: ComfortLevel.STANDARD.ordinal
             return ComfortLevel.values()[ordinal]
         }
-        set(value) = put(DbEntries.Car.COMFORT_LEVEL, value?.ordinal ?: ComfortLevel.STANDARD.ordinal)
+        set(value) = put(DbEntries.Car.CAR_CLASS, value.ordinal)
 
 
     /**
