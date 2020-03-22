@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.ui.main.adapters
+package ua.com.cuteteam.cutetaxiproject.fragments.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -66,7 +66,7 @@ class OrdersAdapter(private var orders: List<Order> = emptyList()) :
         }
         return null
     }
-    
+
     private fun prepareDistance(order: Order): String? {
         val d = calcDistance(order) ?: return ""
         return when(d){

@@ -22,8 +22,6 @@ import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
 import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission
 import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
-import ua.com.cuteteam.cutetaxiproject.ui.main.DriverActivity
-import ua.com.cuteteam.cutetaxiproject.ui.main.PassengerActivity
 import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.PassengerViewModelFactory
 
@@ -56,6 +54,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
 
+        val role = AppSettingsHelper(this).role
+        if (role) {
+            startActivity(
+                Intent(
+                    this,
+                    DriverActivity::class.java
+                )
+            )
+        } else
+            startActivity(
+                Intent(
+                    this,
+                    PassengerActivity::class.java
+                )
+            )
+        finish()
+
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -73,39 +88,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         addAMarkerAndMoveTheCamera()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.home -> {
-                val role = AppSettingsHelper(this).role
-                if (role) {
-                    startActivity(
-                        Intent(
-                            this,
-                            DriverActivity::class.java
-                        )
-                    ).run {
-                        finish()
-                        return true
-                    }
-                } else
-                startActivity(
-                    Intent(
-                        this,
-                        PassengerActivity::class.java
-                    )
-                ).run {
-                    finish()
-                    return true
-                }
-            }
-            else -> return super.onOptionsItemSelected(item)
-        }
-    }
 
     @AfterPermissionGranted(PermissionProvider.LOCATION_REQUEST_CODE)
     private fun addAMarkerAndMoveTheCamera() {

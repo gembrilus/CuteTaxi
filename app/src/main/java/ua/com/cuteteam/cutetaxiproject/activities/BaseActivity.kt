@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.ui.main
+package ua.com.cuteteam.cutetaxiproject.activities
 
 import android.content.Intent
 import android.content.SharedPreferences
@@ -20,7 +20,6 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
 import kotlinx.android.synthetic.main.navigation_header.view.*
 import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.activities.AuthActivity
 import ua.com.cuteteam.cutetaxiproject.common.network.NetStatus
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
 import ua.com.cuteteam.cutetaxiproject.extentions.createNotificationChannel
@@ -28,7 +27,7 @@ import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission
 import ua.com.cuteteam.cutetaxiproject.permissions.PermissionProvider
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
-import ua.com.cuteteam.cutetaxiproject.ui.main.models.BaseViewModel
+import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
 
 abstract class BaseActivity :
     AppCompatActivity(),

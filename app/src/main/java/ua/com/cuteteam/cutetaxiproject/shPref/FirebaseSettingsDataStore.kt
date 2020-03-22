@@ -18,7 +18,7 @@ class FirebaseSettingsDataStore(
         DbEntries.Car.MODEL to "${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.MODEL}",
         DbEntries.Car.NUMBER to "${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.NUMBER}",
         DbEntries.Car.COLOR to "${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.COLOR}",
-        DbEntries.Car.COMFORT_LEVEL to "${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.COMFORT_LEVEL}"
+        DbEntries.Car.CAR_CLASS to "${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.CAR_CLASS}"
     )
 
     override fun getString(key: String?, defValue: String?): String? =

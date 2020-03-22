@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.ui.main.models
+package ua.com.cuteteam.cutetaxiproject.viewmodels
 
 import androidx.lifecycle.*
 import com.google.android.gms.maps.model.LatLng
@@ -6,7 +6,6 @@ import ua.com.cuteteam.cutetaxiproject.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.common.network.NetStatus
 import ua.com.cuteteam.cutetaxiproject.livedata.SingleLiveEvent
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
-import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
 
 open class BaseViewModel(private val repository: Repository) : ViewModel() {
 
