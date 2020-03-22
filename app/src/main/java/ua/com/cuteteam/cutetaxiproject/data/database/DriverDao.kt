@@ -3,10 +3,8 @@ package ua.com.cuteteam.cutetaxiproject.data.database
 import android.util.Log
 import com.google.firebase.database.*
 import ua.com.cuteteam.cutetaxiproject.data.entities.Coordinates
-import ua.com.cuteteam.cutetaxiproject.data.entities.Driver
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
-import ua.com.cuteteam.cutetaxiproject.extentions.distanceTo
 import ua.com.cuteteam.cutetaxiproject.extentions.getValue
 
 class DriverDao : BaseDao() {
@@ -38,6 +36,29 @@ class DriverDao : BaseDao() {
         } else {
             removeListeners(newOrdersRef)
             newOrdersRef.addChildEventListener(listener)
+        }
+    }
+
+    fun observeOrders(onSuccess: (List<Order>) -> Unit) {
+
+        val ref = rootRef.child(DbEntries.Orders.TABLE)
+            .orderByChild(DbEntries.Orders.Fields.ORDER_STATUS)
+            .equalTo(OrderStatus.NEW.name)
+
+        val listener = object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {}
+            override fun onDataChange(p0: DataSnapshot) {
+                val result = p0.children
+                    .mapNotNull {
+                        it.getValue(Order::class.java)
+                    }
+                    .toList()
+                onSuccess.invoke(result)
+            }
+        }
+        if (!eventListeners.contains(ref.ref)) {
+            ref.addValueEventListener(listener)
+            eventListeners[ref.ref] = listener
         }
     }
 
