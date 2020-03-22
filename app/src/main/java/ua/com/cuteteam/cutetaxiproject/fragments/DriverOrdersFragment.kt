@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.ui.main.fragments
+package ua.com.cuteteam.cutetaxiproject.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,10 +10,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_driver_orders.view.*
 import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.fragments.adapters.OrdersAdapter
 import ua.com.cuteteam.cutetaxiproject.repositories.DriverRepository
-import ua.com.cuteteam.cutetaxiproject.ui.main.adapters.OrdersAdapter
-import ua.com.cuteteam.cutetaxiproject.ui.main.models.BaseViewModel
-import ua.com.cuteteam.cutetaxiproject.ui.main.models.DriverViewModel
+import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
+import ua.com.cuteteam.cutetaxiproject.viewmodels.DriverViewModel
 
 class DriverOrdersFragment : Fragment() {
 

@@ -6,18 +6,18 @@
 
     <fragment
         android:id="@+id/backToHome"
-        android:name="ua.com.cuteteam.cutetaxiproject.ui.main.fragments.DriverMapFragment"
+        android:name="ua.com.cuteteam.cutetaxiproject.fragments.DriverMapFragment"
         android:label="DriverMapFragment"/>
     <fragment
         android:id="@+id/mainInfoFragment"
-        android:name="ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.MainInfoFragment"
+        android:name="ua.com.cuteteam.cutetaxiproject.fragments.MainInfoFragment"
         android:label="MainInfoFragment" />
     <fragment
         android:id="@+id/driverInfoFragment"
-        android:name="ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.DriverInfoFragment"
+        android:name="ua.com.cuteteam.cutetaxiproject.fragments.DriverInfoFragment"
         android:label="DriverInfoFragment" />
     <fragment
         android:id="@+id/systemFragment"
-        android:name="ua.com.cuteteam.cutetaxiproject.ui.settings.fragments.SystemFragment"
+        android:name="ua.com.cuteteam.cutetaxiproject.fragments.SystemFragment"
         android:label="SystemFragment" />
 </navigation>

@@ -1,7 +1,6 @@
-package ua.com.cuteteam.cutetaxiproject.ui.main
+package ua.com.cuteteam.cutetaxiproject.activities
 
 import android.content.SharedPreferences
-import android.util.Log
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
@@ -13,9 +12,9 @@ import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.extentions.showInfoSnackBar
 import ua.com.cuteteam.cutetaxiproject.repositories.DriverRepository
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
-import ua.com.cuteteam.cutetaxiproject.ui.main.adapters.OrdersAdapter
-import ua.com.cuteteam.cutetaxiproject.ui.main.models.BaseViewModel
-import ua.com.cuteteam.cutetaxiproject.ui.main.models.DriverViewModel
+import ua.com.cuteteam.cutetaxiproject.fragments.adapters.OrdersAdapter
+import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
+import ua.com.cuteteam.cutetaxiproject.viewmodels.DriverViewModel
 
 class DriverActivity : BaseActivity(), OrdersAdapter.OnOrderAccept {
 

@@ -12,29 +12,27 @@ class DriverDao : BaseDao() {
     override val usersRef: DatabaseReference
         get() = rootRef.child("drivers")
 
-    @Suppress("UNCHECKED_CAST")
     fun observeOrders(onSuccess: (List<Order>) -> Unit) {
+
         val ref = rootRef.child(DbEntries.Orders.TABLE)
             .orderByChild(DbEntries.Orders.Fields.ORDER_STATUS)
-            .equalTo(OrderStatus.NEW.name, DbEntries.Orders.Fields.ORDER_STATUS)
-            .orderByChild(DbEntries.Orders.Fields.START_ADDRESS)
-            .ref
-            .child(DbEntries.Orders.Fields.START_ADDRESS)
-            .child(DbEntries.Address.LOCATION)
-            .startAt(DbEntries.Address.LOCATION)
-            .endAt(DbEntries.Address.LOCATION)
-        ref.addValueEventListener(object : ValueEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                Log.e("CuteDAO", error.message)
-                ref.removeEventListener(this)
-            }
+            .equalTo(OrderStatus.NEW.name)
 
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val result = snapshot.getValue(List::class.java) as List<Order>
+        val listener = object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {}
+            override fun onDataChange(p0: DataSnapshot) {
+                val result = p0.children
+                    .mapNotNull {
+                        it.getValue(Order::class.java)
+                    }
+                    .toList()
                 onSuccess.invoke(result)
-                ref.removeEventListener(this)
             }
-        })
+        }
+        if (!eventListeners.contains(ref.ref)) {
+            ref.addValueEventListener(listener)
+            eventListeners[ref.ref] = listener
+        }
     }
 
     fun subscribeForOrders(driver: Driver, onSuccess: (Order) -> Unit) {
@@ -68,11 +66,13 @@ class DriverDao : BaseDao() {
         })
     }
 
-    fun writeOrder(id: String, order: Order) {
-        ordersRef.child(id).setValue(order).addOnFailureListener {
-            Log.e("Firebase: writeOrder()", it.message.toString())
-        }.addOnCompleteListener {
-            Log.d("Firebase: writeOrder()", "Write is successful")
+    fun writeOrder(order: Order) {
+        order.orderId?.let {
+            ordersRef.child(it).setValue(order).addOnFailureListener {
+                Log.e("Firebase: writeOrder()", it.message.toString())
+            }.addOnCompleteListener {
+                Log.d("Firebase: writeOrder()", "Write is successful")
+            }
         }
     }
 

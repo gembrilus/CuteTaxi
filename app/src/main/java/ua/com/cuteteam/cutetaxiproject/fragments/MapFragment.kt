@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.ui.main.fragments
+package ua.com.cuteteam.cutetaxiproject.fragments
 
 import android.os.Bundle
 import com.google.android.gms.maps.GoogleMap

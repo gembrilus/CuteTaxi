@@ -45,7 +45,7 @@ class FirebaseSettingsDataStoreTest {
         doReturn(name).whenever(shPref).getString(DbEntries.Passengers.Fields.NAME, null)
         doReturn(phone).whenever(shPref).getString(DbEntries.Passengers.Fields.PHONE, null)
         doReturn(comfortLevel.ordinal.toString()).whenever(shPref)
-            .getString(DbEntries.Car.COMFORT_LEVEL, null)
+            .getString(DbEntries.Car.CAR_CLASS, null)
         doReturn(brand).whenever(shPref).getString(DbEntries.Car.BRAND, null)
         doReturn(model).whenever(shPref).getString(DbEntries.Car.MODEL, null)
         doReturn(color).whenever(shPref).getString(DbEntries.Car.COLOR, null)
@@ -56,7 +56,7 @@ class FirebaseSettingsDataStoreTest {
         assertEquals(phone, dataStore.getString(DbEntries.Passengers.Fields.PHONE, null))
         assertEquals(
             comfortLevel.ordinal.toString(),
-            dataStore.getString(DbEntries.Car.COMFORT_LEVEL, null)
+            dataStore.getString(DbEntries.Car.CAR_CLASS, null)
         )
         assertEquals(brand, dataStore.getString(DbEntries.Car.BRAND, null))
         assertEquals(model, dataStore.getString(DbEntries.Car.MODEL, null))
@@ -66,7 +66,7 @@ class FirebaseSettingsDataStoreTest {
         //Verify
         inOrder.verify(shPref).getString(DbEntries.Passengers.Fields.NAME, null)
         inOrder.verify(shPref).getString(DbEntries.Passengers.Fields.PHONE, null)
-        inOrder.verify(shPref).getString(DbEntries.Car.COMFORT_LEVEL, null)
+        inOrder.verify(shPref).getString(DbEntries.Car.CAR_CLASS, null)
         inOrder.verify(shPref).getString(DbEntries.Car.BRAND, null)
         inOrder.verify(shPref).getString(DbEntries.Car.MODEL, null)
         inOrder.verify(shPref).getString(DbEntries.Car.COLOR, null)
@@ -82,7 +82,7 @@ class FirebaseSettingsDataStoreTest {
         val inOrder = inOrder(shPref, editor, fbDao)
         doReturn(editor).whenever(editor).putString(DbEntries.Passengers.Fields.NAME, null)
         doReturn(editor).whenever(editor).putString(DbEntries.Passengers.Fields.PHONE, null)
-        doReturn(editor).whenever(editor).putString(DbEntries.Car.COMFORT_LEVEL, null)
+        doReturn(editor).whenever(editor).putString(DbEntries.Car.CAR_CLASS, null)
         doReturn(editor).whenever(editor).putString(DbEntries.Car.BRAND, null)
         doReturn(editor).whenever(editor).putString(DbEntries.Car.MODEL, null)
         doReturn(editor).whenever(editor).putString(DbEntries.Car.COLOR, null)
@@ -90,7 +90,7 @@ class FirebaseSettingsDataStoreTest {
         doNothing().whenever(editor).apply()
         doNothing().whenever(fbDao).writeField(DbEntries.Passengers.Fields.NAME, null)
         doNothing().whenever(fbDao).writeField(DbEntries.Passengers.Fields.PHONE, null)
-        doNothing().whenever(fbDao).writeField("${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.COMFORT_LEVEL}", null)
+        doNothing().whenever(fbDao).writeField("${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.CAR_CLASS}", null)
         doNothing().whenever(fbDao).writeField("${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.BRAND}", null)
         doNothing().whenever(fbDao).writeField("${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.MODEL}", null)
         doNothing().whenever(fbDao).writeField("${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.COLOR}", null)
@@ -99,7 +99,7 @@ class FirebaseSettingsDataStoreTest {
         //Run
         dataStore.putString(DbEntries.Passengers.Fields.NAME, null)
         dataStore.putString(DbEntries.Passengers.Fields.PHONE, null)
-        dataStore.putString(DbEntries.Car.COMFORT_LEVEL, null)
+        dataStore.putString(DbEntries.Car.CAR_CLASS, null)
         dataStore.putString(DbEntries.Car.BRAND, null)
         dataStore.putString(DbEntries.Car.MODEL, null)
         dataStore.putString(DbEntries.Car.COLOR, null)
@@ -117,9 +117,9 @@ class FirebaseSettingsDataStoreTest {
         inOrder.verify(fbDao).writeField(DbEntries.Passengers.Fields.PHONE, null)
 
         inOrder.verify(shPref).edit()
-        inOrder.verify(editor).putString(DbEntries.Car.COMFORT_LEVEL, null)
+        inOrder.verify(editor).putString(DbEntries.Car.CAR_CLASS, null)
         inOrder.verify(editor).apply()
-        inOrder.verify(fbDao).writeField("${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.COMFORT_LEVEL}", null)
+        inOrder.verify(fbDao).writeField("${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.CAR_CLASS}", null)
 
         inOrder.verify(shPref).edit()
         inOrder.verify(editor).putString(DbEntries.Car.BRAND, null)
