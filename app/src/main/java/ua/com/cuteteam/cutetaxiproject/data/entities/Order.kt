@@ -1,7 +1,5 @@
 package ua.com.cuteteam.cutetaxiproject.data.entities
 
-import com.google.android.gms.maps.model.LatLng
-
 data class Order(
     var orderId: String? = null,
     var driverId: String? = null,

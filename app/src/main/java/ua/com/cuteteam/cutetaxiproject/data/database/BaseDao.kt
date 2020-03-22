@@ -2,17 +2,17 @@ package ua.com.cuteteam.cutetaxiproject.data.database
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.coroutineScope
 import ua.com.cuteteam.cutetaxiproject.data.User
 import ua.com.cuteteam.cutetaxiproject.data.entities.Driver
-import ua.com.cuteteam.cutetaxiproject.data.entities.Order
-import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.extentions.exists
 import ua.com.cuteteam.cutetaxiproject.extentions.getValue
 
@@ -27,7 +27,7 @@ abstract class BaseDao(
     protected val ordersRef = database.reference.root.child(DbEntries.Orders.TABLE)
     protected abstract val usersRef: DatabaseReference
 
-    protected val eventListeners = mutableMapOf<DatabaseReference, ValueEventListener>()
+    protected val eventListeners = mutableMapOf<DatabaseReference, Any>()
 
     @Suppress("UNCHECKED_CAST")
     suspend fun <T : User> getUser(uid: String): T? {
@@ -188,7 +188,10 @@ abstract class BaseDao(
      */
     fun removeAllListeners() {
         for (item in eventListeners) {
-            item.key.removeEventListener(item.value)
+            when (item.value) {
+                is ChildEventListener -> item.key.removeEventListener(item.value as ChildEventListener)
+                is ValueEventListener -> item.key.removeEventListener(item.value as ValueEventListener)
+            }
         }
         eventListeners.clear()
     }
@@ -204,14 +207,16 @@ abstract class BaseDao(
     }
 
 
-    private fun removeListeners(reference: DatabaseReference) {
+    protected fun removeListeners(reference: DatabaseReference) {
         for (item in eventListeners) {
             if (item.key == reference) {
                 Log.d("Realtime Database", "Unsubscribe from ${item.key}")
-                item.key.removeEventListener(item.value)
+                when (item.value) {
+                    is ChildEventListener -> item.key.removeEventListener(item.value as ChildEventListener)
+                    is ValueEventListener -> item.key.removeEventListener(item.value as ValueEventListener)
+                }
                 eventListeners.remove(item.key)
             }
         }
     }
-
 }

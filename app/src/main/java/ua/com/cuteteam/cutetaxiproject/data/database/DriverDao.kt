@@ -2,77 +2,55 @@ package ua.com.cuteteam.cutetaxiproject.data.database
 
 import android.util.Log
 import com.google.firebase.database.*
+import ua.com.cuteteam.cutetaxiproject.data.entities.Coordinates
 import ua.com.cuteteam.cutetaxiproject.data.entities.Driver
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.extentions.distanceTo
+import ua.com.cuteteam.cutetaxiproject.extentions.getValue
 
 class DriverDao : BaseDao() {
 
     override val usersRef: DatabaseReference
         get() = rootRef.child("drivers")
 
+    private val newOrdersQuery: Query = ordersRef
+        .orderByChild(DbEntries.Orders.Fields.ORDER_STATUS)
+        .equalTo(OrderStatus.NEW.name, DbEntries.Orders.Fields.ORDER_STATUS)
+
     @Suppress("UNCHECKED_CAST")
-    fun observeOrders(onSuccess: (List<Order>) -> Unit) {
-        val ref = rootRef.child(DbEntries.Orders.TABLE)
-            .orderByChild(DbEntries.Orders.Fields.ORDER_STATUS)
-            .equalTo(OrderStatus.NEW.name, DbEntries.Orders.Fields.ORDER_STATUS)
-            .orderByChild(DbEntries.Orders.Fields.START_ADDRESS)
-            .ref
-            .child(DbEntries.Orders.Fields.START_ADDRESS)
-            .child(DbEntries.Address.LOCATION)
-            .startAt(DbEntries.Address.LOCATION)
-            .endAt(DbEntries.Address.LOCATION)
-        ref.addValueEventListener(object : ValueEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                Log.e("CuteDAO", error.message)
-                ref.removeEventListener(this)
-            }
+    suspend fun getOrdersList(location: Coordinates): List<Order> {
+        val ordersReference = newOrdersQuery.ref
+        val listOfOrdersSnapshot = ordersReference.getValue().value as List<Order>
+        val ordersList = mutableListOf<Order>()
 
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val result = snapshot.getValue(List::class.java) as List<Order>
-                onSuccess.invoke(result)
-                ref.removeEventListener(this)
-            }
-        })
+        listOfOrdersSnapshot.forEach {
+            ordersList.add(it)
+        }
+        return ordersList
     }
 
-    fun subscribeForOrders(driver: Driver, onSuccess: (Order) -> Unit) {
-        val ref = rootRef.child(DbEntries.Orders.TABLE)
-        ref.addChildEventListener(object : ChildEventListener {
-            override fun onCancelled(error: DatabaseError) {
+    fun subscribeForNewOrders(listener: ChildEventListener) {
+        val newOrdersRef = newOrdersQuery.ref
 
-            }
-
-            override fun onChildMoved(snapshot: DataSnapshot, prevName: String?) {
-
-            }
-
-            override fun onChildChanged(snapshot: DataSnapshot, prevName: String?) {
-
-            }
-
-            override fun onChildAdded(snapshot: DataSnapshot, prevName: String?) {
-                val newOrder = snapshot.getValue(Order::class.java) as Order
-                if (newOrder.addressStart!!.location!!.toLatLng()!!
-                        .distanceTo(driver.location!!.toLatLng()!!) <= 10000 &&
-                    newOrder.comfortLevel == driver.car?.carClass
-                ) {
-                    onSuccess.invoke(newOrder)
-                }
-            }
-
-            override fun onChildRemoved(snapshot: DataSnapshot) {
-
-            }
-        })
+        if (!eventListeners.contains(newOrdersRef)) {
+            newOrdersRef.addChildEventListener(listener)
+        } else {
+            removeListeners(newOrdersRef)
+            newOrdersRef.addChildEventListener(listener)
+        }
     }
 
-    fun writeOrder(id: String, order: Order) {
-        ordersRef.child(id).setValue(order).addOnFailureListener {
-            Log.e("Firebase: writeOrder()", it.message.toString())
-        }.addOnCompleteListener {
-            Log.d("Firebase: writeOrder()", "Write is successful")
+    fun writeOrder(order: Order) {
+        val orderId = order.orderId
+        if (orderId != null) {
+            ordersRef.child(orderId).setValue(order).addOnFailureListener {
+                Log.e("Firebase: writeOrder()", it.message.toString())
+            }.addOnCompleteListener {
+                Log.d("Firebase: writeOrder()", "Write is successful")
+            }
+        } else {
+            Log.e("Firebase: writeOrder()", "Order id is null")
         }
     }
 
@@ -83,6 +61,4 @@ class DriverDao : BaseDao() {
             Log.d("Firebase: updateOrder()", "Write is successful")
         }
     }
-
-
 }
