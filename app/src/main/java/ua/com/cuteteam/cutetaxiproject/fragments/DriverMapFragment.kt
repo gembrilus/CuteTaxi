@@ -1,6 +1,7 @@
 package ua.com.cuteteam.cutetaxiproject.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,8 @@ import ua.com.cuteteam.cutetaxiproject.dialogs.RateDialog
 import ua.com.cuteteam.cutetaxiproject.repositories.DriverRepository
 import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.DriverViewModel
+
+private const val TAG = "Cute.DriverFragment"
 
 class DriverMapFragment : MapFragment() {
 
@@ -40,7 +43,8 @@ class DriverMapFragment : MapFragment() {
         view.btn_orders_list.setOnClickListener {
             findNavController().navigate(R.id.action_home_to_new_orders)
         }
-        model.isNewOrdersExist.observe(requireActivity(), Observer { count ->
+        model.countOfOrders.observe(requireActivity(), Observer { count ->
+            Log.d(TAG, count.toString() )
             with(view.cart_badge) {
                 visibility = if (count != 0) View.VISIBLE else View.GONE
                 text = count.toString()

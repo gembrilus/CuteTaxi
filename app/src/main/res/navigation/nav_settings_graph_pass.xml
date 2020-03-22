@@ -5,10 +5,6 @@
     app:startDestination="@id/mainInfoFragment">
 
     <fragment
-        android:id="@+id/backToHome"
-        android:name="ua.com.cuteteam.cutetaxiproject.ui.main.fragments.PassengerMapFragment"
-        android:label="PassengerMapFragment"/>
-    <fragment
         android:id="@+id/mainInfoFragment"
         android:name="ua.com.cuteteam.cutetaxiproject.fragments.MainInfoFragment"
         android:label="MainInfoFragment" />
