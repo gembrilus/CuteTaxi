@@ -22,10 +22,6 @@
         <activity android:name=".activities.MapsActivity" />
         <activity android:name=".activities.AuthActivity" />
 
-        <activity
-            android:name=".ui.passenger.activities.PassengerActivity"
-            android:theme="@style/Theme.MaterialComponents.Light.NoActionBar"/>
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
@@ -40,17 +36,18 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.main.BaseActivity"
+        <activity android:name=".activities.BaseActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-        <activity android:name=".ui.main.PassengerActivity"
+        <activity android:name=".activities.PassengerActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-        <activity android:name=".ui.main.DriverActivity"
+        <activity android:name=".activities.DriverActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <service android:name=".services.DriverService"
             android:exported="false"/>
+
         <service android:name=".services.PassengerService"
             android:exported="false" />
 

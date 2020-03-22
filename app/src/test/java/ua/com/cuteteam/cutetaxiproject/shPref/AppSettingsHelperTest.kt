@@ -50,7 +50,7 @@ class AppSettingsHelperTest {
         car = Car(
             brand = "AUDI",
             model = "Q7",
-            comfortLevel = ComfortLevel.COMFORT,
+            carClass = ComfortLevel.COMFORT,
             color = "darkgrey",
             regNumber = "II1111II"
         )
@@ -150,7 +150,7 @@ class AppSettingsHelperTest {
             color = it.getArgument(1) as String
             editor
         }
-        whenever(editor.putInt(DbEntries.Car.COMFORT_LEVEL, driver.car?.comfortLevel?.ordinal!!)).doAnswer {
+        whenever(editor.putInt(DbEntries.Car.CAR_CLASS, driver.car?.carClass?.ordinal!!)).doAnswer {
             comfortLevel = ComfortLevel.values()[it.getArgument(1) as Int]
             editor
         }
@@ -168,7 +168,7 @@ class AppSettingsHelperTest {
         doReturn(model).whenever(sharedPreferences).getString(DbEntries.Car.MODEL, null)
         doReturn(number).whenever(sharedPreferences).getString(DbEntries.Car.NUMBER, null)
         doReturn(color).whenever(sharedPreferences).getString(DbEntries.Car.COLOR, null)
-        doReturn(comfortLevel?.ordinal.toString()).whenever(sharedPreferences).getString(DbEntries.Car.COMFORT_LEVEL, null)
+        doReturn(comfortLevel?.ordinal.toString()).whenever(sharedPreferences).getString(DbEntries.Car.CAR_CLASS, null)
 
 
         //Assertion
@@ -194,7 +194,7 @@ class AppSettingsHelperTest {
         inOrder.verify(editor).putString(DbEntries.Car.MODEL, driver.car?.model)
         inOrder.verify(editor).apply()
         inOrder.verify(sharedPreferences).edit()
-        inOrder.verify(editor).putInt(DbEntries.Car.COMFORT_LEVEL, driver.car?.comfortLevel?.ordinal!!)
+        inOrder.verify(editor).putInt(DbEntries.Car.CAR_CLASS, driver.car?.carClass?.ordinal!!)
         inOrder.verify(editor).apply()
         inOrder.verify(sharedPreferences).edit()
         inOrder.verify(editor).putString(DbEntries.Car.COLOR, driver.car?.color)
@@ -208,7 +208,7 @@ class AppSettingsHelperTest {
         inOrder.verify(sharedPreferences).getString(DbEntries.Car.MODEL, null)
         inOrder.verify(sharedPreferences).getString(DbEntries.Car.NUMBER, null)
         inOrder.verify(sharedPreferences).getString(DbEntries.Car.COLOR, null)
-        inOrder.verify(sharedPreferences).getString(DbEntries.Car.COMFORT_LEVEL, null)
+        inOrder.verify(sharedPreferences).getString(DbEntries.Car.CAR_CLASS, null)
         verifyNoMoreInteractions(sharedPreferences, editor)
 
     }
@@ -646,13 +646,13 @@ class AppSettingsHelperTest {
     @Test
     fun check_that_is_read_property_CarClass() {
         //Setup
-        doReturn(ComfortLevel.STANDARD.ordinal.toString()).whenever(sharedPreferences).getString(DbEntries.Car.COMFORT_LEVEL, null)
+        doReturn(ComfortLevel.STANDARD.ordinal.toString()).whenever(sharedPreferences).getString(DbEntries.Car.CAR_CLASS, null)
 
         //Assertion
         assertEquals(ComfortLevel.STANDARD, appSettingsHelper.carClass)
 
         //Verify
-        verify(sharedPreferences).getString(DbEntries.Car.COMFORT_LEVEL, null)
+        verify(sharedPreferences).getString(DbEntries.Car.CAR_CLASS, null)
     }
 
     @Test
@@ -662,7 +662,7 @@ class AppSettingsHelperTest {
         var newValue: ComfortLevel? = null
         val oldValue = ComfortLevel.STANDARD
         val expected = ComfortLevel.COMFORT
-        val key = DbEntries.Car.COMFORT_LEVEL
+        val key = DbEntries.Car.CAR_CLASS
         val inOrder = inOrder(sharedPreferences, editor)
 
         whenever(editor.putInt(key, expected.ordinal)).doAnswer {

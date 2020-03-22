@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.ui.main.fragments
+package ua.com.cuteteam.cutetaxiproject.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,8 +13,8 @@ import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
 import ua.com.cuteteam.cutetaxiproject.dialogs.RateDialog
 import ua.com.cuteteam.cutetaxiproject.repositories.DriverRepository
-import ua.com.cuteteam.cutetaxiproject.ui.main.models.BaseViewModel
-import ua.com.cuteteam.cutetaxiproject.ui.main.models.DriverViewModel
+import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
+import ua.com.cuteteam.cutetaxiproject.viewmodels.DriverViewModel
 
 class DriverMapFragment : MapFragment() {
 

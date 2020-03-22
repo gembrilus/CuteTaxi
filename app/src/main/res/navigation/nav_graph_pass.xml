@@ -14,7 +14,3 @@
     <include app:graph="@navigation/nav_settings_graph_pass" />
 
 </navigation>
-
-<!--
-    android:name="ua.com.cuteteam.cutetaxiproject.ui.main.fragments.PassengerMapFragment"
-    android:label="PassengerMapFragment" />-->
