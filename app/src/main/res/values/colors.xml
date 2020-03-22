@@ -10,4 +10,5 @@
 
     <color name="colorAccent">#bbdefb</color>
     <color name="colorError">#FF5722</color>
+    <color name="polyline">#143671</color>
 </resources>
