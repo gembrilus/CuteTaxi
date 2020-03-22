@@ -1,6 +1,7 @@
 package ua.com.cuteteam.cutetaxiproject.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,8 @@ import ua.com.cuteteam.cutetaxiproject.fragments.adapters.OrdersAdapter
 import ua.com.cuteteam.cutetaxiproject.repositories.DriverRepository
 import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.DriverViewModel
+
+private const val TAG = "Cute.OrdersFragment"
 
 class DriverOrdersFragment : Fragment() {
 
@@ -43,11 +46,8 @@ class DriverOrdersFragment : Fragment() {
         }
 
         model.orders.observe(requireActivity(), Observer {
+            Log.d(TAG, it.toString() )
             mAdapter.setOrders(it)
-        })
-
-        model.currentLocation.observe(requireActivity(), Observer {
-            mAdapter.setLocation(it)
         })
 
     }

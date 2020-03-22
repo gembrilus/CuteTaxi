@@ -103,7 +103,7 @@
 
     // Car class
 
-    <string name="key_car_class_preference" translatable="false">comfortLevel</string>
+    <string name="key_car_class_preference" translatable="false">carClass</string>
     <string name="title_car_class_preference_for_car">Car comfort class</string>
 
     // Car color

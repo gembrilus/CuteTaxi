@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.driver_orders_item.view.*
 import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.data.entities.Coordinates
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.extentions.distanceTo
 
@@ -43,14 +42,6 @@ class OrdersAdapter(private var orders: List<Order> = emptyList()) :
 
     fun setAcceptListener(listener: OnOrderAccept){
         acceptListener = listener
-    }
-
-    fun setLocation(location: LatLng) {
-        orders.forEach {
-            it.driverLocation = Coordinates(location.latitude, location.longitude)
-            it.arrivingTime = calcDistance(it)?.div(1000)?.toLong()
-        }
-        notifyDataSetChanged()
     }
 
     private fun calcDistance(order: Order): Double? {

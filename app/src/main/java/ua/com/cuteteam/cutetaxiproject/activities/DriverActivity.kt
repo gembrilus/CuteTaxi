@@ -58,7 +58,7 @@ class DriverActivity : BaseActivity(), OrdersAdapter.OnOrderAccept {
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         super.onSharedPreferenceChanged(sharedPreferences, key)
-        model.getOrders()
+        model.updateOrders()
     }
 
     private fun show() {

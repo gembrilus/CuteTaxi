@@ -1,5 +1,6 @@
 package ua.com.cuteteam.cutetaxiproject.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
@@ -33,48 +34,41 @@ class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
 
             override fun onDataChange(snapshot: DataSnapshot) {
                 snapshot.getValue(Order::class.java)?.let {
-                        _activeOrder.value = it
+                    _activeOrder.value = it
                 }
             }
         }
     }
 
     private val locationObserver by lazy {
-        Observer<LatLng>{latLng ->
+        Observer<LatLng> { latLng ->
             mOrder?.driverLocation = Coordinates(latLng.latitude, latLng.longitude)
-                mOrder?.let { repo.dao.writeOrder(it) }
+            mOrder?.let { repo.dao.writeOrder(it) }
         }
     }
 
     private val _activeOrder = MutableLiveData<Order>()
     val activeOrder: LiveData<Order> get() = _activeOrder
 
-    fun getOrders() = viewModelScope.launch(Dispatchers.Unconfined) {
-        if (repo.netHelper.hasInternet) {
-            val currentLocation = repo.locationProvider.getLocation()?.toLatLng
-            repo.dao.observeOrders { orders ->
-                _orders.value = orders
-                    .filter { it.comfortLevel == repo.spHelper.carClass }
-                    .filter {
-                        val lat = it.addressStart?.location?.latitude
-                        val lon = it.addressStart?.location?.longitude
-                        if (lat != null && lon != null && currentLocation != null) {
-                            val latLng = LatLng(lat, lon)
-                            val distance = currentLocation distanceTo latLng
-                            distance <= 5000
-                        } else false
-                    }
-            }
+    private val _orders = MutableLiveData<List<Order>>()
+    val orders: LiveData<List<Order>>
+        get() = Transformations.map(_orders) { list ->
+            Log.d("Cute", list.toString())
+            Log.d("Cute", repo.spHelper.carClass.toString() )
+            list.filter { it.comfortLevel == repo.spHelper.carClass }
         }
-    }
-
-    private val _orders= MutableLiveData<List<Order>>()
-    val orders: LiveData<List<Order>> get() = _orders
-    val isNewOrdersExist = Transformations.map(orders){
+    val countOfOrders = Transformations.map(orders) {
         it.size
     }
 
-    fun obtainOrder(order: Order){
+    fun updateOrders() {
+        _orders.value = _orders.value
+/*        val temp = _orders.value
+        _orders.value = emptyList()
+        _orders.value = temp*/
+    }
+
+    fun obtainOrder(order: Order) {
         mOrder = order
         mOrder?.driverId = FirebaseAuth.getInstance().currentUser?.uid
         val orderId = mOrder?.orderId
@@ -88,9 +82,34 @@ class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
 //        repo.spHelper.activeOrderId = orderId
     }
 
+    private fun getOrders() = viewModelScope.launch(Dispatchers.Unconfined) {
+        if (repo.netHelper.hasInternet) {
+            val currentLocation = repo.locationProvider.getLocation()?.toLatLng
+            repo.dao.observeOrders { orders ->
+                _orders.value = orders
+                    .filter {
+                        val lat = it.addressStart?.location?.latitude
+                        val lon = it.addressStart?.location?.longitude
+                        if (lat != null && lon != null && currentLocation != null) {
+                            val latLng = LatLng(lat, lon)
+                            val distance = currentLocation distanceTo latLng
+                            distance <= 5000
+                        } else false
+                    }
+                    .map {
+                        it.apply {
+                            driverLocation =
+                                Coordinates(currentLocation?.latitude, currentLocation?.longitude)
+                        }
+                    }
+            }
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         currentLocation.removeObserver(locationObserver)
+        repo.dao.removeAllListeners()
     }
 
 }
