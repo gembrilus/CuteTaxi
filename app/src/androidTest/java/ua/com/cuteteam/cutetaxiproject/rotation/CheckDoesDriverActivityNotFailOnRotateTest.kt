@@ -6,7 +6,7 @@ import androidx.test.rule.ActivityTestRule
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import ua.com.cuteteam.cutetaxiproject.ui.main.DriverActivity
+import ua.com.cuteteam.cutetaxiproject.activities.DriverActivity
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest

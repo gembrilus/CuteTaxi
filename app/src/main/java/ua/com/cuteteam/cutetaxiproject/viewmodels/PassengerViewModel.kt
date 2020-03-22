@@ -7,13 +7,16 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import ua.com.cuteteam.cutetaxiproject.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.LocationProvider
-import ua.com.cuteteam.cutetaxiproject.ui.main.models.BaseViewModel
 import ua.com.cuteteam.cutetaxiproject.helpers.PhoneNumberHelper
 import ua.com.cuteteam.cutetaxiproject.api.geocoding.GeocodeRequest
 import ua.com.cuteteam.cutetaxiproject.application.AppClass
 import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 import java.util.*
+import com.google.firebase.auth.FirebaseAuth
+import ua.com.cuteteam.cutetaxiproject.data.entities.Address
+import ua.com.cuteteam.cutetaxiproject.data.entities.ComfortLevel
+import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 
 class PassengerViewModel(
     private val repository: PassengerRepository,
@@ -21,6 +24,12 @@ class PassengerViewModel(
 ) : BaseViewModel(repository) {
 
     private var dialogShowed = false
+
+    val userId = FirebaseAuth.getInstance().currentUser!!.uid
+
+    val addressStart: Address = Address()
+    val addressFinish: Address = Address()
+    var comfortLevel = ComfortLevel.STANDARD
 
     val observableLocation: LocationLiveData
         get() = repository.observableLocation
@@ -73,5 +82,24 @@ class PassengerViewModel(
     private fun countryNameByRegionCode(regionCode: String): String {
         val local = Locale("", regionCode)
         return local.displayCountry
+    }
+
+/*    fun makeOrder() {
+        val order = Order(
+            passengerId = userId,
+            comfortLevel = comfortLevel,
+            addressStart = addressStart,
+            addressDestination = addressFinish
+        )
+
+        if (order.isReady()) {
+            repository.writeOrder(order)
+        }
+    }*/
+
+    private fun Order.isReady(): Boolean {
+        return (this.passengerId != null &&
+                this.addressStart?.location != null &&
+                this.addressDestination?.location != null)
     }
 }

@@ -7,8 +7,9 @@
 
     <fragment
         android:id="@+id/home"
-        android:name="ua.com.cuteteam.cutetaxiproject.ui.main.fragments.PassengerMapFragment"
-        android:label="PassengerMapFragment" />
+        android:name="ua.com.cuteteam.cutetaxiproject.ui.passenger.fragments.PassengerFragment"
+        android:label="PassengerFragment" />
+
 
     <include app:graph="@navigation/nav_settings_graph_pass" />
 

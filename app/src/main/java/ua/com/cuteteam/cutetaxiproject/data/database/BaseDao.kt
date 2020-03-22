@@ -5,11 +5,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.coroutineScope
 import ua.com.cuteteam.cutetaxiproject.data.User
 import ua.com.cuteteam.cutetaxiproject.data.entities.Driver
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
-import ua.com.cuteteam.cutetaxiproject.data.entities.Trip
 import ua.com.cuteteam.cutetaxiproject.extentions.exists
 import ua.com.cuteteam.cutetaxiproject.extentions.getValue
 
@@ -18,14 +21,16 @@ abstract class BaseDao(
     database: FirebaseDatabase = Firebase.database
 ) {
 
+    protected val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     protected val authUser = auth.currentUser!!
     protected val rootRef = database.reference.root
+    protected val ordersRef = database.reference.root.child(DbEntries.Orders.TABLE)
     protected abstract val usersRef: DatabaseReference
 
-    private val eventListeners = mutableMapOf<DatabaseReference, ValueEventListener>()
+    protected val eventListeners = mutableMapOf<DatabaseReference, ValueEventListener>()
 
     @Suppress("UNCHECKED_CAST")
-    suspend fun <T: User> getUser(uid: String): T? {
+    suspend fun <T : User> getUser(uid: String): T? {
         val userData = usersRef.child(uid).getValue()
         return userData.getValue(Driver::class.java) as T?
     }
@@ -139,41 +144,42 @@ abstract class BaseDao(
         val childRef = usersRef.child(uid).child(field)
         if (!eventListeners.contains(childRef)) {
             childRef.addValueEventListener(listener)
-            eventListeners.put(childRef, listener)
+            eventListeners[childRef] = listener
             Log.d("Realtime database", "Set to listen for $childRef")
         } else {
             Log.e("Database Error", "Listener $childRef is already set")
         }
     }
 
-    fun writeOrder(order: Order?): DatabaseReference {
-        val ref = rootRef.child(DbEntries.Orders.TABLE).push()
-        order?.let {
-            ref.setValue(it)
+    fun subscribeForChanges(
+        table: String,
+        entry: String,
+        listener: ValueEventListener
+    ) {
+        val childRef = rootRef.child(table).child(entry)
+        if (!eventListeners.contains(childRef)) {
+            childRef.addValueEventListener(listener)
+            eventListeners[childRef] = listener
+            Log.d("Realtime database", "Set to listen for $childRef")
+        } else {
+            Log.e("Database Error", "Listener $childRef is already set")
         }
-        return ref
     }
 
-    @Suppress("UNCHECKED_CAST")
-    fun observeOrders(onSuccess: (List<Order>) -> Unit){
-        rootRef.child(DbEntries.Orders.TABLE)
-            .orderByChild(DbEntries.Orders.Fields.ORDER_STATUS)
-            .equalTo(OrderStatus.NEW.name, DbEntries.Orders.Fields.ORDER_STATUS)
-            .orderByChild(DbEntries.Orders.Fields.START_ADDRESS)
-            .ref
-            .child(DbEntries.Orders.Fields.START_ADDRESS)
-            .child(DbEntries.Address.LOCATION)
-            .startAt(DbEntries.Address.LOCATION)
-            .endAt(DbEntries.Address.LOCATION)
-            .addValueEventListener(object : ValueEventListener{
-                override fun onCancelled(p0: DatabaseError) {
-                    Log.e("CuteDAO", p0.message)
-                }
-                override fun onDataChange(p0: DataSnapshot) {
-                    val result = p0.getValue(List::class.java) as List<Order>
-                    onSuccess.invoke(result)
-                }
-            })
+    fun subscribeForChanges(
+        table: String,
+        entry: String,
+        field: String,
+        listener: ValueEventListener
+    ) {
+        val childRef = rootRef.child(table).child(entry).child(field)
+        if (!eventListeners.contains(childRef)) {
+            childRef.addValueEventListener(listener)
+            eventListeners[childRef] = listener
+            Log.d("Realtime database", "Set to listen for $childRef")
+        } else {
+            Log.e("Database Error", "Listener $childRef is already set")
+        }
     }
 
     /** Removes all active listeners

@@ -5,16 +5,10 @@ import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.preference.PreferenceManager
 import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.activities.MainActivity
-import ua.com.cuteteam.cutetaxiproject.data.entities.Order
-import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
-import ua.com.cuteteam.cutetaxiproject.ui.main.DriverActivity
 
 private const val UPDATABLE_ID = 0
 private var _NOTE_ID = 1

@@ -36,17 +36,18 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.main.BaseActivity"
+        <activity android:name=".activities.BaseActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-        <activity android:name=".ui.main.PassengerActivity"
+        <activity android:name=".activities.PassengerActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-        <activity android:name=".ui.main.DriverActivity"
+        <activity android:name=".activities.DriverActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <service android:name=".services.DriverService"
             android:exported="false"/>
+
         <service android:name=".services.PassengerService"
             android:exported="false" />
 
