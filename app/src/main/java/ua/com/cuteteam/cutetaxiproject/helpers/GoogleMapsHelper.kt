@@ -1,6 +1,7 @@
 package ua.com.cuteteam.cutetaxiproject.helpers
 
 import android.graphics.Color
+import androidx.navigation.ActivityNavigator
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
@@ -8,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.api.RouteProvider
+import ua.com.cuteteam.cutetaxiproject.extentions.findBy
 
 class GoogleMapsHelper(private val googleMap: GoogleMap) {
 
@@ -15,6 +17,8 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
         googleMap.isMyLocationEnabled = true
         googleMap.isBuildingsEnabled = false
     }
+
+    private var currentRoute: RouteProvider.RouteSummary? = null
 
     fun addMarkers(markers: Map<Int, Marker?>): Map<Int, Marker?> {
         googleMap.clear()
@@ -57,7 +61,7 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
         icon: Int,
         callback: ((Marker?) -> Unit)? = null
     ) {
-        val marker = findBy(markers) { it.value?.tag == tag }
+        val marker = markers.findBy { it.value?.tag == tag }
 
         if (marker != null) {
             updateMarkerByClick(marker.value!!, icon, callback)
@@ -66,9 +70,9 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
         }
     }
 
-    suspend fun buildRoute(markers: MutableMap<Int, Marker?>) {
-        if (markers.count() < 2) return
-        val routeProvider = buildRouteProvider(markers) ?: return
+    suspend fun buildRoute(from: Marker?, to: Marker?) {
+        if (from == null || to == null) return
+        val routeProvider = buildRouteProvider(from.position, to.position)
         withContext(Dispatchers.Main) {
             val routeSummary = routeProvider.routes()[0]
             googleMap.addPolyline(PolylineOptions()
@@ -79,7 +83,7 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
                 .startCap(CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.circular_shape_silhouette), 300f))
                 .endCap(CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.circular_shape_silhouette), 300f))
             )
-            updateCameraForBounds(markers)
+            currentRoute = routeSummary
         }
     }
 
@@ -87,11 +91,9 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
         googleMap.setOnMapClickListener(null)
     }
 
-    private suspend fun updateCameraForBounds(markers: MutableMap<Int, Marker?>) {
-        val routeProvider = buildRouteProvider(markers) ?: return
-        withContext(Dispatchers.Main) {
-            val routeSummary = routeProvider.routes()[0]
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(buildBoundaryForRoute(routeSummary), 100))
+    fun updateCameraForCurrentRoute() {
+        currentRoute?.let {
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(buildBoundaryForRoute(it), 100))
         }
     }
 
@@ -104,18 +106,10 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
             .build()
     }
 
-    private fun stringListOfPoints(markers: MutableMap<Int, Marker?>): List<String> {
-        return markers.values
-            .filterNotNull()
-            .map { "${it.position?.latitude}, ${it.position?.longitude}" }
-    }
-
-    private fun buildRouteProvider(markers: MutableMap<Int, Marker?>): RouteProvider? {
-        val pointCoordinates = stringListOfPoints(markers)
-        if (pointCoordinates.isEmpty()) return null
+    private fun buildRouteProvider(from: LatLng, to: LatLng): RouteProvider {
         return RouteProvider.Builder()
-            .addOrigin(pointCoordinates[0])
-            .addDestination(pointCoordinates[1])
+            .addOrigin(from)
+            .addDestination(to)
             .build()
     }
 
@@ -126,16 +120,6 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
     ) {
         marker.remove()
         createMarkerByClick(marker.tag, icon, callback)
-    }
-
-    private fun findBy(
-        markers: MutableMap<Int, Marker?>,
-        predicate: (MutableMap.MutableEntry<Int, Marker?>) -> Boolean
-    ): MutableMap.MutableEntry<Int, Marker?>? {
-        for (marker in markers) {
-            if (predicate(marker)) return marker
-        }
-        return null
     }
 
     private fun createMarkerByClick(

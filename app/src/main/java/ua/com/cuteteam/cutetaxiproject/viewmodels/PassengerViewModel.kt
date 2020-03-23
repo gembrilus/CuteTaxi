@@ -14,6 +14,7 @@ import com.google.android.gms.maps.model.Marker
 import ua.com.cuteteam.cutetaxiproject.helpers.PhoneNumberHelper
 import ua.com.cuteteam.cutetaxiproject.api.geocoding.GeocodeRequest
 import ua.com.cuteteam.cutetaxiproject.application.AppClass
+import ua.com.cuteteam.cutetaxiproject.extentions.findBy
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 import java.util.*
@@ -63,6 +64,10 @@ class PassengerViewModel(
 
     suspend fun currentCameraPosition(): CameraPosition {
         return cameraPosition ?: countryCameraPosition()
+    }
+
+    fun findMarkerByTag(tag: String): Marker? {
+        return markers.value?.findBy { it.value?.tag == tag }?.value
     }
 
     private suspend fun countryCameraPosition(): CameraPosition {

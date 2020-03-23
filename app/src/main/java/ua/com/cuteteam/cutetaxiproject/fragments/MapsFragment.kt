@@ -15,6 +15,7 @@ import pub.devrel.easypermissions.AfterPermissionGranted
 import ua.com.cuteteam.cutetaxiproject.helpers.GoogleMapsHelper
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
+import ua.com.cuteteam.cutetaxiproject.extentions.findBy
 import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission
 import ua.com.cuteteam.cutetaxiproject.permissions.PermissionProvider
 import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
@@ -96,7 +97,10 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
                         .addMarkers(passengerViewModel.markers.value ?: emptyMap())
                         .also { passengerViewModel.replaceMarkers(it) }
                     GlobalScope.launch(Dispatchers.Main) {
-                        googleMapsHelper.buildRoute(passengerViewModel.markers.value!!)
+                        googleMapsHelper.buildRoute(
+                            passengerViewModel.findMarkerByTag("A"),
+                            passengerViewModel.findMarkerByTag("B")
+                        )
                     }
                 })
 
@@ -115,14 +119,6 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
                     passengerViewModel.markers.value = passengerViewModel.markers.value?.plus(
                         R.drawable.marker_a_icon to marker
                     )?.toMutableMap()
-                }
-
-                googleMapsHelper.createOrUpdateMarkerByClick(
-                    passengerViewModel.markers.value!!,
-                    "B",
-                    R.drawable.marker_b_icon
-                ) {
-                    passengerViewModel.setMarker(R.drawable.marker_b_icon, it)
                 }
 
                 if (passengerViewModel.cameraPosition == null)
