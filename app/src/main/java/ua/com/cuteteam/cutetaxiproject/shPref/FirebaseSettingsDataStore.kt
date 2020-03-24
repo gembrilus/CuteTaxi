@@ -2,8 +2,8 @@ package ua.com.cuteteam.cutetaxiproject.shPref
 
 import android.content.SharedPreferences
 import androidx.preference.PreferenceDataStore
-import ua.com.cuteteam.cutetaxiproject.data.database.BaseDao
-import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
+import ua.com.cuteteam.cutetaxiproject.data.firebase_database.BaseDao
+import ua.com.cuteteam.cutetaxiproject.data.firebase_database.DbEntries
 
 class FirebaseSettingsDataStore(
     private val shPref: SharedPreferences,

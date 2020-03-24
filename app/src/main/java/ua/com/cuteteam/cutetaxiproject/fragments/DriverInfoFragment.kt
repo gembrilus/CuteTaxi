@@ -2,8 +2,8 @@ package ua.com.cuteteam.cutetaxiproject.fragments
 
 import androidx.preference.Preference
 import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
-import ua.com.cuteteam.cutetaxiproject.data.database.DriverDao
+import ua.com.cuteteam.cutetaxiproject.data.firebase_database.DbEntries
+import ua.com.cuteteam.cutetaxiproject.data.firebase_database.DriverDao
 import ua.com.cuteteam.cutetaxiproject.shPref.FirebaseSettingsDataStore
 import ua.com.cuteteam.cutetaxiproject.fragments.sum_providers.ComfortLevelSumProvider
 

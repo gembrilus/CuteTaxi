@@ -5,9 +5,8 @@ import android.view.inputmethod.EditorInfo
 import androidx.preference.EditTextPreference
 import androidx.preference.Preference
 import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
-import ua.com.cuteteam.cutetaxiproject.data.database.PassengerDao
-import ua.com.cuteteam.cutetaxiproject.fragments.BaseSettingsFragment
+import ua.com.cuteteam.cutetaxiproject.data.firebase_database.DbEntries
+import ua.com.cuteteam.cutetaxiproject.data.firebase_database.PassengerDao
 import ua.com.cuteteam.cutetaxiproject.shPref.FirebaseSettingsDataStore
 
 class MainInfoFragment : BaseSettingsFragment() {

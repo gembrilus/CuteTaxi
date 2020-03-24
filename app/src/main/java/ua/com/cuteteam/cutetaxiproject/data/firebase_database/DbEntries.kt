@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.data.database
+package ua.com.cuteteam.cutetaxiproject.data.firebase_database
 
 object DbEntries {
 

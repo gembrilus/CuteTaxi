@@ -15,6 +15,7 @@ import ua.com.cuteteam.cutetaxiproject.helpers.PhoneNumberHelper
 import ua.com.cuteteam.cutetaxiproject.api.geocoding.GeocodeRequest
 import ua.com.cuteteam.cutetaxiproject.application.AppClass
 import ua.com.cuteteam.cutetaxiproject.extentions.findBy
+import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 import java.util.*
@@ -23,6 +24,8 @@ class PassengerViewModel(
     private val repository: Repository,
     private val context: Context = AppClass.appContext()
 ) : BaseViewModel(repository) {
+
+    private val repo = repository as PassengerRepository
 
     private var dialogShowed = false
 
@@ -89,7 +92,7 @@ class PassengerViewModel(
         return local.displayCountry
     }
 
-/*    fun makeOrder() {
+    fun makeOrder() {
         val order = Order(
             passengerId = userId,
             comfortLevel = comfortLevel,
@@ -98,9 +101,9 @@ class PassengerViewModel(
         )
 
         if (order.isReady()) {
-            repository.writeOrder(order)
+            repo.makeOrder(order)
         }
-    }*/
+    }
 
     private fun Order.isReady(): Boolean {
         return (this.passengerId != null &&

@@ -2,8 +2,8 @@ package ua.com.cuteteam.cutetaxiproject.fragments
 
 import androidx.preference.Preference
 import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
-import ua.com.cuteteam.cutetaxiproject.data.database.PassengerDao
+import ua.com.cuteteam.cutetaxiproject.data.firebase_database.DbEntries
+import ua.com.cuteteam.cutetaxiproject.data.firebase_database.PassengerDao
 import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreference
 import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreferenceDialogFragmentCompat
 import ua.com.cuteteam.cutetaxiproject.shPref.FirebaseSettingsDataStore

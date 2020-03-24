@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.data.database
+package ua.com.cuteteam.cutetaxiproject.data.firebase_database
 
 import com.google.firebase.database.DatabaseReference
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order

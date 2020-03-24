@@ -1,15 +1,13 @@
 package ua.com.cuteteam.cutetaxiproject.shPref
 
 import android.content.SharedPreferences
-import androidx.preference.EditTextPreference
-import androidx.preference.Preference
 import com.nhaarman.mockitokotlin2.*
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-import ua.com.cuteteam.cutetaxiproject.data.database.BaseDao
-import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
+import ua.com.cuteteam.cutetaxiproject.data.firebase_database.BaseDao
+import ua.com.cuteteam.cutetaxiproject.data.firebase_database.DbEntries
 import ua.com.cuteteam.cutetaxiproject.data.entities.ComfortLevel
 
 @RunWith(MockitoJUnitRunner.Silent::class)
