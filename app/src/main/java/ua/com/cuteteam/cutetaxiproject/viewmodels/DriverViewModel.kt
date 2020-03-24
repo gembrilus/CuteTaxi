@@ -1,7 +1,7 @@
 package ua.com.cuteteam.cutetaxiproject.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.*
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -53,8 +53,6 @@ class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
     private val _orders = MutableLiveData<List<Order>>()
     val orders: LiveData<List<Order>>
         get() = Transformations.map(_orders) { list ->
-            Log.d("Cute", list.toString())
-            Log.d("Cute", repo.spHelper.carClass.toString() )
             list.filter { it.comfortLevel == repo.spHelper.carClass }
         }
     val countOfOrders = Transformations.map(orders) {
@@ -63,9 +61,6 @@ class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
 
     fun updateOrders() {
         _orders.value = _orders.value
-/*        val temp = _orders.value
-        _orders.value = emptyList()
-        _orders.value = temp*/
     }
 
     fun obtainOrder(order: Order) {
@@ -79,7 +74,7 @@ class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
                 repo.dao.subscribeForChanges(DbEntries.Orders.TABLE, it, orderListener)
             }
         }
-//        repo.spHelper.activeOrderId = orderId
+        repo.spHelper.activeOrderId = orderId
     }
 
     private fun getOrders() = viewModelScope.launch(Dispatchers.Unconfined) {
@@ -108,6 +103,14 @@ class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
 
     override fun onCleared() {
         super.onCleared()
+        currentLocation.removeObserver(locationObserver)
+        repo.dao.removeAllListeners()
+    }
+
+    fun closeOrder(map: GoogleMap?) {
+        mOrder = null
+        repo.spHelper.activeOrderId = null
+        map?.clear()
         currentLocation.removeObserver(locationObserver)
         repo.dao.removeAllListeners()
     }

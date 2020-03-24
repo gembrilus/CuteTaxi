@@ -8,7 +8,7 @@ import com.google.android.gms.maps.SupportMapFragment
 abstract class MapFragment : SupportMapFragment(),
     OnMapReadyCallback {
 
-    private var mMap: GoogleMap? = null
+    protected var mMap: GoogleMap? = null
 
     override fun onCreate(p0: Bundle?) {
         super.onCreate(p0)
