@@ -16,11 +16,13 @@ Download
 </p>
 
 
-Author
-------
+Authors
+-------
 Maksim Nakonechnyi - @gembrilus on GitHub
+
 @yuriy-burkut on GitHub
-@Camila-1
+
+@Camila-1 on GitHub
 
 License
 -------
