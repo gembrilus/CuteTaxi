@@ -1,61 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map_container"
+    android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
-    <RelativeLayout
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/map_fragment"
+        android:name="ua.com.cuteteam.cutetaxiproject.fragments.MapsFragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/order_info_price"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:minWidth="120dp"
-            android:elevation="1dp"
-            android:background="@drawable/ct_left_top_corner"
-            android:layout_alignParentStart="true"/>
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/order_info_distance"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:minWidth="120dp"
-            android:padding="@dimen/padding_8dp"
-            android:layout_alignParentEnd="true"
-            android:background="@drawable/ct_right_top_corner"
-            tools:ignore="RelativeOverlap" />
-
-    </RelativeLayout>
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/cart_badge"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:background="@drawable/badge_background"
+        android:elevation="10dp"
         android:padding="3dp"
+        android:textAlignment="center"
         android:textColor="@android:color/white"
         android:textSize="@dimen/very_small_text_10dp"
-        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="@id/btn_orders_list"
-        app:layout_constraintTop_toTopOf="@id/btn_orders_list"
-        android:elevation="10dp"/>
+        app:layout_constraintTop_toTopOf="@id/btn_orders_list" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_orders_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorPrimary"
         android:minWidth="48dp"
         android:minHeight="48dp"
-        android:layout_margin="@dimen/margin_24dp"
         android:src="@drawable/ct_list"
-        android:backgroundTint="@color/colorPrimary"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toTopOf="@id/info_boxes"
+        app:layout_constraintBottom_toBottomOf="@id/info_boxes"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <RelativeLayout
+        android:id="@+id/info_boxes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_16dp"
+        app:layout_constraintBottom_toTopOf="@id/bottom_sheet">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/order_info_price"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:textAlignment="gravity"
+            android:gravity="center_horizontal|center_vertical"
+            android:layout_alignParentStart="true"
+            android:background="@drawable/ct_left_top_corner"
+            android:elevation="1dp"
+            android:minWidth="96dp" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/order_info_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:textAlignment="gravity"
+            android:gravity="center_horizontal|center_vertical"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/ct_right_top_corner"
+            android:minWidth="96dp"
+            android:padding="@dimen/padding_8dp"
+            tools:ignore="RelativeOverlap" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/ct_rounded_box"
+        android:paddingTop="@dimen/padding_16dp"
+        android:paddingBottom="@dimen/margin_16dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/origin_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_8dp"
+            android:layout_marginEnd="@dimen/margin_8dp"/>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_marginStart="@dimen/margin_8dp"
+            android:layout_marginEnd="@dimen/margin_8dp"
+            android:src="@drawable/ct_dest_chain" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/dest_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_8dp"
+            android:layout_marginEnd="@dimen/margin_8dp" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

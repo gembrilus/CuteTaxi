@@ -1,5 +1,7 @@
 package ua.com.cuteteam.cutetaxiproject.fragments
 
-class PassengerMapFragment : MapFragment(){
+import com.google.android.gms.maps.SupportMapFragment
+
+class PassengerMapFragment : SupportMapFragment(){
 
 }
