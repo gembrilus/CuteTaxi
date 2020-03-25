@@ -8,6 +8,9 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navGraphViewModels
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
 import kotlinx.android.synthetic.main.fragment_map_driver.view.*
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
@@ -51,11 +54,10 @@ class DriverMapFragment : MapFragment() {
             }
         })
 
-        // TODO: Draw routes, fill info boxes
-
         model.activeOrder.observe(requireActivity(), Observer {
             when (it.orderStatus) {
-                OrderStatus.CANCELLED ->
+                OrderStatus.CANCELLED ->{
+                    model.closeOrder(mMap)
                     InfoDialog.show(
                         requireActivity().supportFragmentManager,
                         getString(R.string.dialog_title_order_is_changed),
@@ -65,17 +67,37 @@ class DriverMapFragment : MapFragment() {
                             it.addressDestination?.address
                         )
                     )
-                OrderStatus.ACTIVE ->
+                }
+                OrderStatus.FINISHED ->{
+                    model.closeOrder(mMap)
                     RateDialog.show(
                         requireActivity().supportFragmentManager,
                         null
                     ) { ratingBar, fl, b ->
-
+                        // TODO: Write rating
                     }
+                }
+                OrderStatus.ACTIVE -> {
+                    // TODO: Draw routes, fill info boxes
+
+                    val startLocation = it.addressStart?.location?.toLatLng()
+                    val endLocation = it.addressDestination?.location?.toLatLng()
+                    val start = "${startLocation?.latitude},${startLocation?.longitude}"
+                    val end = "${endLocation?.latitude},${endLocation?.longitude}"
+                    model.buildRoute(start, end).observe(requireActivity(), Observer {
+                        mMap?.addMarker(MarkerOptions().apply {
+                            startLocation?.let { startL -> position(startL) }
+                        })
+                        mMap?.addPolyline(PolylineOptions().apply {
+                            add(*it.polyline)
+                        })
+                        mMap?.addMarker(MarkerOptions().apply {
+                            endLocation?.let { endL -> position(endL) }
+                        })
+                    })
+                }
                 else -> {}
             }
         })
-
     }
-
 }
