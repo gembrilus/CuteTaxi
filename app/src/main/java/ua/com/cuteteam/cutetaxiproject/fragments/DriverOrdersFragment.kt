@@ -46,10 +46,7 @@ class DriverOrdersFragment : Fragment() {
         }
 
         model.orders.observe(requireActivity(), Observer {
-            Log.d(TAG, it.toString() )
-            mAdapter.setOrders(it)
+            mAdapter.setOrders(it?: emptyList())
         })
-
     }
-
 }

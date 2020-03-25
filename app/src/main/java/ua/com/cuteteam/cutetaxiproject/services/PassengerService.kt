@@ -9,6 +9,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.launch
 import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
 import ua.com.cuteteam.cutetaxiproject.data.database.PassengerDao
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
@@ -39,7 +40,7 @@ class PassengerService : BaseService() {
         launch {
             orderId = intent?.getStringExtra(ORDER_ID_NAME) ?: appSettingsHelper.activeOrderId
             orderId?.let { id ->
-//                fbDao.subscribeForChanges(DbEntries.Orders.TABLE, id, orderListener)             //Uncomment when a method FbDao appears
+                fbDao.subscribeForChanges(DbEntries.Orders.TABLE, id, orderListener)
             } ?: stopSelf()
         }
 

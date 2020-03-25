@@ -2,7 +2,12 @@
 
 package ua.com.cuteteam.cutetaxiproject.common
 
+import android.content.Context
+import com.google.android.gms.maps.model.LatLng
+import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.data.entities.ComfortLevel
+import ua.com.cuteteam.cutetaxiproject.data.entities.Order
+import ua.com.cuteteam.cutetaxiproject.extentions.distanceTo
 
 fun calculatePrice(tax: Double, distance: Double, level: ComfortLevel): Double {
     val koef = when(level){
@@ -13,6 +18,24 @@ fun calculatePrice(tax: Double, distance: Double, level: ComfortLevel): Double {
     return tax * distance * koef
 }
 
-fun checkDriversRoute() {
+fun calcDistance(order: Order): Double? {
+    val location = order.driverLocation?.latitude?.let {lat ->
+        order.driverLocation?.longitude?.let { lon ->
+            LatLng(lat, lon)
+        }
+    }
+    val startLat = order.addressStart?.location?.latitude
+    val startLon = order.addressStart?.location?.longitude
+    if (startLat != null && startLon != null && location != null) {
+        return (location distanceTo LatLng(startLat, startLon))
+    }
+    return null
+}
 
+fun prepareDistance(context: Context?, order: Order): String? {
+    val d = calcDistance(order) ?: return ""
+    return when(d){
+        in 0.0..999.0 -> context?.getString(R.string.units_M, d.toInt().toString())
+        else -> context?.getString(R.string.units_KM, (d/1000).toInt().toString())
+    }
 }

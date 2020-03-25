@@ -20,16 +20,16 @@ import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.PassengerV
 
 class MapsActivity : AppCompatActivity() {
 
-    private val passengerViewModel by lazy {
+/*    private val passengerViewModel by lazy {
         ViewModelProvider(this, PassengerViewModelFactory(PassengerRepository()))
             .get(PassengerViewModel::class.java)
-    }
+    }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
 
-        GlobalScope.launch {
+/*        GlobalScope.launch {
             withContext(Dispatchers.Main) {
                 val options = GoogleMapOptions()
                 options.camera(passengerViewModel.currentCameraPosition())
@@ -38,7 +38,7 @@ class MapsActivity : AppCompatActivity() {
                     .replace(R.id.map_container, MapsFragment.newInstance(options))
                     .commit()
             }
-        }
+        }*/
 
 
         val role = AppSettingsHelper(this).role
@@ -59,8 +59,8 @@ class MapsActivity : AppCompatActivity() {
         finish()
     }
 
-    override fun onBackPressed() {
+/*    override fun onBackPressed() {
         super.onBackPressed()
         finishAffinity()
-    }
+    }*/
 }
