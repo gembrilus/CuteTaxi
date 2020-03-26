@@ -69,13 +69,9 @@ abstract class BaseActivity :
     private val onNavigationListener = NavigationView.OnNavigationItemSelectedListener { item ->
         item.isChecked = true
         when(item.itemId){
-            R.id.settings -> {
-                navigationView.menu.clear()
-                navigationView.inflateMenu(menuResId)
-            }
+            R.id.settings -> inflateSettingsSubMenu()
             R.id.backToHome -> {
-                navigationView.menu.clear()
-                navigationView.inflateMenu(R.menu.main_menu)
+                inflateMainMenu()
                 navController.navigateUp()
             }
             else -> drawerLayout.closeDrawers()
@@ -131,6 +127,13 @@ abstract class BaseActivity :
                 header.tv_nav_header_phone.text = phone
             }
             getString(R.string.key_app_theme_preference) -> recreate()
+        }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if (navigationView.menu.findItem(R.menu.main_menu) == null){
+            inflateMainMenu()
         }
     }
 
@@ -203,6 +206,16 @@ abstract class BaseActivity :
             getString(R.string.value_item_light_theme) -> setTheme(R.style.AppTheme_NoActionBar)
             getString(R.string.value_item_dark_theme) -> setTheme(R.style.AppTheme_NoActionBar_Dark)
         }
+    }
+
+    private fun inflateMainMenu(){
+        navigationView.menu.clear()
+        navigationView.inflateMenu(R.menu.main_menu)
+    }
+
+    private fun inflateSettingsSubMenu(){
+        navigationView.menu.clear()
+        navigationView.inflateMenu(menuResId)
     }
 
 }
