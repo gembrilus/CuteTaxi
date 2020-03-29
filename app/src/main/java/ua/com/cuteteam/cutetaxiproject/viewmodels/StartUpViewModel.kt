@@ -17,26 +17,22 @@ class StartUpViewModel(context: Context = AppClass.appContext()) : ViewModel() {
 
     val appSettingsHelper = AppSettingsHelper(context)
 
-    suspend fun initSettings(firebaseUser: FirebaseUser) {
-        when (val user = checkUserExistence(firebaseUser)) {
-            is User -> appSettingsHelper.initUser(user)
-            else -> {
-                val passenger = Passenger(
-                    firebaseUser.displayName,
-                    firebaseUser.phoneNumber
-                )
-                appSettingsHelper.initUser(passenger)
-                passengerDAO.writeUser(passenger)
-            }
+    suspend fun initUser(firebaseUser: FirebaseUser) {
+        getUser(firebaseUser)?.also {
+            appSettingsHelper.initUser(it)
+            return@initUser
         }
+
+        val passenger = Passenger(
+            firebaseUser.displayName,
+            firebaseUser.phoneNumber
+        )
+        appSettingsHelper.initUser(passenger)
+        passengerDAO.writeUser(passenger)
     }
 
-    private suspend fun checkUserExistence(firebaseUser: FirebaseUser): User? {
+    private suspend fun getUser(firebaseUser: FirebaseUser): User? {
         val uid = firebaseUser.uid
-        return when {
-            driverDAO.isUserExist(uid) -> driverDAO.getUser(uid)
-            passengerDAO.isUserExist(uid) -> passengerDAO.getUser(uid)
-            else -> null
-        }
+        return driverDAO.getUser(uid) ?: passengerDAO.getUser(uid)
     }
 }

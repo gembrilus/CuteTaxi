@@ -55,12 +55,6 @@ class MainActivity : AppCompatActivity() {
         }, 350)
     }
 
-//    private fun openStartUpActivity() {
-//        val intent = Intent(this, StartUpActivity::class.java)
-//        startActivity(intent)
-//    }
-
-
     private fun startAuthorization() {
         val intent = Intent(this, AuthActivity::class.java)
         startActivityForResult(intent, AUTH_REQUEST_CODE)
@@ -70,9 +64,9 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode != AUTH_REQUEST_CODE && resultCode != AUTH_RESULT_CODE) return
 
-        val user = data?.extras?.getSerializable("user") as FirebaseUser
+        val user = data?.extras?.get("user") as FirebaseUser
         GlobalScope.launch(Dispatchers.Main) {
-            startUpViewModel.initSettings(user)
+            startUpViewModel.initUser(user)
             if (startUpViewModel.appSettingsHelper.role) startDriverActivity()
             else startPassengerActivity()
         }

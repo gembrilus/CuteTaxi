@@ -2,16 +2,23 @@ package ua.com.cuteteam.cutetaxiproject.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import ua.com.cuteteam.cutetaxiproject.AuthListener
 import ua.com.cuteteam.cutetaxiproject.AuthProvider
-
-
 
 class AuthViewModel: ViewModel(), AuthListener {
 
     companion object {
         private const val ERROR_INVALID_PHONE_NUMBER = "ERROR_INVALID_PHONE_NUMBER"
         private const val ERROR_INVALID_VERIFICATION_CODE = "ERROR_INVALID_VERIFICATION_CODE"
+    }
+
+    init {
+        FirebaseAuth.getInstance().addAuthStateListener{
+            if (it.currentUser != null)
+                state.value = State.LOGGED_IN
+        }
     }
 
     enum class State {
@@ -28,7 +35,7 @@ class AuthViewModel: ViewModel(), AuthListener {
 
     private val authProvider = AuthProvider().apply { authListener = this@AuthViewModel }
 
-    val firebaseUser = authProvider.user
+    val firebaseUser get() = authProvider.user
 
     var phoneNumber: String = ""
     var smsCode: String = ""
@@ -63,9 +70,7 @@ class AuthViewModel: ViewModel(), AuthListener {
         state.value = State.ENTERING_VERIFICATION_CODE
     }
 
-    override fun onSuccess() {
-        state.value = State.LOGGED_IN
-    }
+    override fun onSuccess() {}
 
     override fun onFailure(errorCode: String) {
         when(errorCode) {

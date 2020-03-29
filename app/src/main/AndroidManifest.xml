@@ -18,8 +18,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activities.StartUpActivity"></activity>
-        <activity android:name=".activities.MapsActivity" />
         <activity android:name=".activities.AuthActivity" />
 
         <meta-data

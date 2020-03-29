@@ -24,7 +24,7 @@ class AuthProvider {
     var authListener: AuthListener? = null
     private val firebaseAuth = FirebaseAuth.getInstance()
 
-    val user = firebaseAuth.currentUser
+    val user get() = firebaseAuth.currentUser
 
     private val verificationStateChangedCallbacks =
         object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
