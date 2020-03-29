@@ -28,6 +28,8 @@ class AuthViewModel: ViewModel(), AuthListener {
 
     private val authProvider = AuthProvider().apply { authListener = this@AuthViewModel }
 
+    val firebaseUser = authProvider.user
+
     var phoneNumber: String = ""
     var smsCode: String = ""
 

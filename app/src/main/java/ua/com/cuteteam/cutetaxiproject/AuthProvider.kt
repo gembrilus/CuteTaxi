@@ -24,6 +24,8 @@ class AuthProvider {
     var authListener: AuthListener? = null
     private val firebaseAuth = FirebaseAuth.getInstance()
 
+    val user = firebaseAuth.currentUser
+
     private val verificationStateChangedCallbacks =
         object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
@@ -48,7 +50,7 @@ class AuthProvider {
             }
         }
 
-    fun isUserSignedIn() = firebaseAuth.currentUser != null
+    fun isUserSignedIn() = user != null
 
     suspend fun verifyCurrentUser(): Boolean {
         return suspendCoroutine {

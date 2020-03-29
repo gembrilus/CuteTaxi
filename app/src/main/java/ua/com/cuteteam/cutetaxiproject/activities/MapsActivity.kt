@@ -59,8 +59,8 @@ class MapsActivity : AppCompatActivity() {
         finish()
     }
 
-/*    override fun onBackPressed() {
+    override fun onBackPressed() {
         super.onBackPressed()
         finishAffinity()
-    }*/
+    }
 }

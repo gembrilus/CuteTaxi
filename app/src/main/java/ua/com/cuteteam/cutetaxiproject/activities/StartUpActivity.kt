@@ -8,15 +8,13 @@ import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.fragments.HeadPieceFragment
+import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 import ua.com.cuteteam.cutetaxiproject.viewmodels.AuthViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.StartUpViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.AuthViewModelFactory
 import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.StartUpViewModelFactory
-import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class StartUpActivity : AppCompatActivity() {
 
     companion object {
         private const val AUTH_REQUEST_CODE = 1
@@ -35,31 +33,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.head_piece_fl, HeadPieceFragment())
-            .commit()
 
-        Timer().schedule(object : TimerTask() {
-            override fun run() {
-                //openStartUpActivity()
-                GlobalScope.launch(Dispatchers.Main) {
-                    if (authViewModel.verifyCurrentUser()) {
-                        if (startUpViewModel.appSettingsHelper.role) startDriverActivity()
-                        else startPassengerActivity()
-                    }
-                    else startAuthorization()
-                }
+        GlobalScope.launch(Dispatchers.Main) {
+            if (authViewModel.verifyCurrentUser()) {
+                if (startUpViewModel.appSettingsHelper.role) startDriverActivity()
+                else startPassengerActivity()
             }
-        }, 350)
+            else startAuthorization()
+        }
     }
-
-//    private fun openStartUpActivity() {
-//        val intent = Intent(this, StartUpActivity::class.java)
-//        startActivity(intent)
-//    }
-
 
     private fun startAuthorization() {
         val intent = Intent(this, AuthActivity::class.java)
