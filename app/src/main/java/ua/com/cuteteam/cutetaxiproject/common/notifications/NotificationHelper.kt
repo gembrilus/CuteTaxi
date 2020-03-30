@@ -9,10 +9,9 @@ import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import ua.com.cuteteam.cutetaxiproject.R
+import java.util.*
 
 private const val UPDATABLE_ID = 0
-private var _NOTE_ID = 1
-private val NOTE_ID = _NOTE_ID++
 private const val GROUP_KEY = "ua.com.cuteteam.cutetaxiproject.CuteTeamGroup"
 
 
@@ -108,7 +107,7 @@ class NotificationUtils(private val context: Context) {
         }
         .build()
         .run {
-            val id = if (updatable) UPDATABLE_ID else NOTE_ID
+            val id = if (updatable) UPDATABLE_ID else (Date().time % Int.MAX_VALUE).toInt()
             NotificationManagerCompat.from(context)
                 .notify(id, this)
             emptyActions()
