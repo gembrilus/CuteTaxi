@@ -31,7 +31,7 @@ class DriverMapFragment : Fragment() {
         inflator: LayoutInflater,
         parent: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View?  = inflator.inflate(R.layout.fragment_map_driver, parent, false)
+    ): View? = inflator.inflate(R.layout.fragment_map_driver, parent, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -54,11 +54,11 @@ class DriverMapFragment : Fragment() {
         model.activeOrder.observe(requireActivity(), Observer {
             showUI()
             when (it.orderStatus) {
-                OrderStatus.CANCELLED ->{
+                OrderStatus.CANCELLED -> {
                     model.closeOrder()
                     hideUI()
                     InfoDialog.show(
-                        requireActivity().supportFragmentManager,
+                        childFragmentManager,
                         getString(R.string.dialog_title_order_is_changed),
                         getString(
                             R.string.dialog_text_order_was_cancelled,
@@ -67,20 +67,22 @@ class DriverMapFragment : Fragment() {
                         )
                     )
                 }
-                OrderStatus.FINISHED ->{
+                OrderStatus.FINISHED -> {
                     model.closeOrder()
                     hideUI()
                     RateDialog.show(
-                        requireActivity().supportFragmentManager,
+                        childFragmentManager,
                         null
                     ) { ratingBar, fl, b ->
                         // TODO: Write rating
                     }
+
                 }
                 OrderStatus.ACTIVE -> {
                     // TODO: Draw routes
 
-                    view?.order_info_price?.text = requireActivity().getString(R.string.currency_UAH, it.price.toString())
+                    view?.order_info_price?.text =
+                        requireActivity().getString(R.string.currency_UAH, it.price.toString())
                     view?.order_info_distance?.text = prepareDistance(requireActivity(), it)
                     view?.origin_address?.text = it.addressStart?.address
                     view?.dest_address?.text = it.addressDestination?.address
@@ -93,18 +95,19 @@ class DriverMapFragment : Fragment() {
 
 
                 }
-                else -> {}
+                else -> {
+                }
             }
         })
     }
 
-    private fun hideUI(){
+    private fun hideUI() {
         view?.info_boxes?.order_info_price?.visibility = View.INVISIBLE
         view?.info_boxes?.order_info_distance?.visibility = View.GONE
         view?.bottom_sheet?.visibility = View.GONE
     }
 
-    private fun showUI(){
+    private fun showUI() {
         view?.info_boxes?.order_info_price?.visibility = View.VISIBLE
         view?.info_boxes?.order_info_distance?.visibility = View.VISIBLE
         view?.bottom_sheet?.visibility = View.VISIBLE

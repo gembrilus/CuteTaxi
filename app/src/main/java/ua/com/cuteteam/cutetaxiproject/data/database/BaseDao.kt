@@ -182,6 +182,11 @@ abstract class BaseDao(
         }
     }
 
+    suspend fun getOrder(orderId: String) : Order? {
+        val orderData = ordersRef.child(orderId).getValue()
+        return orderData.getValue(Order::class.java)
+    }
+
     /** Removes all active listeners
      * @see ValueEventListener
      * @see subscribeForChanges

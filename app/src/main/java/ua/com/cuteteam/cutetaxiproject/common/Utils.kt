@@ -9,6 +9,8 @@ import ua.com.cuteteam.cutetaxiproject.data.entities.ComfortLevel
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.extentions.distanceTo
 
+const val speed = 1000 // meter per minute
+
 fun calculatePrice(tax: Double, distance: Double, level: ComfortLevel): Double {
     val koef = when(level){
         ComfortLevel.STANDARD -> 1.0
@@ -38,4 +40,9 @@ fun prepareDistance(context: Context?, order: Order): String? {
         in 0.0..999.0 -> context?.getString(R.string.units_M, d.toInt().toString())
         else -> context?.getString(R.string.units_KM, (d/1000).toInt().toString())
     }
+}
+
+fun arrivalTime(order: Order): Long? {
+    val distance = calcDistance(order)
+    return distance?.div(speed)?.toLong()
 }

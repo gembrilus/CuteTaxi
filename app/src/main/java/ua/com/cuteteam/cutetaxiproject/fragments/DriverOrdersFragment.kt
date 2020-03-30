@@ -46,7 +46,6 @@ class DriverOrdersFragment : Fragment() {
         }
 
         model.orders.observe(requireActivity(), Observer {
-            Log.d("CuteDriver", "$it")
             mAdapter.setOrders(it?: emptyList())
         })
     }
