@@ -54,6 +54,7 @@ class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
     val activeOrder: LiveData<Order> get() = _activeOrder
 
     private val _orders = MutableLiveData<List<Order>>()
+
     val orders = MediatorLiveData<List<Order>>()
 
     val countOfOrders = Transformations.map(orders) {
@@ -104,14 +105,14 @@ class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
                     }
             }
             orders.addSource(_orders) { list ->
-                orders.setValue(list.filter { it.comfortLevel == repo.spHelper.carClass })
+                orders.value = list.filter { it.comfortLevel == repo.spHelper.carClass }
             }
             orders.addSource(LocationLiveData()) { loc ->
-                orders.setValue(orders.value?.map {
+                orders.value = orders.value?.map {
                     it.apply {
                         driverLocation = Coordinates(loc.latitude, loc.longitude)
                     }
-                })
+                }
             }
         }
     }

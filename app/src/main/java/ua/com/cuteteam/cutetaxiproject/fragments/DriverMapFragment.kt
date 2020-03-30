@@ -1,6 +1,7 @@
 package ua.com.cuteteam.cutetaxiproject.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,6 +44,7 @@ class DriverMapFragment : Fragment() {
 
         model.countOfOrders.observe(requireActivity(), Observer { count ->
             with(view.cart_badge) {
+                Log.d("CuteDriver", count.toString())
                 visibility = if (count != 0) View.VISIBLE else View.GONE
                 text = count.toString()
             }

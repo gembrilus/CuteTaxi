@@ -1,6 +1,8 @@
 package ua.com.cuteteam.cutetaxiproject.activities
 
+import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.fragment_map_driver.*
@@ -10,6 +12,10 @@ import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.extentions.showInfoSnackBar
 import ua.com.cuteteam.cutetaxiproject.fragments.adapters.OrdersAdapter
 import ua.com.cuteteam.cutetaxiproject.repositories.DriverRepository
+import ua.com.cuteteam.cutetaxiproject.services.ACCEPTED_ORDER_ID
+import ua.com.cuteteam.cutetaxiproject.services.BaseService
+import ua.com.cuteteam.cutetaxiproject.services.DriverService
+import ua.com.cuteteam.cutetaxiproject.services.ORDER_ID_NAME
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.DriverViewModel
@@ -52,7 +58,29 @@ class DriverActivity : BaseActivity(), OrdersAdapter.OnOrderAccept {
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         super.onSharedPreferenceChanged(sharedPreferences, key)
-        model.updateOrders()
+        when(key){
+            getString(R.string.key_send_notifications_preference) ->
+                stopService(
+                    Intent(this, DriverService::class.java)
+                )
+            else -> model.updateOrders()
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        intent.getStringExtra(ACCEPTED_ORDER_ID)?.let {
+            onHasActiveOrder(it)
+        }
+        stopService(Intent(this, DriverService::class.java))
+    }
+
+    override fun onDestroy() {
+        val orderId = model.activeOrderId.value
+        startService(Intent(this, DriverService::class.java).apply {
+            putExtra(ORDER_ID_NAME, orderId)
+        })
+        super.onDestroy()
     }
 
     private fun show() {
