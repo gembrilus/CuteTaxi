@@ -66,7 +66,7 @@ class DriverActivity : BaseActivity(), OrdersAdapter.OnOrderAccept {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         intent.getStringExtra(ACCEPTED_ORDER_ID)?.let {
-//TODO: fill and subscribe to new order, write to shared preferences
+            onHasActiveOrder(it)
         }
     }
 

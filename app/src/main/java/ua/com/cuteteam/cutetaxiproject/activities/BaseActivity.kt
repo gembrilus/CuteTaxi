@@ -93,10 +93,14 @@ abstract class BaseActivity :
         setObservers()
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         NotificationUtils(this).cancelAll()
         stopService()
+    }
+
+    override fun onResume() {
+        super.onResume()
         PreferenceManager
             .getDefaultSharedPreferences(this)
             .registerOnSharedPreferenceChangeListener(this)
@@ -104,11 +108,14 @@ abstract class BaseActivity :
 
     override fun onPause() {
         super.onPause()
-        startService()
-
         PreferenceManager
             .getDefaultSharedPreferences(this)
             .unregisterOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        startService()
     }
 
     override fun onRequestPermissionsResult(
