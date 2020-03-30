@@ -1,5 +1,6 @@
 package ua.com.cuteteam.cutetaxiproject.viewmodels
 
+import android.view.View
 import androidx.lifecycle.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
@@ -13,13 +14,13 @@ import ua.com.cuteteam.cutetaxiproject.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
 import ua.com.cuteteam.cutetaxiproject.data.entities.Coordinates
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
+import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.extentions.distanceTo
 import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
 import ua.com.cuteteam.cutetaxiproject.repositories.DriverRepository
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 
 class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
-
     private val repo = repository as DriverRepository
     private var mOrder: Order? = null
 
@@ -64,23 +65,8 @@ class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
         _orders.value = _orders.value
     }
 
-    fun obtainOrder(order: Order) {
-        mOrder = order
-        mOrder?.driverId = FirebaseAuth.getInstance().currentUser?.uid
-        val orderId = mOrder?.orderId
-        if (repo.netHelper.hasInternet) {
-            repo.dao.writeOrder(order)
-            subscribeOnOrder(orderId)
-        }
-        repo.spHelper.activeOrderId = orderId
-    }
-
-    fun subscribeOnOrder(orderId: String?) {
-        currentLocation.observeForever(locationObserver)
-        orderId?.let {
-            repo.dao.subscribeForChanges(DbEntries.Orders.TABLE, it, orderListener)
-        }
-    }
+    fun getOrderById(orderId: String) =
+        _orders.value?.find { it.orderId == orderId }
 
     private fun getOrders() = viewModelScope.launch(Dispatchers.Unconfined) {
         if (repo.netHelper.hasInternet) {
@@ -104,15 +90,34 @@ class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
                     }
             }
             orders.addSource(_orders) { list ->
-                orders.setValue(list.filter { it.comfortLevel == repo.spHelper.carClass })
+                orders.value = list.filter { it.comfortLevel == repo.spHelper.carClass }
             }
             orders.addSource(LocationLiveData()) { loc ->
-                orders.setValue(orders.value?.map {
+                orders.value = orders.value?.map {
                     it.apply {
                         driverLocation = Coordinates(loc.latitude, loc.longitude)
                     }
-                })
+                }
             }
+        }
+    }
+
+    fun obtainOrder(order: Order) {
+        mOrder = order
+        order.orderStatus = OrderStatus.ACTIVE
+        mOrder?.driverId = FirebaseAuth.getInstance().currentUser?.uid
+        val orderId = mOrder?.orderId
+        if (repo.netHelper.hasInternet) {
+            repo.dao.writeOrder(order)
+            subscribeOnOrder(orderId)
+        }
+    }
+
+    fun subscribeOnOrder(orderId: String?) {
+        repo.spHelper.activeOrderId = orderId
+        currentLocation.observeForever(locationObserver)
+        orderId?.let {
+            repo.dao.subscribeForChanges(DbEntries.Orders.TABLE, it, orderListener)
         }
     }
 
@@ -124,7 +129,7 @@ class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
 
     fun closeOrder() {
         repo.spHelper.activeOrderId = null
-        mOrder?.orderId?.let {
+        mOrder?.orderId?.let {                  //TODO: Replace with Dao-method
             FirebaseDatabase.getInstance()
                 .reference
                 .child(DbEntries.Orders.TABLE)
@@ -133,5 +138,7 @@ class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
         currentLocation.removeObserver(locationObserver)
         mOrder = null
     }
+
+    var mapOfVisibility: Map<View, Int>? = null
 
 }

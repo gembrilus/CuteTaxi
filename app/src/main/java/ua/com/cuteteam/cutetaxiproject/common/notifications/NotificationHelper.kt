@@ -9,10 +9,9 @@ import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import ua.com.cuteteam.cutetaxiproject.R
+import java.util.*
 
 private const val UPDATABLE_ID = 0
-private var _NOTE_ID = 1
-private val NOTE_ID = _NOTE_ID++
 private const val GROUP_KEY = "ua.com.cuteteam.cutetaxiproject.CuteTeamGroup"
 
 
@@ -94,7 +93,7 @@ class NotificationUtils(private val context: Context) {
     ) = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
         .apply {
 
-            setSmallIcon(R.drawable.cute_taxi_headpiece)
+            setSmallIcon(R.drawable.ct_rate_car)
             setContentTitle(title)
             setContentText(text)
             priority = NotificationCompat.PRIORITY_DEFAULT
@@ -103,16 +102,15 @@ class NotificationUtils(private val context: Context) {
             actions.forEach { addAction(it) }
             extras?.let { addExtras(it) }
             setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            setAutoCancel(true)
-            setWhen(System.currentTimeMillis())
             setDefaults(Notification.DEFAULT_ALL)
             setGroup(GROUP_KEY)
         }
         .build()
         .run {
-            val id = if (updatable) UPDATABLE_ID else NOTE_ID
+            val id = if (updatable) UPDATABLE_ID else (Date().time % Int.MAX_VALUE).toInt()
             NotificationManagerCompat.from(context)
                 .notify(id, this)
+            emptyActions()
         }
 
 
@@ -121,5 +119,7 @@ class NotificationUtils(private val context: Context) {
      *
      */
     fun cancelAll() = NotificationManagerCompat.from(context).cancelAll()
+
+    private fun emptyActions() = actions.clear()
 
 }

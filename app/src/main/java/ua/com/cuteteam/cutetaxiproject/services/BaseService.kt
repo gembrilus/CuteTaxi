@@ -9,15 +9,23 @@ import kotlinx.coroutines.Dispatchers
 import ua.com.cuteteam.cutetaxiproject.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.LocationProvider
 import ua.com.cuteteam.cutetaxiproject.common.notifications.NotificationUtils
+import ua.com.cuteteam.cutetaxiproject.extentions.createNotificationChannel
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 import kotlin.coroutines.CoroutineContext
 
 const val ACCEPTED_ORDER_ID = "AcceptedOrderId"
+const val ORDER_ID_NAME = "Service_active_orderId"
 
 abstract class BaseService : Service(), CoroutineScope {
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + handler
+
+
+    override fun onCreate() {
+        super.onCreate()
+        createNotificationChannel()
+    }
 
     protected val notificationUtils by lazy {
         NotificationUtils(applicationContext)

@@ -14,8 +14,6 @@ import ua.com.cuteteam.cutetaxiproject.data.database.PassengerDao
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 
-private const val ORDER_ID_NAME = "DriverService_orderId"
-
 class PassengerService : BaseService() {
 
     private var orderId: String? = null

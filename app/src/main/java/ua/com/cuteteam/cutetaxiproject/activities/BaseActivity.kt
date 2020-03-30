@@ -1,5 +1,6 @@
 package ua.com.cuteteam.cutetaxiproject.activities
 
+import android.app.Service
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -21,11 +22,13 @@ import com.google.android.material.textview.MaterialTextView
 import kotlinx.android.synthetic.main.navigation_header.view.*
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.common.network.NetStatus
+import ua.com.cuteteam.cutetaxiproject.common.notifications.NotificationUtils
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
 import ua.com.cuteteam.cutetaxiproject.extentions.createNotificationChannel
 import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission
 import ua.com.cuteteam.cutetaxiproject.permissions.PermissionProvider
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
+import ua.com.cuteteam.cutetaxiproject.services.ORDER_ID_NAME
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
 
@@ -36,6 +39,7 @@ abstract class BaseActivity :
 
     protected abstract val menuResId: Int
     protected abstract val layoutResId: Int
+    protected abstract val service: Class<out Service>
     protected abstract fun onHasActiveOrder(orderId: String?)
     protected abstract fun onNoActiveOrder()
     protected abstract fun onNetworkAvailable()
@@ -91,6 +95,8 @@ abstract class BaseActivity :
 
     override fun onResume() {
         super.onResume()
+        NotificationUtils(this).cancelAll()
+        stopService()
         PreferenceManager
             .getDefaultSharedPreferences(this)
             .registerOnSharedPreferenceChangeListener(this)
@@ -98,6 +104,8 @@ abstract class BaseActivity :
 
     override fun onPause() {
         super.onPause()
+        startService()
+
         PreferenceManager
             .getDefaultSharedPreferences(this)
             .unregisterOnSharedPreferenceChangeListener(this)
@@ -216,6 +224,19 @@ abstract class BaseActivity :
     private fun inflateSettingsSubMenu(){
         navigationView.menu.clear()
         navigationView.inflateMenu(menuResId)
+    }
+
+    protected fun stopService(){
+        stopService(Intent(this, service))
+    }
+
+    private fun startService(){
+        if (model.shouldStartService){
+            val orderId = model.activeOrderId.value
+            startService(Intent(this, service).apply {
+                putExtra(ORDER_ID_NAME, orderId)
+            })
+        }
     }
 
 }

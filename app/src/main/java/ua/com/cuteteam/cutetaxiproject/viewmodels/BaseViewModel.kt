@@ -17,75 +17,19 @@ open class BaseViewModel(private val repository: Repository) : ViewModel() {
 
     val isGPSEnabled get() = repository.locationProvider.isGPSEnabled()
 
+    val shouldStartService: Boolean get() = repository.spHelper.isServiceEnabled
+
     val netStatus: LiveData<NetStatus> = repository.netHelper.netStatus
 
     val activeOrderId: LiveData<String?> = SingleLiveEvent<String?>().apply {
         value = repository.spHelper.activeOrderId
     }
 
-    /**
-     * Return location as Address class with coordinates and an address name
-     */
-    fun getSingleLocation() = liveData {
-        val loc = repository.locationProvider.getLocation()
-        if (loc != null) {
-            val latLng = LatLng(loc.latitude, loc.longitude)
-            val address = repository.geocoder.build()
-                .requestNameByCoordinates(latLng)
-                .toAddress()
-
-            emit(address)
-        }
-    }
-
     private val _currentLocation = LocationLiveData()
-
-    /**
-     * Periodical observable location in [LatLng]
-     */
     val currentLocation
         get() = Transformations.map(_currentLocation) {
             LatLng(it.latitude, it.longitude)
         }
-
-    /**
-     * Return address name by LatLng argument or string of "latitude,longitude"
-     */
-    fun geocodeLocation(param: Any) = liveData {
-        val address = when (param) {
-            is String -> {
-                repository.geocoder.build()
-                    .requestNameByCoordinates(param)
-                    .toName()
-            }
-            is LatLng -> {
-                repository.geocoder.build()
-                    .requestNameByCoordinates(param)
-                    .toName()
-            }
-            else -> ""
-        }
-        emit(address)
-    }
-
-    /**
-     * Build route by origin and destination addresses. It can be a name or string of "latitude,longitude"
-     * Return only the one smallest route
-     */
-    fun buildRoute(orig: String, dest: String, wayPoints: List<LatLng>? = null) = liveData {
-        val points = repository.routeBuilder.apply {
-                addDestination(orig)
-                addOrigin(dest)
-                wayPoints?.let {
-                    it.forEach {
-                        addWayPoint("${it.latitude},${it.longitude}")
-                    }
-                }
-            }
-            .build()
-            .routes()[0]
-        emit(points)
-    }
 
     private val _role = MutableLiveData(repository.spHelper.role)
 

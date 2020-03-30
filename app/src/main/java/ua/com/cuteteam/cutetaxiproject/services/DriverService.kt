@@ -8,23 +8,23 @@ import androidx.lifecycle.Observer
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.activities.DriverActivity
 import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
 import ua.com.cuteteam.cutetaxiproject.data.database.DriverDao
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
+import ua.com.cuteteam.cutetaxiproject.extentions.createNotificationChannel
 import ua.com.cuteteam.cutetaxiproject.extentions.distanceTo
 import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
-import ua.com.cuteteam.cutetaxiproject.activities.DriverActivity
-
-private const val ORDER_ID_NAME = "DriverService_orderId"
 
 class DriverService : BaseService(), CoroutineScope {
 
-    private val orders = mutableListOf<Order>()
     private var orderId: String? = null
     private val fbDao by lazy {
         DriverDao()
@@ -49,57 +49,49 @@ class DriverService : BaseService(), CoroutineScope {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        orderId = intent
+            ?.getStringExtra(ORDER_ID_NAME)
+            ?: appSettingsHelper.activeOrderId
 
-        launch {
-            orderId = intent?.getStringExtra(ORDER_ID_NAME) ?: appSettingsHelper.activeOrderId
-            val location = locationProvider.getLocation()?.toLatLng
+        orderId?.let {
+            fbDao.subscribeForChanges(DbEntries.Orders.TABLE, it, orderListener)
+            locationLiveData.observeForever(locationObserver)
+        }
 
-            if (orderId != null) {
-//                dao.subscribeForChanges(DbEntries.Orders.TABLE, orderId, orderListener)               //TODO:Uncomment when a method FbDao appears
-                locationLiveData.observeForever(locationObserver)
-            }
-
-            fbDao.observeOrders { list ->
+        fbDao.observeOrders { list ->
+            launch(Dispatchers.Main) {
+                val currentLocation = locationProvider.getLocation()?.toLatLng
                 if (orderId == null && list.isNotEmpty()) {
-                    val filteredList =
-                        list
-                            .filter { it.comfortLevel == appSettingsHelper.carClass }
-                            .filter {
-                                val startLocation = it.addressStart?.location.run {
-                                    this?.latitude?.let { lat ->
-                                        longitude?.let { lon ->
-                                            LatLng(lat, lon)
-                                        }
-                                    }
-                                }
-                                if (location != null && startLocation != null) {
-                                    (location distanceTo startLocation) < 5000.0
-                                } else false
-                            }
-                            .filter { !orders.contains(it) }
-                    orders.clear()
-                    orders.addAll(filteredList)
-                    orders.forEach(this@DriverService::notifyForNewOrder)
+                    val newOrders = list.filter { it.comfortLevel == appSettingsHelper.carClass }
+                        .filter {
+                            val lat = it.addressStart?.location?.latitude
+                            val lon = it.addressStart?.location?.longitude
+                            if (lat != null && lon != null && currentLocation != null) {
+                                val latLng = LatLng(lat, lon)
+                                val distance = currentLocation distanceTo latLng
+                                distance <= 5000
+                            } else false
+                        }
+                    newOrders.forEach(::notifyForNewOrder)
                 }
             }
         }
-
         return START_STICKY
     }
 
     override fun onDestroy() {
         super.onDestroy()
         locationLiveData.removeObserver(locationObserver)
+        fbDao.removeAllListeners()
     }
 
     private fun onOrderCancel(order: Order) {
         if (order.orderStatus == OrderStatus.CANCELLED) {
-            notifyOrderCancelled(order)
+            notifyOrderCancelled()
         }
     }
 
     private fun postCoordinates(location: Location) {
-        val path = "${DbEntries.Orders.TABLE}/${DbEntries.Orders.Fields.DRIVER_LOCATION}"
         orderId?.let {
             fbDao.updateOrder(
                 it,
@@ -134,8 +126,10 @@ class DriverService : BaseService(), CoroutineScope {
 
         notificationUtils
             .addAction(getAcceptOrderIntent(order))
+            .setStartActivityIntent(DriverActivity::class.java)
             .sendNotification(
                 "New order!",
+                "$from - $to, $price hrn",
                 "From: $from\n" +
                         "To: $to\n" +
                         "Distance: $distance\n" +
@@ -143,12 +137,21 @@ class DriverService : BaseService(), CoroutineScope {
             )
     }
 
-    private fun notifyOrderCancelled(order: Order) {
+    private fun notifyOrderCancelled() {
         notificationUtils.sendNotification(
             title = "ORDER IS CANCELLED!",
             text = "Sorry, but current order was cancelled by client"
         )
-        orders.remove(order)
+        cancelOrder()
+    }
+
+    private fun cancelOrder(){
+        locationLiveData.removeObserver(locationObserver)
+        orderId?.let {
+            FirebaseDatabase.getInstance().reference.child(DbEntries.Orders.TABLE).child(
+                it
+            ).removeEventListener(orderListener)
+        }
         orderId = null
         appSettingsHelper.activeOrderId = null
     }

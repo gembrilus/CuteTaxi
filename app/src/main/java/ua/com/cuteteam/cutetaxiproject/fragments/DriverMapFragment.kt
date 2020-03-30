@@ -56,6 +56,7 @@ class DriverMapFragment : Fragment() {
             when (it.orderStatus) {
                 OrderStatus.CANCELLED ->{
                     model.closeOrder()
+                    hideUI()
                     InfoDialog.show(
                         requireActivity().supportFragmentManager,
                         getString(R.string.dialog_title_order_is_changed),
@@ -68,6 +69,7 @@ class DriverMapFragment : Fragment() {
                 }
                 OrderStatus.FINISHED ->{
                     model.closeOrder()
+                    hideUI()
                     RateDialog.show(
                         requireActivity().supportFragmentManager,
                         null
