@@ -8,31 +8,13 @@ import ua.com.cuteteam.cutetaxiproject.data.User
 import ua.com.cuteteam.cutetaxiproject.data.database.DriverDao
 import ua.com.cuteteam.cutetaxiproject.data.database.PassengerDao
 import ua.com.cuteteam.cutetaxiproject.data.entities.Passenger
+import ua.com.cuteteam.cutetaxiproject.repositories.StartUpRepository
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 
-class StartUpViewModel(context: Context = AppClass.appContext()) : ViewModel() {
+class StartUpViewModel(private val repository: StartUpRepository) : ViewModel() {
 
-    private val passengerDAO = PassengerDao()
-    private val driverDAO = DriverDao()
+    fun checkRole() = repository.checkRole()
 
-    val appSettingsHelper = AppSettingsHelper(context)
-
-    suspend fun initUser(firebaseUser: FirebaseUser) {
-        getUser(firebaseUser)?.also {
-            appSettingsHelper.initUser(it)
-            return@initUser
-        }
-
-        val passenger = Passenger(
-            firebaseUser.displayName,
-            firebaseUser.phoneNumber
-        )
-        appSettingsHelper.initUser(passenger)
-        passengerDAO.writeUser(passenger)
-    }
-
-    private suspend fun getUser(firebaseUser: FirebaseUser): User? {
-        val uid = firebaseUser.uid
-        return driverDAO.getUser(uid) ?: passengerDAO.getUser(uid)
-    }
+    suspend fun updateOrCreateUser(firebaseUser: FirebaseUser) =
+        repository.updateOrCreateUser(firebaseUser)
 }

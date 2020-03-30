@@ -10,6 +10,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.fragments.HeadPieceFragment
+import ua.com.cuteteam.cutetaxiproject.repositories.StartUpRepository
 import ua.com.cuteteam.cutetaxiproject.viewmodels.AuthViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.StartUpViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.AuthViewModelFactory
@@ -46,8 +47,11 @@ class MainActivity : AppCompatActivity() {
                 //openStartUpActivity()
                 GlobalScope.launch(Dispatchers.Main) {
                     if (authViewModel.verifyCurrentUser()) {
-                        if (startUpViewModel.appSettingsHelper.role) startDriverActivity()
-                        else startPassengerActivity()
+                        startUpViewModel.updateOrCreateUser(authViewModel.firebaseUser!!)
+                        when (startUpViewModel.checkRole()) {
+                            StartUpRepository.UserRole.DRIVER -> startDriverActivity()
+                            StartUpRepository.UserRole.PASSENGER -> startPassengerActivity()
+                        }
                     }
                     else startAuthorization()
                 }
@@ -66,20 +70,24 @@ class MainActivity : AppCompatActivity() {
 
         val user = data?.extras?.get("user") as FirebaseUser
         GlobalScope.launch(Dispatchers.Main) {
-            startUpViewModel.initUser(user)
-            if (startUpViewModel.appSettingsHelper.role) startDriverActivity()
-            else startPassengerActivity()
+            startUpViewModel.updateOrCreateUser(user)
+            when (startUpViewModel.checkRole()) {
+                StartUpRepository.UserRole.DRIVER -> startDriverActivity()
+                StartUpRepository.UserRole.PASSENGER -> startPassengerActivity()
+            }
         }
     }
 
     private fun startPassengerActivity() {
         val intent = Intent(this, PassengerActivity::class.java)
         startActivity(intent)
+        finish()
     }
 
     private fun startDriverActivity() {
         val intent = Intent(this, DriverActivity::class.java)
         startActivity(intent)
+        finish()
     }
 
     override fun onBackPressed() {

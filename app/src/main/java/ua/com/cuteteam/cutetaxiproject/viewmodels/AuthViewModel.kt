@@ -1,5 +1,6 @@
 package ua.com.cuteteam.cutetaxiproject.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -16,8 +17,10 @@ class AuthViewModel: ViewModel(), AuthListener {
 
     init {
         FirebaseAuth.getInstance().addAuthStateListener{
-            if (it.currentUser != null)
+            if (it.currentUser != null) {
+                Log.d(AuthViewModel::javaClass.name, "user is not null")
                 state.value = State.LOGGED_IN
+            }
         }
     }
 
