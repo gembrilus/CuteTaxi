@@ -73,8 +73,8 @@ class AppSettingsHelperTest {
             phone = it.getArgument(1) as String
             editor
         }
-        whenever(editor.putInt(DbEntries.Passengers.Fields.COMFORT_LEVEL, pass.comfortLevel.ordinal)).doAnswer {
-            comfortLevel = ComfortLevel.values()[it.getArgument(1) as Int]
+        whenever(editor.putString(DbEntries.Passengers.Fields.COMFORT_LEVEL, pass.comfortLevel.ordinal.toString())).doAnswer {
+            comfortLevel = ComfortLevel.values()[(it.getArgument(1) as String).toInt()]
             editor
         }
         doNothing().whenever(editor).apply()
@@ -103,7 +103,7 @@ class AppSettingsHelperTest {
         inOrder.verify(editor).putString(DbEntries.Passengers.Fields.PHONE, pass.phoneNumber)
         inOrder.verify(editor).apply()
         inOrder.verify(sharedPreferences).edit()
-        inOrder.verify(editor).putInt(DbEntries.Passengers.Fields.COMFORT_LEVEL, pass.comfortLevel.ordinal)
+        inOrder.verify(editor).putString(DbEntries.Passengers.Fields.COMFORT_LEVEL, pass.comfortLevel.ordinal.toString())
         inOrder.verify(editor).apply()
         inOrder.verify(sharedPreferences).getString(DbEntries.Passengers.Fields.NAME, null)
         inOrder.verify(sharedPreferences).getString(DbEntries.Passengers.Fields.PHONE, null)
@@ -150,8 +150,8 @@ class AppSettingsHelperTest {
             color = it.getArgument(1) as String
             editor
         }
-        whenever(editor.putInt(DbEntries.Car.CAR_CLASS, driver.car?.carClass?.ordinal!!)).doAnswer {
-            comfortLevel = ComfortLevel.values()[it.getArgument(1) as Int]
+        whenever(editor.putString(DbEntries.Car.CAR_CLASS, driver.car?.carClass?.ordinal.toString())).doAnswer {
+            comfortLevel = ComfortLevel.values()[(it.getArgument(1) as String).toInt()]
             editor
         }
         doNothing().whenever(editor).apply()
@@ -194,7 +194,7 @@ class AppSettingsHelperTest {
         inOrder.verify(editor).putString(DbEntries.Car.MODEL, driver.car?.model)
         inOrder.verify(editor).apply()
         inOrder.verify(sharedPreferences).edit()
-        inOrder.verify(editor).putInt(DbEntries.Car.CAR_CLASS, driver.car?.carClass?.ordinal!!)
+        inOrder.verify(editor).putString(DbEntries.Car.CAR_CLASS, driver.car?.carClass?.ordinal.toString())
         inOrder.verify(editor).apply()
         inOrder.verify(sharedPreferences).edit()
         inOrder.verify(editor).putString(DbEntries.Car.COLOR, driver.car?.color)
@@ -475,8 +475,8 @@ class AppSettingsHelperTest {
         val key = DbEntries.Passengers.Fields.COMFORT_LEVEL
         val inOrder = inOrder(sharedPreferences, editor)
 
-        whenever(editor.putInt(key, expected.ordinal)).doAnswer {
-            newValue = ComfortLevel.values()[it.getArgument(1) as Int]
+        whenever(editor.putString(key, expected.ordinal.toString())).doAnswer {
+            newValue = ComfortLevel.values()[(it.getArgument(1) as String).toInt()]
             editor
         }
         doReturn(oldValue.ordinal.toString()).whenever(sharedPreferences).getString(key, null)
@@ -495,7 +495,7 @@ class AppSettingsHelperTest {
         //Verify
         verify(sharedPreferences, times(2)).getString(key, null)
         inOrder.verify(sharedPreferences).edit()
-        inOrder.verify(editor).putInt(key, expected.ordinal)
+        inOrder.verify(editor).putString(key, expected.ordinal.toString())
         inOrder.verify(editor).apply()
         verifyNoMoreInteractions(sharedPreferences)
     }
@@ -665,8 +665,8 @@ class AppSettingsHelperTest {
         val key = DbEntries.Car.CAR_CLASS
         val inOrder = inOrder(sharedPreferences, editor)
 
-        whenever(editor.putInt(key, expected.ordinal)).doAnswer {
-            newValue = ComfortLevel.values()[it.getArgument(1) as Int]
+        whenever(editor.putString(key, expected.ordinal.toString())).doAnswer {
+            newValue = ComfortLevel.values()[(it.getArgument(1) as String).toInt()]
             editor
         }
         doReturn(oldValue.ordinal.toString()).whenever(sharedPreferences).getString(key, null)
@@ -685,7 +685,7 @@ class AppSettingsHelperTest {
         //Verify
         verify(sharedPreferences, times(2)).getString(key, null)
         inOrder.verify(sharedPreferences).edit()
-        inOrder.verify(editor).putInt(key, expected.ordinal)
+        inOrder.verify(editor).putString(key, expected.ordinal.toString())
         inOrder.verify(editor).apply()
         verifyNoMoreInteractions(sharedPreferences)
 
