@@ -20,7 +20,6 @@ import ua.com.cuteteam.cutetaxiproject.data.database.DriverDao
 import ua.com.cuteteam.cutetaxiproject.data.entities.Coordinates
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
-import ua.com.cuteteam.cutetaxiproject.extentions.createNotificationChannel
 import ua.com.cuteteam.cutetaxiproject.extentions.distanceTo
 import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
 
@@ -54,29 +53,30 @@ class DriverService : BaseService(), CoroutineScope {
             ?.getStringExtra(ORDER_ID_NAME)
             ?: appSettingsHelper.activeOrderId
 
-        orderId?.let {
-            fbDao.subscribeForChanges(DbEntries.Orders.TABLE, it, orderListener)
-            locationLiveData.observeForever(locationObserver)
-        }
-
-        fbDao.observeOrders { list ->
-            launch(Dispatchers.Main) {
-                val currentLocation = locationProvider.getLocation()?.toLatLng
-                if (orderId == null && list.isNotEmpty()) {
-                    val newOrders = list.filter { it.comfortLevel == appSettingsHelper.carClass }
-                        .filter {
-                            val lat = it.addressStart?.location?.latitude
-                            val lon = it.addressStart?.location?.longitude
-                            if (lat != null && lon != null && currentLocation != null) {
-                                val latLng = LatLng(lat, lon)
-                                val distance = currentLocation distanceTo latLng
-                                distance <= 5000
-                            } else false
-                        }
-                    newOrders.forEach(::notifyForNewOrder)
+        orderId
+            ?.let {
+                fbDao.subscribeForChanges(DbEntries.Orders.TABLE, it, orderListener)
+                locationLiveData.observeForever(locationObserver)
+            }
+            ?: fbDao.observeOrders { list ->
+                launch(Dispatchers.Main) {
+                    val currentLocation = locationProvider.getLocation()?.toLatLng
+                    if (list.isNotEmpty()) {
+                        val newOrders =
+                            list.filter { it.comfortLevel == appSettingsHelper.carClass }
+                                .filter {
+                                    val lat = it.addressStart?.location?.latitude
+                                    val lon = it.addressStart?.location?.longitude
+                                    if (lat != null && lon != null && currentLocation != null) {
+                                        val latLng = LatLng(lat, lon)
+                                        val distance = currentLocation distanceTo latLng
+                                        distance <= 5000
+                                    } else false
+                                }
+                        newOrders.forEach(::notifyForNewOrder)
+                    }
                 }
             }
-        }
         return START_STICKY
     }
 
@@ -146,7 +146,7 @@ class DriverService : BaseService(), CoroutineScope {
         cancelOrder()
     }
 
-    private fun cancelOrder(){
+    private fun cancelOrder() {
         locationLiveData.removeObserver(locationObserver)
         orderId?.let {
             FirebaseDatabase.getInstance().reference.child(DbEntries.Orders.TABLE).child(

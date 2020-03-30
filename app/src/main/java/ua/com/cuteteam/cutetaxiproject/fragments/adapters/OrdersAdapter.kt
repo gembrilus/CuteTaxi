@@ -50,7 +50,7 @@ class OrdersAdapter(private var orders: List<Order> = emptyList()) :
                 showAcceptButton(itemView)
             }
             view.btn_accept.setOnClickListener {
-                acceptListener?.onAccept(orders[adapterPosition])
+                acceptListener?.onAccept(orders[adapterPosition].orderId!!)
             }
         }
 
@@ -70,7 +70,7 @@ class OrdersAdapter(private var orders: List<Order> = emptyList()) :
     }
 
     interface OnOrderAccept{
-        fun onAccept(order: Order)
+        fun onAccept(orderId: String)
     }
 
 }

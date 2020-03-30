@@ -1,5 +1,7 @@
 package ua.com.cuteteam.cutetaxiproject.viewmodels
 
+import android.content.Context
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.*
 import com.google.android.gms.maps.model.LatLng
@@ -11,6 +13,9 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ua.com.cuteteam.cutetaxiproject.LocationLiveData
+import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.application.AppClass
+import ua.com.cuteteam.cutetaxiproject.common.arrivalTime
 import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
 import ua.com.cuteteam.cutetaxiproject.data.entities.Coordinates
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
@@ -20,7 +25,10 @@ import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
 import ua.com.cuteteam.cutetaxiproject.repositories.DriverRepository
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 
-class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
+class DriverViewModel(
+    repository: Repository,
+    private val context: Context = AppClass.appContext()
+) : BaseViewModel(repository) {
     private val repo = repository as DriverRepository
     private var mOrder: Order? = null
 
@@ -65,9 +73,6 @@ class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
         _orders.value = _orders.value
     }
 
-    fun getOrderById(orderId: String) =
-        _orders.value?.find { it.orderId == orderId }
-
     private fun getOrders() = viewModelScope.launch(Dispatchers.Unconfined) {
         if (repo.netHelper.hasInternet) {
             val currentLocation = repo.locationProvider.getLocation()?.toLatLng
@@ -90,7 +95,7 @@ class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
                     }
             }
             orders.addSource(_orders) { list ->
-                orders.value = list.filter { it.comfortLevel == repo.spHelper.carClass }
+                orders.value = list?.filter { it.comfortLevel == repo.spHelper.carClass }
             }
             orders.addSource(LocationLiveData()) { loc ->
                 orders.value = orders.value?.map {
@@ -102,14 +107,27 @@ class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
         }
     }
 
-    fun obtainOrder(order: Order) {
-        mOrder = order
-        order.orderStatus = OrderStatus.ACTIVE
-        mOrder?.driverId = FirebaseAuth.getInstance().currentUser?.uid
-        val orderId = mOrder?.orderId
+    fun obtainOrder(orderId: String) = viewModelScope.launch {
         if (repo.netHelper.hasInternet) {
-            repo.dao.writeOrder(order)
-            subscribeOnOrder(orderId)
+            mOrder = repo.dao.getOrder(orderId)?.apply {
+                if (orderStatus == OrderStatus.NEW) {
+                    orderStatus = OrderStatus.ACTIVE
+                    driverId = FirebaseAuth.getInstance().currentUser?.uid
+                    arrivingTime = arrivalTime(this)
+                    carInfo = with(repo.spHelper) {
+                        context.getString(
+                            R.string.order_message_from_dirver,
+                            carBrand,
+                            carModel,
+                            carColor,
+                            carNumber,
+                            this@apply.arrivingTime
+                        )
+                    }
+                }
+            }
+            repo.dao.writeOrder(mOrder!!)
+            subscribeOnOrder(mOrder!!.orderId)
         }
     }
 

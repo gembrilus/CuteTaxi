@@ -29,51 +29,33 @@ class DriverActivity : BaseActivity(), OrdersAdapter.OnOrderAccept {
     override val service: Class<out Service>
         get() = DriverService::class.java
 
-    override fun onNetworkAvailable() = show()
+    override fun onNetworkAvailable() = restoreStateVisibility()
     override fun onNetworkLost() = hide()
+
     override fun onHasActiveOrder(orderId: String?) {
         model.subscribeOnOrder(orderId)
         navController.setGraph(R.navigation.nav_graph_driver)
     }
-
-    override fun onNoActiveOrder() {
+    override fun onNoActiveOrder() =
         navController.navigate(R.id.action_home_to_new_orders)
-    }
 
-    override fun onAccept(order: Order) {
-        order.carInfo = with(AppSettingsHelper(this)) {
-            getString(
-                R.string.order_message_from_dirver,
-                carBrand,
-                carModel,
-                carColor,
-                carNumber,
-                order.arrivingTime
-            )
-        }
-        model.obtainOrder(order)
+
+    override fun onAccept(orderId: String) {
+        model.obtainOrder(orderId)
         navController.navigate(R.id.action_new_orders_to_home)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         super.onSharedPreferenceChanged(sharedPreferences, key)
-        when (key) {
-            getString(R.string.key_send_notifications_preference) -> stopService()
-            else -> model.updateOrders()
-        }
+        model.updateOrders()
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onResume() {
+        super.onResume()
         intent.getStringExtra(ACCEPTED_ORDER_ID)?.let {
-            onHasActiveOrder(it)
+            onAccept(it)
         }
     }
-
-    private fun show() {
-        restoreStateVisibility()
-    }
-
 
     private fun hide() {
         saveStateVisibility()
