@@ -43,28 +43,6 @@ class OrdersAdapter(private var orders: List<Order> = emptyList()) :
         acceptListener = listener
     }
 
-/*    private fun calcDistance(order: Order): Double? {
-        val location = order.driverLocation?.latitude?.let {lat ->
-            order.driverLocation?.longitude?.let { lon ->
-                LatLng(lat, lon)
-            }
-        }
-        val startLat = order.addressStart?.location?.latitude
-        val startLon = order.addressStart?.location?.longitude
-        if (startLat != null && startLon != null && location != null) {
-            return (location distanceTo LatLng(startLat, startLon))
-        }
-        return null
-    }
-
-    private fun prepareDistance(order: Order): String? {
-        val d = calcDistance(order) ?: return ""
-        return when(d){
-            in 0.0..999.0 -> view?.context?.getString(R.string.units_M, d.toInt().toString())
-            else -> view?.context?.getString(R.string.units_KM, (d/1000).toInt().toString())
-        }
-    }*/
-
     inner class OrdersViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         init {

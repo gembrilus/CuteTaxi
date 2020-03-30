@@ -93,7 +93,7 @@ class AppSettingsHelper (
     var comfortClass: ComfortLevel
         get() {
             val ordinal =
-                shPref.getString(DbEntries.Passengers.Fields.COMFORT_LEVEL, null)?.toInt() ?: ComfortLevel.STANDARD.ordinal
+                shPref.getString(DbEntries.Passengers.Fields.COMFORT_LEVEL, null)?.toIntOrNull() ?: ComfortLevel.STANDARD.ordinal
             return ComfortLevel.values()[ordinal]
         }
         set(value) = put(
@@ -153,7 +153,7 @@ class AppSettingsHelper (
      */
     var carClass: ComfortLevel
         get() {
-            val ordinal = shPref.getString(DbEntries.Car.CAR_CLASS, null)?.toInt() ?: ComfortLevel.STANDARD.ordinal
+            val ordinal = shPref.getString(DbEntries.Car.CAR_CLASS, null)?.toIntOrNull() ?: ComfortLevel.STANDARD.ordinal
             return ComfortLevel.values()[ordinal]
         }
         set(value) = put(DbEntries.Car.CAR_CLASS, value.ordinal)
