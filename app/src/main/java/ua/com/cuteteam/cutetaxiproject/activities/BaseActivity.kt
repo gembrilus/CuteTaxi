@@ -212,7 +212,7 @@ abstract class BaseActivity :
 
     private fun onRoleChanged(isDriver: Boolean) {
         model.changeRole(isDriver)
-        startActivity(Intent(this, AuthActivity::class.java))
+        startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
 

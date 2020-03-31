@@ -31,27 +31,39 @@ class AuthActivity : AppCompatActivity() {
 
         authViewModel.state.observe(this, Observer {
             val transaction = supportFragmentManager.beginTransaction()
-            when(it) {
-                State.ENTERING_PHONE_NUMBER -> transaction.replace(R.id.auth_fl, PhoneNumberFragment(), PHONE_NUMBER_FRAGMENT)
+            when (it) {
+                State.ENTERING_PHONE_NUMBER -> transaction.replace(
+                    R.id.auth_fl,
+                    PhoneNumberFragment(),
+                    PHONE_NUMBER_FRAGMENT
+                )
                     .addToBackStack(PHONE_NUMBER_FRAGMENT)
                     .commit()
-                State.ENTERING_VERIFICATION_CODE -> transaction.replace(R.id.auth_fl, VerificationCodeFragment(), VERIFICATION_CODE_FRAGMENT)
+                State.ENTERING_VERIFICATION_CODE -> transaction.replace(
+                    R.id.auth_fl,
+                    VerificationCodeFragment(),
+                    VERIFICATION_CODE_FRAGMENT
+                )
                     .addToBackStack(VERIFICATION_CODE_FRAGMENT)
                     .commit()
-                State.LOGGED_IN -> openFakeMap()
+                State.LOGGED_IN -> returnToStartUpActivity()
                 State.RESEND_CODE -> authViewModel.resendVerificationCode()
-                else -> {}
+                else -> {
+                }
             }
         })
     }
 
-    private fun openFakeMap() {
-        val intent = Intent(this, MapsActivity::class.java)
-        startActivity(intent)
+    private fun returnToStartUpActivity() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("user", authViewModel.firebaseUser)
+        setResult(2, intent)
+        finish()
     }
 
     override fun onBackPressed() {
-        val verificationCodeFragment = supportFragmentManager.findFragmentByTag(VERIFICATION_CODE_FRAGMENT)
+        val verificationCodeFragment =
+            supportFragmentManager.findFragmentByTag(VERIFICATION_CODE_FRAGMENT)
         if (verificationCodeFragment?.isVisible == true) authViewModel.backToEnteringPhoneNumber()
         else finishAffinity()
     }

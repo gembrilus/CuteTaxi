@@ -46,6 +46,17 @@ abstract class BaseDao(
         }
     }
 
+    /**Writes user to realtime database
+     * @see User
+     */
+    fun writeUser(id: String, user: User) {
+        usersRef.child(id).setValue(user).addOnFailureListener {
+            Log.e("Firebase: writeUser()", it.message.toString())
+        }.addOnCompleteListener {
+            Log.d("Firebase: writeUser()", "Write is successful")
+        }
+    }
+
     /**Writes value into user field, specified by entry
      * @param field field entry
      * @see DbEntries
