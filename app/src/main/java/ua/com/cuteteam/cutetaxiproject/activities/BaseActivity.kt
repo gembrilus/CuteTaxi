@@ -21,8 +21,8 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
 import kotlinx.android.synthetic.main.navigation_header.view.*
 import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.common.network.NetStatus
-import ua.com.cuteteam.cutetaxiproject.common.notifications.NotificationUtils
+import ua.com.cuteteam.cutetaxiproject.helpers.network.NetStatus
+import ua.com.cuteteam.cutetaxiproject.helpers.NotificationUtils
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
 import ua.com.cuteteam.cutetaxiproject.extentions.createNotificationChannel
 import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission

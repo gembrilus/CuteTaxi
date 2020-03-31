@@ -1,12 +1,8 @@
-package ua.com.cuteteam.cutetaxiproject.common.network
+package ua.com.cuteteam.cutetaxiproject.helpers.network
 
 import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers
 import org.junit.Test
-import kotlin.reflect.KVisibility
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.isSubclassOf
-import kotlin.reflect.full.primaryConstructor
 
 class NetStatusTest{
 

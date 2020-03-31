@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.common.network
+package ua.com.cuteteam.cutetaxiproject.helpers.network
 
 import android.content.Context
 import android.net.ConnectivityManager
