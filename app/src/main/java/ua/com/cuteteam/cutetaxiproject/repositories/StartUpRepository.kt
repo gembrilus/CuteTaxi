@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.firebase.auth.FirebaseUser
 import ua.com.cuteteam.cutetaxiproject.application.AppClass
 import ua.com.cuteteam.cutetaxiproject.data.User
+import ua.com.cuteteam.cutetaxiproject.data.database.BaseDao
 import ua.com.cuteteam.cutetaxiproject.data.database.DriverDao
 import ua.com.cuteteam.cutetaxiproject.data.database.PassengerDao
 import ua.com.cuteteam.cutetaxiproject.data.entities.Driver
@@ -16,59 +17,32 @@ class StartUpRepository(context: Context = AppClass.appContext()) {
 
     private val appSettingsHelper = AppSettingsHelper(context)
 
-    enum class UserRole {
-        DRIVER,
-        PASSENGER
-    }
-
-    fun checkRole(): UserRole {
-        return if (appSettingsHelper.role) UserRole.DRIVER
-        else UserRole.PASSENGER
-    }
+    val isDriver: Boolean
+        get() = appSettingsHelper.role
 
     suspend fun updateOrCreateUser(firebaseUser: FirebaseUser) {
-        if (appSettingsHelper.role) updateOrCreateDriver(firebaseUser)
-        else updateOrCreatePassenger(firebaseUser)
-    }
-
-
-
-    private suspend fun updateOrCreateDriver(firebaseUser: FirebaseUser) {
-        checkDriverExistence(firebaseUser.uid)?.also {
-            appSettingsHelper.initUser(it)
-            return@updateOrCreateDriver
+        if (appSettingsHelper.role) {
+            updateOrCreateUser(firebaseUser, driverDAO) {
+                Driver(firebaseUser.displayName, firebaseUser.phoneNumber)
+            }
+        } else {
+            updateOrCreateUser(firebaseUser, passengerDAO) {
+                Passenger(firebaseUser.displayName, firebaseUser.phoneNumber)
+            }
         }
-        val driver = Driver(
-            firebaseUser.displayName,
-            firebaseUser.phoneNumber
-        )
-        createDriver(firebaseUser.uid, driver)
-        appSettingsHelper.initUser(driver)
     }
 
-    private suspend fun updateOrCreatePassenger(firebaseUser: FirebaseUser) {
-        checkPassengerExistence(firebaseUser.uid)?.also {
+    private suspend fun <T : User> updateOrCreateUser(
+        firebaseUser: FirebaseUser,
+        dao: BaseDao,
+        buildUser: () -> T
+    ) {
+        dao.getUser<T>(firebaseUser.uid)?.also {
             appSettingsHelper.initUser(it)
-            return@updateOrCreatePassenger
+            return@updateOrCreateUser
         }
-        val passenger = Passenger(
-            firebaseUser.displayName,
-            firebaseUser.phoneNumber
-        )
-        createPassenger(firebaseUser.uid, passenger)
-        appSettingsHelper.initUser(passenger)
+        val user = buildUser()
+        dao.writeUser(user)
+        appSettingsHelper.initUser(user)
     }
-
-    private fun createDriver(id: String, driver: Driver) = driverDAO.writeUser(driver)
-
-    private fun createPassenger(id: String, passenger: Passenger) = passengerDAO.writeUser(passenger)
-
-    private suspend fun getUser(firebaseUser: FirebaseUser): User? {
-        val uid = firebaseUser.uid
-        return checkDriverExistence(uid) ?: checkPassengerExistence(uid)
-    }
-
-    private suspend fun checkDriverExistence(uid: String): User? = driverDAO.getUser(uid)
-
-    private suspend fun checkPassengerExistence(uid: String): User? = passengerDAO.getUser(uid)
 }

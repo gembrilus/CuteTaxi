@@ -10,7 +10,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.fragments.HeadPieceFragment
-import ua.com.cuteteam.cutetaxiproject.repositories.StartUpRepository
 import ua.com.cuteteam.cutetaxiproject.viewmodels.AuthViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.StartUpViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.AuthViewModelFactory
@@ -44,14 +43,9 @@ class MainActivity : AppCompatActivity() {
 
         Timer().schedule(object : TimerTask() {
             override fun run() {
-                //openStartUpActivity()
                 GlobalScope.launch(Dispatchers.Main) {
                     if (authViewModel.verifyCurrentUser()) {
-                        startUpViewModel.updateOrCreateUser(authViewModel.firebaseUser!!)
-                        when (startUpViewModel.checkRole()) {
-                            StartUpRepository.UserRole.DRIVER -> startDriverActivity()
-                            StartUpRepository.UserRole.PASSENGER -> startPassengerActivity()
-                        }
+                        updateUserAndStartActivity(authViewModel.firebaseUser!!)
                     }
                     else startAuthorization()
                 }
@@ -70,12 +64,14 @@ class MainActivity : AppCompatActivity() {
 
         val user = data?.extras?.get("user") as FirebaseUser
         GlobalScope.launch(Dispatchers.Main) {
-            startUpViewModel.updateOrCreateUser(user)
-            when (startUpViewModel.checkRole()) {
-                StartUpRepository.UserRole.DRIVER -> startDriverActivity()
-                StartUpRepository.UserRole.PASSENGER -> startPassengerActivity()
-            }
+            updateUserAndStartActivity(user)
         }
+    }
+
+    private suspend fun updateUserAndStartActivity(firebaseUser: FirebaseUser) {
+        startUpViewModel.updateOrCreateUser(firebaseUser)
+        if (startUpViewModel.isDriver()) startDriverActivity()
+        else startPassengerActivity()
     }
 
     private fun startPassengerActivity() {
