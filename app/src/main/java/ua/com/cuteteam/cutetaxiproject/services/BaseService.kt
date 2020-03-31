@@ -8,7 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import ua.com.cuteteam.cutetaxiproject.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.LocationProvider
-import ua.com.cuteteam.cutetaxiproject.common.notifications.NotificationUtils
+import ua.com.cuteteam.cutetaxiproject.helpers.NotificationUtils
 import ua.com.cuteteam.cutetaxiproject.extentions.createNotificationChannel
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 import kotlin.coroutines.CoroutineContext
@@ -28,7 +28,9 @@ abstract class BaseService : Service(), CoroutineScope {
     }
 
     protected val notificationUtils by lazy {
-        NotificationUtils(applicationContext)
+        NotificationUtils(
+            applicationContext
+        )
     }
     protected val appSettingsHelper by lazy {
         AppSettingsHelper(applicationContext)

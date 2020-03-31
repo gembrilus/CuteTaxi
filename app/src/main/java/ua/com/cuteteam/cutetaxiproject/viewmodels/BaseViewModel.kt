@@ -3,7 +3,7 @@ package ua.com.cuteteam.cutetaxiproject.viewmodels
 import androidx.lifecycle.*
 import com.google.android.gms.maps.model.LatLng
 import ua.com.cuteteam.cutetaxiproject.LocationLiveData
-import ua.com.cuteteam.cutetaxiproject.common.network.NetStatus
+import ua.com.cuteteam.cutetaxiproject.helpers.network.NetStatus
 import ua.com.cuteteam.cutetaxiproject.livedata.SingleLiveEvent
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 

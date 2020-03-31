@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.common.network
+package ua.com.cuteteam.cutetaxiproject.helpers.network
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -7,7 +7,6 @@ import android.net.NetworkCapabilities
 import android.net.NetworkCapabilities.*
 import android.net.NetworkRequest
 import android.os.Build
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 
 private const val TAG = "CuteTaxi.NetHelper"

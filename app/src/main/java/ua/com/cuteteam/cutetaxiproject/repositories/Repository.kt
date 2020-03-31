@@ -5,7 +5,7 @@ import ua.com.cuteteam.cutetaxiproject.LocationProvider
 import ua.com.cuteteam.cutetaxiproject.api.RouteProvider
 import ua.com.cuteteam.cutetaxiproject.api.geocoding.GeocodeRequest
 import ua.com.cuteteam.cutetaxiproject.application.AppClass
-import ua.com.cuteteam.cutetaxiproject.common.network.NetHelper
+import ua.com.cuteteam.cutetaxiproject.helpers.network.NetHelper
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 
 open class Repository {
