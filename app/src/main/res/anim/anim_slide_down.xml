@@ -3,8 +3,8 @@
 
     <translate
         android:duration="@android:integer/config_mediumAnimTime"
-        android:fromYDelta="0%p"
-        android:interpolator="@android:anim/accelerate_interpolator"
-        android:toYDelta="100%p" />
+        android:fromYDelta="0%" android:toYDelta="100%"
+        android:fromXDelta="0%" android:toXDelta="0%"
+        android:interpolator="@android:anim/accelerate_interpolator" />
 
 </set>
