@@ -80,8 +80,8 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/image_way"
-        android:layout_width="@dimen/zero_dp"
-        android:layout_height="@dimen/zero_dp"
+        android:layout_width="32dp"
+        android:layout_height="72dp"
         android:padding="@dimen/padding_8dp"
         android:layout_marginTop="@dimen/margin_8dp"
         android:src="@drawable/ct_dest_chain"
