@@ -12,7 +12,7 @@ import ua.com.cuteteam.cutetaxiproject.extentions.distanceTo
 const val speed = 1000 // meter per minute
 
 fun calculatePrice(tax: Double, distance: Double, level: ComfortLevel): Double {
-    val koef = when(level){
+    val koef = when (level) {
         ComfortLevel.STANDARD -> 1.0
         ComfortLevel.COMFORT -> 1.25
         ComfortLevel.ECO -> 1.5
@@ -21,7 +21,7 @@ fun calculatePrice(tax: Double, distance: Double, level: ComfortLevel): Double {
 }
 
 fun calcDistance(order: Order): Double? {
-    val location = order.driverLocation?.latitude?.let {lat ->
+    val location = order.driverLocation?.latitude?.let { lat ->
         order.driverLocation?.longitude?.let { lon ->
             LatLng(lat, lon)
         }
@@ -36,9 +36,9 @@ fun calcDistance(order: Order): Double? {
 
 fun prepareDistance(context: Context?, order: Order): String? {
     val d = calcDistance(order) ?: return ""
-    return when(d){
+    return when (d) {
         in 0.0..999.0 -> context?.getString(R.string.units_M, d.toInt().toString())
-        else -> context?.getString(R.string.units_KM, (d/1000).toInt().toString())
+        else -> context?.getString(R.string.units_KM, (d / 1000).toInt().toString())
     }
 }
 
