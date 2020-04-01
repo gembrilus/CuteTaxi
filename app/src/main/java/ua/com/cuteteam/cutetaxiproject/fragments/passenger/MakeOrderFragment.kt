@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.ui.passenger.fragments
+package ua.com.cuteteam.cutetaxiproject.fragments.passenger
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -22,7 +22,8 @@ import ua.com.cuteteam.cutetaxiproject.fragments.adapters.AddressAutoCompleteAda
 import ua.com.cuteteam.cutetaxiproject.livedata.ViewAction
 import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
 
-class MakeOrderFragment : Fragment(), BottomSheetFragment, AdapterView.OnItemSelectedListener,
+class MakeOrderFragment : Fragment(),
+    BottomSheetFragment, AdapterView.OnItemSelectedListener,
     View.OnClickListener {
 
     private val viewModel: PassengerViewModel by activityViewModels()

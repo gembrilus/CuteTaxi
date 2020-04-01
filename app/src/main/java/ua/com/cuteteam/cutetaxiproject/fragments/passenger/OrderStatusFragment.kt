@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.ui.passenger.fragments
+package ua.com.cuteteam.cutetaxiproject.fragments.passenger
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,9 +13,12 @@ import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.extentions.mutation
+import ua.com.cuteteam.cutetaxiproject.fragments.passenger.BottomSheetFragment
+import ua.com.cuteteam.cutetaxiproject.fragments.passenger.OnChildDrawnListener
 import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
 
-class OrderStatusFragment : Fragment(), BottomSheetFragment {
+class OrderStatusFragment : Fragment(),
+    BottomSheetFragment {
 
     private val viewModel: PassengerViewModel by activityViewModels()
 

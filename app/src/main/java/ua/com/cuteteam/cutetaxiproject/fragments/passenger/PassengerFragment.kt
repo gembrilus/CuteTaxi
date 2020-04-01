@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.ui.passenger.fragments
+package ua.com.cuteteam.cutetaxiproject.fragments.passenger
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -14,7 +14,8 @@ import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.livedata.ViewAction
 import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
 
-class PassengerFragment() : Fragment(), OnChildDrawnListener {
+class PassengerFragment() : Fragment(),
+    OnChildDrawnListener {
 
     private val viewModel: PassengerViewModel by activityViewModels()
 
@@ -25,7 +26,8 @@ class PassengerFragment() : Fragment(), OnChildDrawnListener {
     }
 
     private val orderStatusFragment by lazy {
-        OrderStatusFragment().apply {
+        OrderStatusFragment()
+            .apply {
             setOnChildDrawnListener(this@PassengerFragment)
         }
     }
