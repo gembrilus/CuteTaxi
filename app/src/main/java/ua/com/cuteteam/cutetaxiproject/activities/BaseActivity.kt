@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
@@ -21,6 +22,9 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
 import kotlinx.android.synthetic.main.navigation_header.view.*
 import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
+import ua.com.cuteteam.cutetaxiproject.data.database.DriverDao
+import ua.com.cuteteam.cutetaxiproject.data.database.PassengerDao
 import ua.com.cuteteam.cutetaxiproject.helpers.network.NetStatus
 import ua.com.cuteteam.cutetaxiproject.helpers.NotificationUtils
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
@@ -132,6 +136,25 @@ abstract class BaseActivity :
 
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        val paths = mapOf(
+            DbEntries.Passengers.Fields.NAME to DbEntries.Passengers.Fields.NAME,
+            DbEntries.Passengers.Fields.PHONE to DbEntries.Passengers.Fields.PHONE,
+            DbEntries.Passengers.Fields.COMFORT_LEVEL to DbEntries.Passengers.Fields.COMFORT_LEVEL,
+            DbEntries.Car.BRAND to "${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.BRAND}",
+            DbEntries.Car.MODEL to "${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.MODEL}",
+            DbEntries.Car.NUMBER to "${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.NUMBER}",
+            DbEntries.Car.COLOR to "${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.COLOR}",
+            DbEntries.Car.CAR_CLASS to "${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.CAR_CLASS}"
+        )
+        paths[key]?.let {
+            val value = sharedPreferences?.getString(key, null)
+            if (model.isChecked) {
+                DriverDao().writeField(it, value)
+            } else {
+                PassengerDao().writeField(it,value)
+            }
+        }
+
         when(key){
             getString(R.string.key_user_name_preference) -> {
                 val name = sharedPreferences?.getString(key, null)
