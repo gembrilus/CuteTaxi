@@ -147,6 +147,7 @@ class MakeOrderFragment : Fragment(),
         }
 
         input_layout_start_address.editText?.setOnFocusChangeListener { _, _ ->
+            viewModel.addresses.mutation { it.value = emptyList() }
             if (btn_start_point.isVisible) {
                 viewModel.viewAction.value =
                     ViewAction.PassengerBottomSheetControl(
@@ -156,6 +157,7 @@ class MakeOrderFragment : Fragment(),
         }
 
         input_layout_destination_address.editText?.setOnFocusChangeListener { _, _ ->
+            viewModel.addresses.mutation { it.value = emptyList() }
             if (btn_start_point.isVisible) {
                 viewModel.viewAction.value =
                     ViewAction.PassengerBottomSheetControl(
