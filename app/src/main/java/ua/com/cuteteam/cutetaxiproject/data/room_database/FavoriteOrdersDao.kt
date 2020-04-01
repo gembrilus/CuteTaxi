@@ -13,7 +13,7 @@ interface FavoriteOrdersDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrder(order: FavoriteOrder)
 
-    @Query("select distinct address_start_address, address_dest_address from orders")
+    @Query("select distinct address_start_address from orders")
     fun getAddresses(): LiveData<List<String>>
 
     @Query("select * from orders")

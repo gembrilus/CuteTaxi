@@ -8,11 +8,8 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import ua.com.cuteteam.cutetaxiproject.data.User
-import ua.com.cuteteam.cutetaxiproject.data.entities.Driver
+import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.extentions.exists
 import ua.com.cuteteam.cutetaxiproject.extentions.getValue
 
@@ -28,17 +25,23 @@ abstract class BaseDao(
 
     protected val eventListeners = mutableMapOf<DatabaseReference, Any>()
 
-    @Suppress("UNCHECKED_CAST")
-    suspend fun <T : User> getUser(uid: String): T? {
-        val userData = usersRef.child(uid).getValue()
-        return userData.getValue(Driver::class.java) as T?
-    }
 
     /**Writes user to realtime database
      * @see User
      */
     fun writeUser(user: User) {
         usersRef.child(authUser.uid).setValue(user).addOnFailureListener {
+            Log.e("Firebase: writeUser()", it.message.toString())
+        }.addOnCompleteListener {
+            Log.d("Firebase: writeUser()", "Write is successful")
+        }
+    }
+
+    /**Writes user to realtime database
+     * @see User
+     */
+    fun writeUser(id: String, user: User) {
+        usersRef.child(id).setValue(user).addOnFailureListener {
             Log.e("Firebase: writeUser()", it.message.toString())
         }.addOnCompleteListener {
             Log.d("Firebase: writeUser()", "Write is successful")
@@ -163,6 +166,11 @@ abstract class BaseDao(
         } else {
             Log.e("Database Error", "Listener $childRef is already set")
         }
+    }
+
+    suspend fun getOrder(orderId: String): Order? {
+        val orderData = ordersRef.child(orderId).getValue()
+        return orderData.getValue(Order::class.java)
     }
 
     fun subscribeForOrder(

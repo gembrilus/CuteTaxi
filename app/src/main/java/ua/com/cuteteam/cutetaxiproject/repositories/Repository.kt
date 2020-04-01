@@ -22,4 +22,5 @@ open class Repository {
     val spHelper = AppSettingsHelper(appContext)
     protected val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
+
 }

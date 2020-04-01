@@ -13,6 +13,7 @@ object DbEntries {
             const val FAVORITE_ADDRESSES = "addresses"
             const val ORDER_ID = "orderId"
             const val MESSAGE = "message"
+            const val TRIPS_COUNT = "tripsCount"
         }
     }
 
@@ -28,6 +29,7 @@ object DbEntries {
             const val LOCATION = "location"
             const val ORDER_ID = "orderId"
             const val MESSAGE = "message"
+            const val TRIPS_COUNT = "tripsCount"
         }
     }
 
@@ -45,6 +47,9 @@ object DbEntries {
             const val ARRIVAL_TIME = "arrivingTime"
             const val PRICE = "price"
             const val CAR_INFO = "carInfo"
+            const val DRIVER_RATE = "driverRate"
+            const val PASSENGER_RATE = "passengerRate"
+            const val TRIP_RATE = "tripRate"
         }
     }
 
@@ -60,5 +65,4 @@ object DbEntries {
         const val LOCATION = "location"
         const val ADDRESS = "address"
     }
-
 }

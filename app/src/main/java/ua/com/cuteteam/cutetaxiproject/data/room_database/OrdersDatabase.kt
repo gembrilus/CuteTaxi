@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import ua.com.cuteteam.cutetaxiproject.data.entities.Order
+import androidx.room.TypeConverters
+import ua.com.cuteteam.cutetaxiproject.data.room_database.entities.FavoriteOrder
 
-@Database(entities = [Order::class], version = 1, exportSchema = false)
+@Database(entities = [FavoriteOrder::class], version = 1, exportSchema = false)
+@TypeConverters(RoomTypeConverters::class)
 abstract class OrdersDatabase : RoomDatabase() {
 
     abstract fun favoriteOrdersDao(): FavoriteOrdersDao

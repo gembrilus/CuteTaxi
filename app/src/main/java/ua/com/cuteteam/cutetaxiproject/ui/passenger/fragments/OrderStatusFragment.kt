@@ -4,12 +4,28 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.bs_order_status.*
 import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.extentions.getObservedHeight
+import ua.com.cuteteam.cutetaxiproject.data.entities.Order
+import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
+import ua.com.cuteteam.cutetaxiproject.extentions.mutation
+import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
 
 class OrderStatusFragment : Fragment(), BottomSheetFragment {
+
+    private val viewModel: PassengerViewModel by activityViewModels()
+
+    private lateinit var callback: OnChildDrawnListener
+
+    private val onGlobalLayoutListener by lazy {
+        ViewTreeObserver.OnGlobalLayoutListener {
+            callback.onChildDrawn(order_status.measuredHeight)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -19,8 +35,51 @@ class OrderStatusFragment : Fragment(), BottomSheetFragment {
         return inflater.inflate(R.layout.bs_order_status, container, false)
     }
 
-    override suspend fun getPeekHeight(): Int {
-        return order_status.getObservedHeight()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        btn_cancel.setOnClickListener {
+            viewModel.activeOrder.mutation {
+                it.value?.orderStatus = OrderStatus.CANCELLED
+                it.value = null
+            }
+        }
+
+        viewModel.activeOrder.observe(viewLifecycleOwner, Observer {
+
+            when (it?.orderStatus) {
+                OrderStatus.NEW -> showWaitMessage()
+                OrderStatus.ACTIVE -> showDriverMessage(it)
+                OrderStatus.FINISHED -> rateTrip()
+            }
+        })
     }
 
+    override fun onStart() {
+        order_status.viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)
+        super.onStart()
+    }
+
+    override fun onPause() {
+        order_status.viewTreeObserver.removeOnGlobalLayoutListener(onGlobalLayoutListener)
+        super.onPause()
+    }
+
+    private fun rateTrip() {
+
+    }
+
+    private fun showDriverMessage(order: Order) {
+        tv_order_info.text = order.carInfo
+        tv_arriving_time.text = getString(R.string.time_in_minutes, order.arrivingTime)
+    }
+
+    private fun showWaitMessage() {
+        tv_order_info.text = getString(R.string.wait_for_driver_message)
+        tv_arriving_time.text = ""
+    }
+
+    override fun setOnChildDrawnListener(callback: OnChildDrawnListener) {
+        this.callback = callback
+    }
 }

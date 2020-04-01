@@ -2,6 +2,7 @@ package ua.com.cuteteam.cutetaxiproject.data.firebase_database
 
 import android.util.Log
 import com.google.firebase.database.*
+import ua.com.cuteteam.cutetaxiproject.data.entities.Driver
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.extentions.getValue
@@ -10,6 +11,11 @@ class DriverDao : BaseDao() {
 
     override val usersRef: DatabaseReference
         get() = rootRef.child("drivers")
+
+    suspend fun getUser(uid: String): Driver? {
+        val userData = usersRef.child(uid).getValue()
+        return userData.getValue(Driver::class.java)
+    }
 
     private val newOrdersQuery: Query = ordersRef
         .orderByChild(DbEntries.Orders.Fields.ORDER_STATUS)

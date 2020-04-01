@@ -5,6 +5,7 @@ import com.google.android.gms.maps.model.LatLng
 import ua.com.cuteteam.cutetaxiproject.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.common.network.NetStatus
 import ua.com.cuteteam.cutetaxiproject.livedata.SingleLiveEvent
+import ua.com.cuteteam.cutetaxiproject.livedata.ViewAction
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 
 open class BaseViewModel(private val repository: Repository) : ViewModel() {
@@ -14,6 +15,12 @@ open class BaseViewModel(private val repository: Repository) : ViewModel() {
     init {
         repository.netHelper.registerNetworkListener()
     }
+
+    val viewAction = SingleLiveEvent<ViewAction>()
+
+
+
+//    val viewAction: LiveData<ViewAction> get() = _viewAction
 
     val isGPSEnabled get() = repository.locationProvider.isGPSEnabled()
 
@@ -74,14 +81,14 @@ open class BaseViewModel(private val repository: Repository) : ViewModel() {
      */
     fun buildRoute(orig: String, dest: String, wayPoints: List<LatLng>? = null) = liveData {
         val points = repository.routeBuilder.apply {
-                addDestination(orig)
-                addOrigin(dest)
-                wayPoints?.let {
-                    it.forEach {
-                        addWayPoint("${it.latitude},${it.longitude}")
-                    }
+            addDestination(orig)
+            addOrigin(dest)
+            wayPoints?.let {
+                it.forEach {
+                    addWayPoint("${it.latitude},${it.longitude}")
                 }
             }
+        }
             .build()
             .routes()[0]
         emit(points)

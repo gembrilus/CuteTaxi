@@ -8,6 +8,7 @@ import ua.com.cuteteam.cutetaxiproject.data.User
 data class Driver(
     override var name: String? = "",
     override var phoneNumber: String? = "",
+    override var tripsCount: Int? = null,
     var car: Car? = null,
     override var rate: Double? = 0.0,
     var status: DriverStatus? = DriverStatus.OFFLINE,
