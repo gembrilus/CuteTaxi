@@ -1,31 +1,46 @@
 package ua.com.cuteteam.cutetaxiproject.api
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.android.gms.maps.model.LatLng
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
+import ua.com.cuteteam.cutetaxiproject.TestCoroutineDispatcher
 import ua.com.cuteteam.cutetaxiproject.api.directions.*
+import ua.com.cuteteam.cutetaxiproject.api.roads.Roads
 import ua.com.cuteteam.cutetaxiproject.api.roads.RoadsRequest
+import java.util.*
 
+@ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
 class RouteProviderTest {
 
     private var routeBuilder: RouteProvider.Builder? = null
     private var route: Route? = null
-    private var snappedPoints: List<LatLng>? = null
+    private var road: Roads? = null
     private var directionRequest: DirectionRequest? = null
     private var roadsRequest: RoadsRequest? = null
 
+    @get:Rule
+    val instantExecutorRule = InstantTaskExecutorRule()
+
     @Before
     fun init() {
+
+        Dispatchers.setMain(TestCoroutineDispatcher)
+
         route = Route(
             status = "OK",
             routes = listOf(
@@ -315,37 +330,45 @@ class RouteProviderTest {
                 )
             )
         )
-        snappedPoints = listOf()
+
+        road = Roads(
+            snappedPoints = listOf()
+        )
+
         directionRequest = mock()
         roadsRequest = mock()
         routeBuilder = RouteProvider.Builder(directionRequest!!, roadsRequest!!)
+            .addOrigin("Черкассы")
+            .addDestination("Киев")
     }
 
     @After
     fun close() {
+        Dispatchers.resetMain()
         route = null
+        road = null
         directionRequest = null
         routeBuilder = null
     }
 
     @Test
-    fun findTheFastest() = runBlocking{
+    fun check_that_the_fastest_route_found_correct() = runBlocking{
 
         //Setup
-        doReturn(route).whenever(directionRequest)?.requestDirection(
-            mapOf(
-                RequestParameters.ORIGIN_PLACE to "Черкассы",
-                RequestParameters.DESTINATION_PLACE to "Киев"
-            )
-        )
-        doReturn(snappedPoints).whenever(roadsRequest)?.getRoads(any())
+        val request = routeBuilder!!
+            .findTheFastest()
+            .build()
+
+        doReturn(route).whenever(directionRequest)?.requestDirection(any())
+        doReturn(road).whenever(roadsRequest)?.getRoads(any())
 
         val actual = listOf(
-            routeBuilder?.build()?.RouteSummary(
+            request.RouteSummary(
                 distance = 211003.0,
                 time = 8100.0,
-                polyline = arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
+                polyline = arrayOf(),
                 maneuvers = arrayListOf(
+                    null,
                     Maneuver.STRAIGHT,
                     Maneuver.TURN_RIGHT,
                     Maneuver.TURN_SLIGHT_RIGHT,
@@ -362,114 +385,262 @@ class RouteProviderTest {
         )
 
         //Run
-        val result = routeBuilder!!
-            .addOrigin("Черкассы")
-            .addDestination("Киев")
-            .findTheFastest()
-            .build()
-            .routes()
+        val result = request.routes()
 
         //Assertion
-        assertEquals(actual, result)
-    }
-/*
-    @Test
-    fun findTheShortest() {
-
-        val actual = listOf(
-            routeBuilder?.build()?.RouteSummary(
-                distance = 999.0,
-                time = 60.0,
-                polyline = arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
-                maneuvers = arrayListOf(Maneuver.STRAIGHT),
-                instructions = arrayListOf("bla bla car")
-            )
-        )
-        val result = routeBuilder?.findTheShortest()?.build()
-
         assertThat(actual, Matchers.equalTo(result))
 
+        //Verify
+
+        verify(directionRequest, atLeastOnce())?.requestDirection(any())
+        verify(roadsRequest, atLeastOnce())?.getRoads(any())
+        verifyNoMoreInteractions(directionRequest, roadsRequest)
+
     }
 
     @Test
-    fun findTheFastestAndTheShortestWays() {
-        val actual = listOf(
-            routeBuilder?.build()?.RouteSummary(
-                distance = 1000.0,
-                time = 58.0,
-                polyline = arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
-                maneuvers = arrayListOf(Maneuver.STRAIGHT),
-                instructions = arrayListOf("bla bla car")
-            ),
-            routeBuilder?.build()?.RouteSummary(
-                distance = 999.0,
-                time = 60.0,
-                polyline = arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
-                maneuvers = arrayListOf(Maneuver.STRAIGHT),
-                instructions = arrayListOf("bla bla car")
-            )
-        )
-        val result = routeBuilder
-            ?.findTheShortest()
-            ?.findTheFastest()
-            ?.build()
+    fun check_that_the_shortest_route_found_correct() = runBlocking{
 
-        assertThat(actual, Matchers.equalTo(result))
-    }
+        //Setup
+        val request = routeBuilder!!
+            .findTheShortest()
+            .build()
 
-    @Test
-    fun build() {
+        doReturn(route).whenever(directionRequest)?.requestDirection(any())
+        doReturn(road).whenever(roadsRequest)?.getRoads(any())
 
         val actual = listOf(
-            routeBuilder?.build()?.RouteSummary(
-                distance = 999.0,
-                time = 60.0,
-                polyline = arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
-                maneuvers = arrayListOf(Maneuver.STRAIGHT),
-                instructions = arrayListOf("bla bla car")
-            ),
-            routeBuilder?.build()?.RouteSummary(
-                distance = 1000.0,
-                time = 58.0,
-                polyline = arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
-                maneuvers = arrayListOf(Maneuver.STRAIGHT),
-                instructions = arrayListOf("bla bla car")
-            ),
-            routeBuilder?.build()?.RouteSummary(
-                distance = 1001.0,
-                time = 60.0,
-                polyline = arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
-                maneuvers = arrayListOf(Maneuver.STRAIGHT),
-                instructions = arrayListOf("bla bla car")
+            request.RouteSummary(
+                distance = 188546.0,
+                time = 9904.0,
+                polyline = arrayOf(),
+                maneuvers = arrayListOf(
+                    null,
+                    Maneuver.STRAIGHT,
+                    Maneuver.RAMP_LEFT,
+                    Maneuver.ROUND_ABOUT_RIGHT,
+                    Maneuver.TURN_LEFT
+                ),
+                instructions = arrayListOf(
+                    "Направляйтесь на <b>севе…Байди Вишневецького</b>",
+                    "Продолжайте движение по …НГ-КЛУБ \"КОСМОС\"</b>)",
+                    "Резкий поворот <b>налево…выезжайте на <b>Н16</b>",
+                    "На круге сверните на <b>…b>/<wbr/><b>ПИРЯТИН</b>",
+                    "Поверните <b>налево</b> … по вул. Хрещатик</div>"
+                )
             )
         )
-        val result = routeBuilder!!.build()
 
+        //Run
+        val result = request.routes()
+
+        //Assertion
         assertThat(actual, Matchers.equalTo(result))
+
+        //Verify
+
+        verify(directionRequest, atLeastOnce())?.requestDirection(any())
+        verify(roadsRequest, atLeastOnce())?.getRoads(any())
+        verifyNoMoreInteractions(directionRequest, roadsRequest)
+
     }
 
     @Test
-    fun testThatBuildAllPolylines() {
+    fun check_that_the_fastest_and_shortest_route_found_correct() = runBlocking{
 
-        val actual: List<Array<LatLng>> = arrayListOf(
-            arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
-            arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0)),
-            arrayOf(LatLng(12.0, 12.0), LatLng(15.0, 14.0))
+        //Setup
+        val request = routeBuilder!!
+            .findTheShortest()
+            .findTheFastest()
+            .build()
+
+        doReturn(route).whenever(directionRequest)?.requestDirection(any())
+        doReturn(road).whenever(roadsRequest)?.getRoads(any())
+
+        val actual = listOf(
+            request.RouteSummary(
+                distance = 211003.0,
+                time = 8100.0,
+                polyline = arrayOf(),
+                maneuvers = arrayListOf(
+                    null,
+                    Maneuver.STRAIGHT,
+                    Maneuver.TURN_RIGHT,
+                    Maneuver.TURN_SLIGHT_RIGHT,
+                    Maneuver.TURN_LEFT
+                ),
+                instructions = arrayListOf(
+                    "Направляйтесь на <b>севе…Байди Вишневецького</b>",
+                    "Продолжайте движение по …НГ-КЛУБ \"КОСМОС\"</b>)",
+                    "Поверните <b>направо</b>…движение по T2403</div>",
+                    "Плавный поворот <b>направо</b> на <b>H01</b>",
+                    "Поверните <b>налево</b> … по вул. Хрещатик</div>"
+                )
+            ),
+            request.RouteSummary(
+                distance = 188546.0,
+                time = 9904.0,
+                polyline = arrayOf(),
+                maneuvers = arrayListOf(
+                    null,
+                    Maneuver.STRAIGHT,
+                    Maneuver.RAMP_LEFT,
+                    Maneuver.ROUND_ABOUT_RIGHT,
+                    Maneuver.TURN_LEFT
+                ),
+                instructions = arrayListOf(
+                    "Направляйтесь на <b>севе…Байди Вишневецького</b>",
+                    "Продолжайте движение по …НГ-КЛУБ \"КОСМОС\"</b>)",
+                    "Резкий поворот <b>налево…выезжайте на <b>Н16</b>",
+                    "На круге сверните на <b>…b>/<wbr/><b>ПИРЯТИН</b>",
+                    "Поверните <b>налево</b> … по вул. Хрещатик</div>"
+                )
+            )
         )
-        val result = mutableListOf(
-            *routeBuilder?.build()?.getManeuverPoints(route!!.routes[0])?.toTypedArray()!!,
-            *routeBuilder?.build()?.getManeuverPoints(route!!.routes[1])?.toTypedArray()!!,
-            *routeBuilder?.build()?.getManeuverPoints(route!!.routes[2])?.toTypedArray()!!
-        )
 
-        val transformActual = actual
-            .flatMap { latlng -> latlng.toList() }
-            .map { "${it.latitude}, ${it.longitude}" }
+        //Run
+        val result = request.routes()
 
-        val transformResult =
-            result.map { "${it.latitude}, ${it.longitude}" }
+        //Assertion
+        assertThat(actual, Matchers.equalTo(result))
 
-        assertThat(transformActual, Matchers.equalTo(transformResult))
+        //Verify
+
+        verify(directionRequest, atLeastOnce())?.requestDirection(any())
+        verify(roadsRequest, atLeastOnce())?.getRoads(any())
+        verifyNoMoreInteractions(directionRequest, roadsRequest)
+
     }
-*/
+
+    @Test
+    fun check_that_all_routes_found_correct() = runBlocking{
+
+        //Setup
+        val request = routeBuilder!!.build()
+
+        doReturn(route).whenever(directionRequest)?.requestDirection(any())
+        doReturn(road).whenever(roadsRequest)?.getRoads(any())
+
+        val actual = listOf(
+            request.RouteSummary(
+                distance = 188546.0,
+                time = 9904.0,
+                polyline = arrayOf(),
+                maneuvers = arrayListOf(
+                    null,
+                    Maneuver.STRAIGHT,
+                    Maneuver.RAMP_LEFT,
+                    Maneuver.ROUND_ABOUT_RIGHT,
+                    Maneuver.TURN_LEFT
+                ),
+                instructions = arrayListOf(
+                    "Направляйтесь на <b>севе…Байди Вишневецького</b>",
+                    "Продолжайте движение по …НГ-КЛУБ \"КОСМОС\"</b>)",
+                    "Резкий поворот <b>налево…выезжайте на <b>Н16</b>",
+                    "На круге сверните на <b>…b>/<wbr/><b>ПИРЯТИН</b>",
+                    "Поверните <b>налево</b> … по вул. Хрещатик</div>"
+                )
+            ),
+            request.RouteSummary(
+                distance = 191524.0,
+                time = 10911.0,
+                polyline = arrayOf(),
+                maneuvers = arrayListOf(
+                    null,
+                    Maneuver.STRAIGHT,
+                    Maneuver.ROUND_ABOUT_RIGHT,
+                    Maneuver.ROUND_ABOUT_RIGHT,
+                    Maneuver.TURN_RIGHT,
+                    Maneuver.TURN_RIGHT
+                ),
+                instructions = arrayListOf(
+                    "Направляйтесь на <b>севе…Байди Вишневецького</b>",
+                    "Продолжайте движение по …НГ-КЛУБ \"КОСМОС\"</b>)",
+                    "На круге сверните на <b>…торону <b>МИРОНІВКА</b>",
+                    "На круге сверните на <b>… движение по <b>P09</b>",
+                    "Поверните <b>направо</b>",
+                    "Поверните <b>налево</b> … по вул. Хрещатик</div>"
+                )
+            ),
+            request.RouteSummary(
+                distance = 211003.0,
+                time = 8100.0,
+                polyline = arrayOf(),
+                maneuvers = arrayListOf(
+                    null,
+                    Maneuver.STRAIGHT,
+                    Maneuver.TURN_RIGHT,
+                    Maneuver.TURN_SLIGHT_RIGHT,
+                    Maneuver.TURN_LEFT
+                ),
+                instructions = arrayListOf(
+                    "Направляйтесь на <b>севе…Байди Вишневецького</b>",
+                    "Продолжайте движение по …НГ-КЛУБ \"КОСМОС\"</b>)",
+                    "Поверните <b>направо</b>…движение по T2403</div>",
+                    "Плавный поворот <b>направо</b> на <b>H01</b>",
+                    "Поверните <b>налево</b> … по вул. Хрещатик</div>"
+                )
+            )
+        )
+
+        //Run
+        val result = request.routes()
+
+        //Assertion
+        assertThat(actual, Matchers.equalTo(result))
+
+        //Verify
+
+        verify(directionRequest, atLeastOnce())?.requestDirection(any())
+        verify(roadsRequest, atLeastOnce())?.getRoads(any())
+        verifyNoMoreInteractions(directionRequest, roadsRequest)
+
+    }
+
+    @Test
+    fun check_that_maneuver_points_extract_correct_from_RouteSummary() {
+
+        //Setup
+        val actual1 = listOf(
+            LatLng(49.4442495, 32.0595199),
+            LatLng(49.4588119, 32.0335838),
+            LatLng(49.4655965, 32.0229632),
+            LatLng(49.6556003, 32.1124988),
+            LatLng(49.6717464, 32.0829153),
+            LatLng(50.44985029999999, 30.5238646)
+        )
+
+        val actual2 = listOf(
+            LatLng(49.4442495, 32.0595199),
+            LatLng(49.4588119, 32.0335838),
+            LatLng(49.7044347, 31.3670327),
+            LatLng(49.7109381, 31.282154),
+            LatLng(49.71852149999999, 31.1688241),
+            LatLng(49.7636601, 31.0575204),
+            LatLng(50.44985029999999, 30.5238646)
+        )
+
+        val actual3 = listOf(
+            LatLng(49.4442495, 32.0595199),
+            LatLng(49.4588119, 32.0335838),
+            LatLng(49.5248453, 31.74126819999999),
+            LatLng(49.4212379, 31.2588566),
+            LatLng(50.44985029999999, 30.5238646)
+        )
+
+        val request = routeBuilder!!.build()
+
+        //Run
+        val maneuverPoints1 = request.getManeuverPoints(route!!.routes[0])
+        val maneuverPoints2 = request.getManeuverPoints(route!!.routes[1])
+        val maneuverPoints3 = request.getManeuverPoints(route!!.routes[2])
+
+        //Assert
+
+        assertThat(actual1, Matchers.equalTo(maneuverPoints1))
+        assertThat(actual2, Matchers.equalTo(maneuverPoints2))
+        assertThat(actual3, Matchers.equalTo(maneuverPoints3))
+
+    }
+
 }

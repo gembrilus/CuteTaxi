@@ -1,8 +1,10 @@
 package ua.com.cuteteam.cutetaxiproject.activities
 
+import android.app.Service
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
@@ -20,12 +22,17 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
 import kotlinx.android.synthetic.main.navigation_header.view.*
 import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.common.network.NetStatus
+import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
+import ua.com.cuteteam.cutetaxiproject.data.database.DriverDao
+import ua.com.cuteteam.cutetaxiproject.data.database.PassengerDao
+import ua.com.cuteteam.cutetaxiproject.helpers.network.NetStatus
+import ua.com.cuteteam.cutetaxiproject.helpers.NotificationUtils
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
 import ua.com.cuteteam.cutetaxiproject.extentions.createNotificationChannel
 import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission
 import ua.com.cuteteam.cutetaxiproject.permissions.PermissionProvider
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
+import ua.com.cuteteam.cutetaxiproject.services.ORDER_ID_NAME
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
 
@@ -36,6 +43,7 @@ abstract class BaseActivity :
 
     protected abstract val menuResId: Int
     protected abstract val layoutResId: Int
+    protected abstract val service: Class<out Service>
     protected abstract fun onHasActiveOrder(orderId: String?)
     protected abstract fun onNoActiveOrder()
     protected abstract fun onNetworkAvailable()
@@ -69,13 +77,9 @@ abstract class BaseActivity :
     private val onNavigationListener = NavigationView.OnNavigationItemSelectedListener { item ->
         item.isChecked = true
         when(item.itemId){
-            R.id.settings -> {
-                navigationView.menu.clear()
-                navigationView.inflateMenu(menuResId)
-            }
+            R.id.settings -> inflateSettingsSubMenu()
             R.id.backToHome -> {
-                navigationView.menu.clear()
-                navigationView.inflateMenu(R.menu.main_menu)
+                inflateMainMenu()
                 navController.navigateUp()
             }
             else -> drawerLayout.closeDrawers()
@@ -93,6 +97,12 @@ abstract class BaseActivity :
         setObservers()
     }
 
+    override fun onStart() {
+        super.onStart()
+        NotificationUtils(this).cancelAll()
+        stopService()
+    }
+
     override fun onResume() {
         super.onResume()
         PreferenceManager
@@ -105,6 +115,11 @@ abstract class BaseActivity :
         PreferenceManager
             .getDefaultSharedPreferences(this)
             .unregisterOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        startService()
     }
 
     override fun onRequestPermissionsResult(
@@ -121,6 +136,25 @@ abstract class BaseActivity :
 
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        val paths = mapOf(
+            DbEntries.Passengers.Fields.NAME to DbEntries.Passengers.Fields.NAME,
+            DbEntries.Passengers.Fields.PHONE to DbEntries.Passengers.Fields.PHONE,
+            DbEntries.Passengers.Fields.COMFORT_LEVEL to DbEntries.Passengers.Fields.COMFORT_LEVEL,
+            DbEntries.Car.BRAND to "${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.BRAND}",
+            DbEntries.Car.MODEL to "${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.MODEL}",
+            DbEntries.Car.NUMBER to "${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.NUMBER}",
+            DbEntries.Car.COLOR to "${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.COLOR}",
+            DbEntries.Car.CAR_CLASS to "${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.CAR_CLASS}"
+        )
+        paths[key]?.let {
+            val value = sharedPreferences?.getString(key, null)
+            if (model.isChecked) {
+                DriverDao().writeField(it, value)
+            } else {
+                PassengerDao().writeField(it,value)
+            }
+        }
+
         when(key){
             getString(R.string.key_user_name_preference) -> {
                 val name = sharedPreferences?.getString(key, null)
@@ -131,6 +165,13 @@ abstract class BaseActivity :
                 header.tv_nav_header_phone.text = phone
             }
             getString(R.string.key_app_theme_preference) -> recreate()
+        }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if (navigationView.menu.findItem(R.menu.main_menu) == null){
+            inflateMainMenu()
         }
     }
 
@@ -194,7 +235,7 @@ abstract class BaseActivity :
 
     private fun onRoleChanged(isDriver: Boolean) {
         model.changeRole(isDriver)
-        startActivity(Intent(this, AuthActivity::class.java))
+        startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
 
@@ -202,6 +243,29 @@ abstract class BaseActivity :
         when (appSettingsHelper.appTheme) {
             getString(R.string.value_item_light_theme) -> setTheme(R.style.AppTheme_NoActionBar)
             getString(R.string.value_item_dark_theme) -> setTheme(R.style.AppTheme_NoActionBar_Dark)
+        }
+    }
+
+    private fun inflateMainMenu(){
+        navigationView.menu.clear()
+        navigationView.inflateMenu(R.menu.main_menu)
+    }
+
+    private fun inflateSettingsSubMenu(){
+        navigationView.menu.clear()
+        navigationView.inflateMenu(menuResId)
+    }
+
+    protected fun stopService(){
+        stopService(Intent(this, service))
+    }
+
+    private fun startService(){
+        if (model.shouldStartService){
+            val orderId = model.activeOrderId.value
+            startService(Intent(this, service).apply {
+                putExtra(ORDER_ID_NAME, orderId)
+            })
         }
     }
 

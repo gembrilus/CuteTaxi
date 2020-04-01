@@ -11,7 +11,9 @@
         android:label="DriverMapFragment" >
         <action
             android:id="@+id/action_home_to_new_orders"
-            app:destination="@id/new_orders" />
+            app:destination="@id/new_orders"
+            app:enterAnim="@anim/anim_slide_up"
+            app:popExitAnim="@anim/anim_slide_down"/>
     </fragment>
 
     <fragment
@@ -20,7 +22,7 @@
         android:label="DriverOrdersFragment" >
         <action
             android:id="@+id/action_new_orders_to_home"
-            app:popUpTo="@id/home"/>
+            app:popUpTo="@id/home" />
     </fragment>
 
     <include app:graph="@navigation/nav_settings_graph_driver" />

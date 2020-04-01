@@ -1,18 +1,19 @@
 package ua.com.cuteteam.cutetaxiproject.activities
 
+import android.app.Service
 import android.content.SharedPreferences
+import android.os.Bundle
 import android.view.View
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.textview.MaterialTextView
+import kotlinx.android.synthetic.main.fragment_map_driver.*
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
-import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.extentions.showInfoSnackBar
-import ua.com.cuteteam.cutetaxiproject.repositories.DriverRepository
-import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 import ua.com.cuteteam.cutetaxiproject.fragments.adapters.OrdersAdapter
+import ua.com.cuteteam.cutetaxiproject.repositories.DriverRepository
+import ua.com.cuteteam.cutetaxiproject.services.ACCEPTED_ORDER_ID
+import ua.com.cuteteam.cutetaxiproject.services.DriverService
+import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.DriverViewModel
 
@@ -25,34 +26,22 @@ class DriverActivity : BaseActivity(), OrdersAdapter.OnOrderAccept {
 
     override val menuResId: Int get() = R.menu.nav_menu_settings_driver
     override val layoutResId: Int get() = R.layout.activity_driver
-    override fun onNetworkAvailable() =  show()
+    override val service: Class<out Service>
+        get() = DriverService::class.java
+
+    override fun onNetworkAvailable() = restoreStateVisibility()
     override fun onNetworkLost() = hide()
+
     override fun onHasActiveOrder(orderId: String?) {
-
-        // TODO: Receive order from Room
-        // TODO: Subscribe to order... Rebuild route in DriverMapFragment
-
-
+        model.subscribeOnOrder(orderId)
         navController.setGraph(R.navigation.nav_graph_driver)
     }
-
-    override fun onNoActiveOrder() {
+    override fun onNoActiveOrder() =
         navController.navigate(R.id.action_home_to_new_orders)
-    }
 
-    override fun onAccept(order: Order) {
-        order.orderStatus = OrderStatus.ACTIVE
-        order.carInfo = with(AppSettingsHelper(this)) {
-            getString(
-                R.string.order_message_from_dirver,
-                carBrand,
-                carModel,
-                carColor,
-                carNumber,
-                order.arrivingTime
-            )
-        }
-        model.obtainOrder(order)
+
+    override fun onAccept(orderId: String) {
+        model.obtainOrder(orderId)
         navController.navigate(R.id.action_new_orders_to_home)
     }
 
@@ -61,34 +50,41 @@ class DriverActivity : BaseActivity(), OrdersAdapter.OnOrderAccept {
         model.updateOrders()
     }
 
-    private fun show() {
-        val parent: ConstraintLayout? = findViewById(R.id.map_container)
-        val topLeftInfoBar = parent?.findViewById<MaterialTextView>(R.id.order_info_price)
-        val topRightInfoBar = parent?.findViewById<MaterialTextView>(R.id.order_info_distance)
-        val actionButton = parent?.findViewById<FloatingActionButton>(R.id.btn_orders_list)
-        val badge = parent?.findViewById<MaterialTextView>(R.id.cart_badge)
-        topLeftInfoBar?.visibility = View.VISIBLE
-        topRightInfoBar?.visibility = View.VISIBLE
-        actionButton?.visibility = View.VISIBLE
-        badge?.visibility = View.VISIBLE
+    override fun onResume() {
+        super.onResume()
+        intent.getStringExtra(ACCEPTED_ORDER_ID)?.let {
+            onAccept(it)
+        }
     }
 
-
     private fun hide() {
-        val parent: ConstraintLayout? = findViewById(R.id.map_container)
-        val topLeftInfoBar = parent?.findViewById<MaterialTextView>(R.id.order_info_price)
-        val topRightInfoBar = parent?.findViewById<MaterialTextView>(R.id.order_info_distance)
-        val actionButton = parent?.findViewById<FloatingActionButton>(R.id.btn_orders_list)
-        val badge = parent?.findViewById<MaterialTextView>(R.id.cart_badge)
+        saveStateVisibility()
+        info_boxes?.visibility = View.GONE
+        bottom_sheet?.visibility = View.GONE
+        btn_orders_list?.visibility = View.GONE
+        cart_badge?.visibility = View.GONE
 
-        topLeftInfoBar?.visibility = View.GONE
-        topRightInfoBar?.visibility = View.GONE
-        actionButton?.visibility = View.GONE
-        badge?.visibility = View.GONE
-
-        parent?.let {
-            showInfoSnackBar( it,"No internet connection!")
+        container?.let {
+            showInfoSnackBar(it, "No internet connection!")
         }
+    }
+
+    private fun saveStateVisibility(){
+        val map = mapOf(
+            info_boxes to info_boxes.visibility,
+            bottom_sheet to bottom_sheet.visibility,
+            btn_orders_list to btn_orders_list.visibility,
+            cart_badge to cart_badge.visibility
+        )
+        model.mapOfVisibility = map
+    }
+
+    private fun restoreStateVisibility(){
+        val map = model.mapOfVisibility ?: return
+        info_boxes?.visibility = map.getValue(info_boxes)
+        bottom_sheet?.visibility = map.getValue(bottom_sheet)
+        btn_orders_list?.visibility = map.getValue(btn_orders_list)
+        cart_badge?.visibility = map.getValue(cart_badge)
     }
 
 }

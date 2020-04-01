@@ -4,11 +4,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.driver_orders_item.view.*
 import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.common.prepareDistance
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
-import ua.com.cuteteam.cutetaxiproject.extentions.distanceTo
 
 class OrdersAdapter(private var orders: List<Order> = emptyList()) :
     RecyclerView.Adapter<OrdersAdapter.OrdersViewHolder>() {
@@ -29,7 +28,7 @@ class OrdersAdapter(private var orders: List<Order> = emptyList()) :
         with(holder.itemView) {
             order_info_price.text = context.getString(R.string.currency_UAH, order.price?.toInt().toString())
             order_info_route.text = context.getString(R.string.units_KM, order.distance?.toInt().toString())
-            order_info_distance.text = prepareDistance(order)
+            order_info_distance.text = prepareDistance(view?.context, order)
             origin_address.text = order.addressStart?.address
             destination_address.text = order.addressDestination?.address
         }
@@ -44,28 +43,6 @@ class OrdersAdapter(private var orders: List<Order> = emptyList()) :
         acceptListener = listener
     }
 
-    private fun calcDistance(order: Order): Double? {
-        val location = order.driverLocation?.latitude?.let {lat ->
-            order.driverLocation?.longitude?.let { lon ->
-                LatLng(lat, lon)
-            }
-        }
-        val startLat = order.addressStart?.location?.latitude
-        val startLon = order.addressStart?.location?.longitude
-        if (startLat != null && startLon != null && location != null) {
-            return (location distanceTo LatLng(startLat, startLon))
-        }
-        return null
-    }
-
-    private fun prepareDistance(order: Order): String? {
-        val d = calcDistance(order) ?: return ""
-        return when(d){
-            in 0.0..999.0 -> view?.context?.getString(R.string.units_M, d.toInt().toString())
-            else -> view?.context?.getString(R.string.units_KM, (d/1000).toInt().toString())
-        }
-    }
-
     inner class OrdersViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         init {
@@ -73,7 +50,7 @@ class OrdersAdapter(private var orders: List<Order> = emptyList()) :
                 showAcceptButton(itemView)
             }
             view.btn_accept.setOnClickListener {
-                acceptListener?.onAccept(orders[adapterPosition])
+                acceptListener?.onAccept(orders[adapterPosition].orderId!!)
             }
         }
 
@@ -93,7 +70,7 @@ class OrdersAdapter(private var orders: List<Order> = emptyList()) :
     }
 
     interface OnOrderAccept{
-        fun onAccept(order: Order)
+        fun onAccept(orderId: String)
     }
 
 }

@@ -9,11 +9,11 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.launch
 import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.data.firebase_database.PassengerDao
+import ua.com.cuteteam.cutetaxiproject.activities.PassengerActivity
+import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
+import ua.com.cuteteam.cutetaxiproject.data.database.PassengerDao
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
-
-private const val ORDER_ID_NAME = "DriverService_orderId"
 
 class PassengerService : BaseService() {
 
@@ -39,7 +39,7 @@ class PassengerService : BaseService() {
         launch {
             orderId = intent?.getStringExtra(ORDER_ID_NAME) ?: appSettingsHelper.activeOrderId
             orderId?.let { id ->
-//                fbDao.subscribeForChanges(DbEntries.Orders.TABLE, id, orderListener)             //Uncomment when a method FbDao appears
+                fbDao.subscribeForChanges(DbEntries.Orders.TABLE, id, orderListener)
             } ?: stopSelf()
         }
 
@@ -64,28 +64,33 @@ class PassengerService : BaseService() {
 
     private fun notifyThatOrderWasAccepted(order: Order) {
         notificationUtils
-            .addAction(getDialerIntent("Driver phone here"))                // Change when Order will be have a required property
+            .addAction(getDialerIntent("Driver phone here"))                // TODO: Change when Order will be have a required property
+            .setStartActivityIntent(PassengerActivity::class.java)
             .sendNotification(
                 title = "An order is accepted!",
-                text = "Wait for $order"                                              // Make a message when Order will be have a required property
+                text = "Wait for $order",                                           // TODO: Make a message when Order will be have a required property
+                updatable = true
             )
     }
 
     private fun notifyThatDriverIsClose() {
         notificationUtils
-            .addAction(getDialerIntent("Driver phone here"))                // Change when Order will be have a required property
+            .addAction(getDialerIntent("Driver phone here"))                // TODO: Change when Order will be have a required property
+            .setStartActivityIntent(PassengerActivity::class.java)
             .sendNotification(
                 title = "Car status",
-                text = "Less than 3 minutes left before the car arrives"
+                text = "Less than 3 minutes left before the car arrives",
+                updatable = true
             )
     }
 
     private fun notifyThatDriverIsArrived() {
         notificationUtils
-            .addAction(getDialerIntent("Driver phone here"))                // Change when Order will be have a required property
+            .addAction(getDialerIntent("Driver phone here"))                // TODO: Change when Order will be have a required property
             .sendNotification(
                 title = "Car status",
-                text = "Car is on the place"
+                text = "Car is on the place",
+                updatable = true
             )
         stopSelf()
     }

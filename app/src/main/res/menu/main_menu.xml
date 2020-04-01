@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/home"
@@ -9,7 +8,7 @@
 
     <item
         android:id="@+id/orders"
-        android:icon="@drawable/ct_home"
+        android:icon="@drawable/ct_list"
         android:title="@string/menu_orders"/>
 
     <item

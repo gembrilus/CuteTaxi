@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.data.User
-import ua.com.cuteteam.cutetaxiproject.data.firebase_database.DbEntries
+import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
 import ua.com.cuteteam.cutetaxiproject.data.entities.ComfortLevel
 import ua.com.cuteteam.cutetaxiproject.data.entities.Driver
 import ua.com.cuteteam.cutetaxiproject.data.entities.Passenger
@@ -16,7 +16,7 @@ import ua.com.cuteteam.cutetaxiproject.data.entities.Passenger
  * @param shPref is a shared header_preferences file where they are stored
  *
  */
-class AppSettingsHelper (
+class AppSettingsHelper(
     private val context: Context,
     private val shPref: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 ) {
@@ -51,7 +51,7 @@ class AppSettingsHelper (
     var activeOrderId: String?
         get() = shPref.getString(context.getString(R.string.key_active_order_id), null)
         set(value) = put(context.getString(R.string.key_active_order_id), value)
-    
+
 
     /**
      * Property that shows is a first start of the app
@@ -93,16 +93,18 @@ class AppSettingsHelper (
     var comfortClass: ComfortLevel
         get() {
             val ordinal =
-                shPref.getString(DbEntries.Passengers.Fields.COMFORT_LEVEL, null)?.toInt() ?: ComfortLevel.STANDARD.ordinal
+                shPref.getString(DbEntries.Passengers.Fields.COMFORT_LEVEL, null)?.toIntOrNull()
+                    ?: ComfortLevel.STANDARD.ordinal
             return ComfortLevel.values()[ordinal]
         }
         set(value) = put(
             DbEntries.Passengers.Fields.COMFORT_LEVEL,
-            value.ordinal
+            value.ordinal.toString()
         )
 
 
-/*    *//**
+/*    */
+    /**
      * Property of the black list drivers
      *//*
     var blackListOfDrivers: Set<String>?
@@ -153,10 +155,11 @@ class AppSettingsHelper (
      */
     var carClass: ComfortLevel
         get() {
-            val ordinal = shPref.getString(DbEntries.Car.CAR_CLASS, null)?.toInt() ?: ComfortLevel.STANDARD.ordinal
+            val ordinal = shPref.getString(DbEntries.Car.CAR_CLASS, null)?.toIntOrNull()
+                ?: ComfortLevel.STANDARD.ordinal
             return ComfortLevel.values()[ordinal]
         }
-        set(value) = put(DbEntries.Car.CAR_CLASS, value.ordinal)
+        set(value) = put(DbEntries.Car.CAR_CLASS, value.ordinal.toString())
 
 
     /**
@@ -171,7 +174,10 @@ class AppSettingsHelper (
      * Property for enable/disable a background service
      */
     var isServiceEnabled: Boolean
-        get() = shPref.getBoolean(context.getString(R.string.key_send_notifications_preference), true)
+        get() = shPref.getBoolean(
+            context.getString(R.string.key_send_notifications_preference),
+            true
+        )
         set(value) = put(context.getString(R.string.key_send_notifications_preference), value)
 
 

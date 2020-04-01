@@ -11,8 +11,8 @@ import kotlinx.coroutines.withContext
 import ua.com.cuteteam.cutetaxiproject.data.entities.Coordinates
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
-import ua.com.cuteteam.cutetaxiproject.data.firebase_database.DbEntries
-import ua.com.cuteteam.cutetaxiproject.data.firebase_database.DriverDao
+import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
+import ua.com.cuteteam.cutetaxiproject.data.database.DriverDao
 import ua.com.cuteteam.cutetaxiproject.extentions.distanceTo
 import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
 

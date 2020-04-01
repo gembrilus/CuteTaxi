@@ -1,24 +1,34 @@
 package ua.com.cuteteam.cutetaxiproject.viewmodels
 
+import android.content.Context
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ua.com.cuteteam.cutetaxiproject.data.firebase_database.DbEntries
+import ua.com.cuteteam.cutetaxiproject.LocationLiveData
+import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.application.AppClass
+import ua.com.cuteteam.cutetaxiproject.common.arrivalTime
+import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
 import ua.com.cuteteam.cutetaxiproject.data.entities.Coordinates
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
+import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.extentions.distanceTo
 import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
 import ua.com.cuteteam.cutetaxiproject.repositories.DriverRepository
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 
-class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
-
+class DriverViewModel(
+    repository: Repository,
+    private val context: Context = AppClass.appContext()
+) : BaseViewModel(repository) {
     private val repo = repository as DriverRepository
     private var mOrder: Order? = null
 
@@ -42,8 +52,10 @@ class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
 
     private val locationObserver by lazy {
         Observer<LatLng> { latLng ->
-            mOrder?.driverLocation = Coordinates(latLng.latitude, latLng.longitude)
-            mOrder?.let { repo.dao.writeOrder(it) }
+            val location = Coordinates(latLng.latitude, latLng.longitude)
+            mOrder?.orderId?.let {
+                repo.dao.updateOrder(it, DbEntries.Orders.Fields.DRIVER_LOCATION, location)
+            }
         }
     }
 
@@ -51,42 +63,21 @@ class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
     val activeOrder: LiveData<Order> get() = _activeOrder
 
     private val _orders = MutableLiveData<List<Order>>()
-    val orders: LiveData<List<Order>>
-        get() = Transformations.map(_orders) { list ->
-            Log.d("Cute", list.toString())
-            Log.d("Cute", repo.spHelper.carClass.toString() )
-            list.filter { it.comfortLevel == repo.spHelper.carClass }
-        }
+    val orders = MediatorLiveData<List<Order>>()
+
     val countOfOrders = Transformations.map(orders) {
-        it.size
+        it?.size
     }
 
     fun updateOrders() {
         _orders.value = _orders.value
-/*        val temp = _orders.value
-        _orders.value = emptyList()
-        _orders.value = temp*/
-    }
-
-    fun obtainOrder(order: Order) {
-        mOrder = order
-        mOrder?.driverId = FirebaseAuth.getInstance().currentUser?.uid
-        val orderId = mOrder?.orderId
-        if (repo.netHelper.hasInternet) {
-            repo.dao.writeOrder(order)
-            currentLocation.observeForever(locationObserver)
-            orderId?.let {
-                repo.dao.subscribeForChanges(DbEntries.Orders.TABLE, it, orderListener)
-            }
-        }
-//        repo.spHelper.activeOrderId = orderId
     }
 
     private fun getOrders() = viewModelScope.launch(Dispatchers.Unconfined) {
         if (repo.netHelper.hasInternet) {
             val currentLocation = repo.locationProvider.getLocation()?.toLatLng
-            repo.dao.observeOrders { orders ->
-                _orders.value = orders
+            repo.dao.observeOrders { list ->
+                _orders.value = list
                     .filter {
                         val lat = it.addressStart?.location?.latitude
                         val lon = it.addressStart?.location?.longitude
@@ -103,6 +94,48 @@ class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
                         }
                     }
             }
+            orders.addSource(_orders) { list ->
+                orders.value = list?.filter { it.comfortLevel == repo.spHelper.carClass }
+            }
+            orders.addSource(LocationLiveData()) { loc ->
+                orders.value = orders.value?.map {
+                    it.apply {
+                        driverLocation = Coordinates(loc.latitude, loc.longitude)
+                    }
+                }
+            }
+        }
+    }
+
+    fun obtainOrder(orderId: String) = viewModelScope.launch {
+        if (repo.netHelper.hasInternet) {
+            mOrder = repo.dao.getOrder(orderId)?.apply {
+                if (orderStatus == OrderStatus.NEW) {
+                    orderStatus = OrderStatus.ACTIVE
+                    driverId = FirebaseAuth.getInstance().currentUser?.uid
+                    arrivingTime = arrivalTime(this)
+                    carInfo = with(repo.spHelper) {
+                        context.getString(
+                            R.string.order_message_from_dirver,
+                            carBrand,
+                            carModel,
+                            carColor,
+                            carNumber,
+                            this@apply.arrivingTime
+                        )
+                    }
+                }
+            }
+            repo.dao.writeOrder(mOrder!!)
+            subscribeOnOrder(mOrder!!.orderId)
+        }
+    }
+
+    fun subscribeOnOrder(orderId: String?) {
+        repo.spHelper.activeOrderId = orderId
+        currentLocation.observeForever(locationObserver)
+        orderId?.let {
+            repo.dao.subscribeForChanges(DbEntries.Orders.TABLE, it, orderListener)
         }
     }
 
@@ -111,5 +144,19 @@ class DriverViewModel(repository: Repository) : BaseViewModel(repository) {
         currentLocation.removeObserver(locationObserver)
         repo.dao.removeAllListeners()
     }
+
+    fun closeOrder() {
+        repo.spHelper.activeOrderId = null
+        mOrder?.orderId?.let {                  //TODO: Replace with Dao-method
+            FirebaseDatabase.getInstance()
+                .reference
+                .child(DbEntries.Orders.TABLE)
+                .child(it).removeEventListener(orderListener)
+        }
+        currentLocation.removeObserver(locationObserver)
+        mOrder = null
+    }
+
+    var mapOfVisibility: Map<View, Int>? = null
 
 }
