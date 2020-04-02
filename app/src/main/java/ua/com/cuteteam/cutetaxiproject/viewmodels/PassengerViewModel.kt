@@ -1,7 +1,9 @@
 package ua.com.cuteteam.cutetaxiproject.viewmodels
 
 import android.content.Context
-import androidx.lifecycle.*
+import android.util.Log
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -20,11 +22,10 @@ import ua.com.cuteteam.cutetaxiproject.extentions.findBy
 import ua.com.cuteteam.cutetaxiproject.extentions.mutation
 import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
 import ua.com.cuteteam.cutetaxiproject.helpers.PhoneNumberHelper
-import ua.com.cuteteam.cutetaxiproject.livedata.SingleLiveEvent
-import ua.com.cuteteam.cutetaxiproject.livedata.ViewAction
 import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
+import java.io.IOException
 import java.util.*
 
 class PassengerViewModel(
@@ -117,25 +118,32 @@ class PassengerViewModel(
     }
 
     fun fetchAddresses(value: String) = viewModelScope.launch {
+
         val list = mutableListOf<Address>()
 
         withContext(Dispatchers.IO) {
-            val geocodeResults = repo.geocoder.build().requestCoordinatesByName(value).results
+            try {
+                val geocodeResults = repo.geocoder.build().requestCoordinatesByName(value).results
 
-            for (result in geocodeResults) {
-                list.add(
-                    Address(
-                        address = result.formattedAddress,
-                        location = Coordinates(
-                            result.geometry.location.latitude,
-                            result.geometry.location.longitude
+                for (result in geocodeResults) {
+                    list.add(
+                        Address(
+                            address = result.formattedAddress,
+                            location = Coordinates(
+                                result.geometry.location.latitude,
+                                result.geometry.location.longitude
+                            )
                         )
                     )
-                )
+                }
+                withContext(Dispatchers.Main) {
+                    addresses.mutation { it.value = list }
+                }
+
+            } catch (exception: IOException) {
+                Log.e("Geocoding error", exception.message.toString())
             }
         }
-
-        addresses.mutation { it.value = list }
     }
 
     fun makeOrder() {
