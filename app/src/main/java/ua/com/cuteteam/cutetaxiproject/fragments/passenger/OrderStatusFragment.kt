@@ -13,8 +13,6 @@ import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.extentions.mutation
-import ua.com.cuteteam.cutetaxiproject.fragments.passenger.BottomSheetFragment
-import ua.com.cuteteam.cutetaxiproject.fragments.passenger.OnChildDrawnListener
 import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
 
 class OrderStatusFragment : Fragment(),
@@ -22,11 +20,11 @@ class OrderStatusFragment : Fragment(),
 
     private val viewModel: PassengerViewModel by activityViewModels()
 
-    private lateinit var callback: OnChildDrawnListener
+    private var callback: OnChildDrawnListener? = null
 
     private val onGlobalLayoutListener by lazy {
         ViewTreeObserver.OnGlobalLayoutListener {
-            callback.onChildDrawn(order_status.measuredHeight)
+            callback?.onChildDrawn(order_status.measuredHeight)
         }
     }
 
@@ -84,5 +82,9 @@ class OrderStatusFragment : Fragment(),
 
     override fun setOnChildDrawnListener(callback: OnChildDrawnListener) {
         this.callback = callback
+    }
+
+    override fun removeOnChildDrawnListener(callback: OnChildDrawnListener) {
+        this.callback = null
     }
 }

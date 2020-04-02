@@ -18,6 +18,7 @@ class PassengerDao : BaseDao() {
     fun writeOrder(order: Order?): DatabaseReference {
         val ref = ordersRef.push()
         order?.let {
+            it.orderId = ref.key
             ref.setValue(it)
         }
         return ref
