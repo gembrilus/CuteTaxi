@@ -1,22 +1,31 @@
 package ua.com.cuteteam.cutetaxiproject.viewmodels
 
-import com.google.firebase.auth.FirebaseAuth
-import ua.com.cuteteam.cutetaxiproject.LocationLiveData
-import ua.com.cuteteam.cutetaxiproject.LocationProvider
-import ua.com.cuteteam.cutetaxiproject.data.entities.Address
-import ua.com.cuteteam.cutetaxiproject.data.entities.ComfortLevel
-import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
-import ua.com.cuteteam.cutetaxiproject.helpers.PhoneNumberHelper
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import ua.com.cuteteam.cutetaxiproject.LocationLiveData
+import ua.com.cuteteam.cutetaxiproject.LocationProvider
 import ua.com.cuteteam.cutetaxiproject.api.geocoding.GeocodeRequest
 import ua.com.cuteteam.cutetaxiproject.application.AppClass
+import ua.com.cuteteam.cutetaxiproject.data.entities.Address
+import ua.com.cuteteam.cutetaxiproject.data.entities.Coordinates
+import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.extentions.findBy
+import ua.com.cuteteam.cutetaxiproject.extentions.mutation
+import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
+import ua.com.cuteteam.cutetaxiproject.helpers.PhoneNumberHelper
+import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
+import java.io.IOException
 import java.util.*
 
 class PassengerViewModel(
@@ -24,13 +33,18 @@ class PassengerViewModel(
     private val context: Context = AppClass.appContext()
 ) : BaseViewModel(repository) {
 
+    private val repo = repository as PassengerRepository
+
     private var dialogShowed = false
 
-    val userId = FirebaseAuth.getInstance().currentUser!!.uid
+    val activeOrder: MutableLiveData<Order?>
+        get() = repo.activeOrder
 
-    val addressStart: Address = Address()
-    val addressFinish: Address = Address()
-    var comfortLevel = ComfortLevel.STANDARD
+
+    val newOrder =
+        MutableLiveData(Order(passengerId = FirebaseAuth.getInstance().currentUser!!.uid))
+
+    val addresses = MutableLiveData<List<Address>>()
 
     val observableLocation: LocationLiveData
         get() = repository.observableLocation
@@ -89,22 +103,54 @@ class PassengerViewModel(
         return local.displayCountry
     }
 
-/*    fun makeOrder() {
-        val order = Order(
-            passengerId = userId,
-            comfortLevel = comfortLevel,
-            addressStart = addressStart,
-            addressDestination = addressFinish
-        )
+    fun fetchCurrentAddress() = viewModelScope.launch {
 
-        if (order.isReady()) {
-            repository.writeOrder(order)
+        val coordinates = locationProvider.getLocation()
+
+        if (coordinates != null) {
+
+            val address =
+                repo.geocoder.build().requestNameByCoordinates(coordinates.toLatLng).toAddress()
+            newOrder.mutation {
+                it.value?.addressStart = address
+            }
         }
-    }*/
+    }
 
-    private fun Order.isReady(): Boolean {
-        return (this.passengerId != null &&
-                this.addressStart?.location != null &&
-                this.addressDestination?.location != null)
+    fun fetchAddresses(value: String) = viewModelScope.launch {
+
+        val list = mutableListOf<Address>()
+
+        withContext(Dispatchers.IO) {
+            try {
+                val geocodeResults = repo.geocoder.build().requestCoordinatesByName(value).results
+
+                for (result in geocodeResults) {
+                    list.add(
+                        Address(
+                            address = result.formattedAddress,
+                            location = Coordinates(
+                                result.geometry.location.latitude,
+                                result.geometry.location.longitude
+                            )
+                        )
+                    )
+                }
+                withContext(Dispatchers.Main) {
+                    addresses.mutation { it.value = list }
+                }
+
+            } catch (exception: IOException) {
+                Log.e("Geocoding error", exception.message.toString())
+            }
+        }
+    }
+
+    fun makeOrder() {
+        if (newOrder.value!!.isReady() &&
+            activeOrder.value == null
+        ) {
+            repo.makeOrder(newOrder.value!!)
+        }
     }
 }

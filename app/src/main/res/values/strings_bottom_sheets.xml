@@ -14,5 +14,8 @@
     <string name="order_summary">This trip will be cost %d UAH</string>
     <string name="make_order">Make order</string>
     <string name="error_start_address_empty">Enter your departure address</string>
+    <string name="wait_for_driver_message">Your order is created successfully, please wait for drivers</string>
+    <string name="time_in_minutes">%d min</string>
+
 
 </resources>

@@ -15,6 +15,7 @@ import java.util.*
 class AutocompleteRequest private constructor(private val map: Map<String, String>) :
     APIRequest<AutoCompleteService>() {
     override val url: String
+
         get() = BuildConfig.GOOGLE_AUTOCOMPLETE_API_URL
     override val adapter: Any?
         get() = null

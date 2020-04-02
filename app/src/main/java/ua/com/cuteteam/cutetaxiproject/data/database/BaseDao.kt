@@ -2,17 +2,14 @@ package ua.com.cuteteam.cutetaxiproject.data.database
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.coroutineScope
 import ua.com.cuteteam.cutetaxiproject.data.User
-import ua.com.cuteteam.cutetaxiproject.data.entities.Driver
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
-import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.extentions.exists
 import ua.com.cuteteam.cutetaxiproject.extentions.getValue
 
@@ -21,19 +18,14 @@ abstract class BaseDao(
     database: FirebaseDatabase = Firebase.database
 ) {
 
-    protected val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     protected val authUser = auth.currentUser!!
     protected val rootRef = database.reference.root
     protected val ordersRef = database.reference.root.child(DbEntries.Orders.TABLE)
     protected abstract val usersRef: DatabaseReference
 
-    protected val eventListeners = mutableMapOf<DatabaseReference, ValueEventListener>()
+    protected val eventListeners = mutableMapOf<DatabaseReference, Any>()
 
-    @Suppress("UNCHECKED_CAST")
-    suspend fun <T : User> getUser(uid: String): T? {
-        val userData = usersRef.child(uid).getValue()
-        return userData.getValue(Driver::class.java) as T?
-    }
+    abstract suspend fun getUser(uid: String) : User?
 
     /**Writes user to realtime database
      * @see User
@@ -177,6 +169,25 @@ abstract class BaseDao(
         }
     }
 
+    suspend fun getOrder(orderId: String): Order? {
+        val orderData = ordersRef.child(orderId).getValue()
+        return orderData.getValue(Order::class.java)
+    }
+
+    fun subscribeForOrder(
+        orderId: String,
+        listener: ValueEventListener
+    ) {
+        val ref = ordersRef.child(orderId)
+        if (!eventListeners.contains(ref)) {
+            ref.addValueEventListener(listener)
+            eventListeners[ref] = listener
+            Log.d("Realtime database", "Set to listen for $ref")
+        } else {
+            Log.e("Database Error", "Listener $ref is already set")
+        }
+    }
+
     fun subscribeForChanges(
         table: String,
         entry: String,
@@ -193,18 +204,16 @@ abstract class BaseDao(
         }
     }
 
-    suspend fun getOrder(orderId: String) : Order? {
-        val orderData = ordersRef.child(orderId).getValue()
-        return orderData.getValue(Order::class.java)
-    }
-
     /** Removes all active listeners
      * @see ValueEventListener
      * @see subscribeForChanges
      */
     fun removeAllListeners() {
         for (item in eventListeners) {
-            item.key.removeEventListener(item.value)
+            when (item.value) {
+                is ChildEventListener -> item.key.removeEventListener(item.value as ChildEventListener)
+                is ValueEventListener -> item.key.removeEventListener(item.value as ValueEventListener)
+            }
         }
         eventListeners.clear()
     }
@@ -219,15 +228,27 @@ abstract class BaseDao(
         removeListeners(usersRef.child(uid).child(field))
     }
 
+    /** Removes listener, specified by entry
+     * @param field field entry
+     * @see DbEntries
+     * @see ValueEventListener
+     * @see subscribeForChanges
+     */
+    fun removeOrdersListeners(orderId: String) {
+        removeListeners(ordersRef.child(orderId))
+    }
 
-    private fun removeListeners(reference: DatabaseReference) {
+
+    protected fun removeListeners(reference: DatabaseReference) {
         for (item in eventListeners) {
             if (item.key == reference) {
                 Log.d("Realtime Database", "Unsubscribe from ${item.key}")
-                item.key.removeEventListener(item.value)
+                when (item.value) {
+                    is ChildEventListener -> item.key.removeEventListener(item.value as ChildEventListener)
+                    is ValueEventListener -> item.key.removeEventListener(item.value as ValueEventListener)
+                }
                 eventListeners.remove(item.key)
             }
         }
     }
-
 }
