@@ -1,6 +1,7 @@
-package ua.com.cuteteam.cutetaxiproject.fragments
+package ua.com.cuteteam.cutetaxiproject.fragments.settings
 
 import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.fragments.settings.BaseSettingsFragment
 
 private const val TAG = "CuteTaxi.AddInfoFrag"
 

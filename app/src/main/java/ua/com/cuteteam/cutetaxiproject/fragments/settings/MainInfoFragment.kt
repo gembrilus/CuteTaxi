@@ -1,10 +1,11 @@
-package ua.com.cuteteam.cutetaxiproject.fragments
+package ua.com.cuteteam.cutetaxiproject.fragments.settings
 
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import androidx.preference.EditTextPreference
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
+import ua.com.cuteteam.cutetaxiproject.fragments.settings.BaseSettingsFragment
 
 class MainInfoFragment : BaseSettingsFragment() {
 
