@@ -37,7 +37,7 @@ class StartUpRepository(context: Context = AppClass.appContext()) {
         dao: BaseDao,
         buildUser: () -> T
     ) {
-        dao.getUser<T>(firebaseUser.uid)?.also {
+        dao.getUser(firebaseUser.uid)?.also {
             appSettingsHelper.initUser(it)
             return@updateOrCreateUser
         }

@@ -6,10 +6,10 @@
         android:icon="@drawable/ct_home"
         android:title="@string/menu_home"/>
 
-    <item
+<!--    <item
         android:id="@+id/orders"
         android:icon="@drawable/ct_list"
-        android:title="@string/menu_orders"/>
+        android:title="@string/menu_orders"/>-->
 
     <item
         android:id="@+id/settings"

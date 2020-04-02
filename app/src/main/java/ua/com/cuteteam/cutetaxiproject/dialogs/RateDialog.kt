@@ -1,11 +1,7 @@
 package ua.com.cuteteam.cutetaxiproject.dialogs
 
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.view.Window
 import android.widget.RatingBar
 import androidx.fragment.app.FragmentManager
 import kotlinx.android.synthetic.main.dialog_rate_layout.*
