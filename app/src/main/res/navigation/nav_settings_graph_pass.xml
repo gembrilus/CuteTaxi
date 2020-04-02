@@ -6,15 +6,15 @@
 
     <fragment
         android:id="@+id/mainInfoFragment"
-        android:name="ua.com.cuteteam.cutetaxiproject.fragments.MainInfoFragment"
+        android:name="ua.com.cuteteam.cutetaxiproject.fragments.settings.MainInfoFragment"
         android:label="MainInfoFragment" />
     <fragment
         android:id="@+id/passengerInfoFragment"
-        android:name="ua.com.cuteteam.cutetaxiproject.fragments.PassengerInfoFragment"
+        android:name="ua.com.cuteteam.cutetaxiproject.fragments.settings.PassengerInfoFragment"
         android:label="PassengerInfoFragment" />
     <fragment
         android:id="@+id/systemFragment"
-        android:name="ua.com.cuteteam.cutetaxiproject.fragments.SystemFragment"
+        android:name="ua.com.cuteteam.cutetaxiproject.fragments.settings.SystemFragment"
         android:label="SystemFragment" />
 
 </navigation>

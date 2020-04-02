@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject.fragments
+package ua.com.cuteteam.cutetaxiproject.fragments.settings
 
 import androidx.preference.Preference
 import ua.com.cuteteam.cutetaxiproject.R
@@ -6,6 +6,7 @@ import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreference
 import ua.com.cuteteam.cutetaxiproject.preferences.ListBoxPreferenceDialogFragmentCompat
 
 private const val TAG = "CuteTaxi.PassInfoFrag"
+private const val LIST_BOX_TAG = "ua.com.cuteteam.cutetaxiproject.ListBoxPreference"
 
 class PassengerInfoFragment : BaseSettingsFragment() {
 
@@ -18,7 +19,7 @@ class PassengerInfoFragment : BaseSettingsFragment() {
                 ListBoxPreferenceDialogFragmentCompat.newInstance(preference.key).apply {
                     setTargetFragment(this@PassengerInfoFragment, 0)
                     targetFragment?.parentFragmentManager?.let {
-                        show(it, "ua.com.cuteteam.cutetaxiproject.ListBoxPreference")
+                        show(it, LIST_BOX_TAG)
                     }
                 }
             }

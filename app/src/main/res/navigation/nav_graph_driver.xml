@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/home"
-        android:name="ua.com.cuteteam.cutetaxiproject.fragments.DriverMapFragment"
+        android:name="ua.com.cuteteam.cutetaxiproject.fragments.driver.DriverMapFragment"
         android:label="DriverMapFragment" >
         <action
             android:id="@+id/action_home_to_new_orders"
@@ -18,7 +18,7 @@
 
     <fragment
         android:id="@+id/new_orders"
-        android:name="ua.com.cuteteam.cutetaxiproject.fragments.DriverOrdersFragment"
+        android:name="ua.com.cuteteam.cutetaxiproject.fragments.driver.DriverOrdersFragment"
         android:label="DriverOrdersFragment" >
         <action
             android:id="@+id/action_new_orders_to_home"
