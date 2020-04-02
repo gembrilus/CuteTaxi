@@ -25,6 +25,7 @@ import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
 import ua.com.cuteteam.cutetaxiproject.data.database.DriverDao
 import ua.com.cuteteam.cutetaxiproject.data.database.PassengerDao
+import ua.com.cuteteam.cutetaxiproject.data.entities.ComfortLevel
 import ua.com.cuteteam.cutetaxiproject.helpers.network.NetStatus
 import ua.com.cuteteam.cutetaxiproject.helpers.NotificationUtils
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
@@ -147,7 +148,14 @@ abstract class BaseActivity :
             DbEntries.Car.CAR_CLASS to "${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.CAR_CLASS}"
         )
         paths[key]?.let {
-            val value = sharedPreferences?.getString(key, null)
+            val value = when(key){
+                DbEntries.Passengers.Fields.COMFORT_LEVEL,
+                DbEntries.Car.CAR_CLASS -> sharedPreferences?.getString(key, null)?.toInt()?.let { ordinal ->
+                    ComfortLevel.values()[ordinal].name
+                }
+                else -> sharedPreferences?.getString(key, null)
+            }
+
             if (model.isChecked) {
                 DriverDao().writeField(it, value)
             } else {

@@ -28,7 +28,7 @@ class MakeOrderFragment : Fragment(),
 
     private val viewModel: PassengerViewModel by activityViewModels()
 
-    private lateinit var callback: OnChildDrawnListener
+    private var callback: OnChildDrawnListener? = null
 
     private val adapter by lazy {
         AddressAutoCompleteAdapter(
@@ -36,11 +36,10 @@ class MakeOrderFragment : Fragment(),
         )
     }
 
-
     private val onGlobalLayoutListener by lazy {
         ViewTreeObserver.OnGlobalLayoutListener {
-            if (btn_start_point.isVisible) {
-                callback.onChildDrawn(make_order_bottom_view.measuredHeight)
+            if (parentFragment?.isVisible == true) {
+                callback?.onChildDrawn(make_order_bottom_view.measuredHeight)
             }
         }
     }
@@ -192,6 +191,9 @@ class MakeOrderFragment : Fragment(),
     }
 
     fun showCollapsed() {
+
+        make_order_bottom_view.viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)
+
         sp_comfort_level_coll.visibility = View.VISIBLE
         btn_make_order_coll.visibility = View.VISIBLE
         btn_start_point.visibility = View.VISIBLE
@@ -217,6 +219,10 @@ class MakeOrderFragment : Fragment(),
 
     override fun setOnChildDrawnListener(callback: OnChildDrawnListener) {
         this.callback = callback
+    }
+
+    override fun removeOnChildDrawnListener(callback: OnChildDrawnListener) {
+        this.callback = null
     }
 
     private fun setSpinnersValue(comfortLevel: ComfortLevel) {

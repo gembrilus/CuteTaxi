@@ -2,6 +2,7 @@ package ua.com.cuteteam.cutetaxiproject.fragments.passenger
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,8 @@ import kotlinx.android.synthetic.main.fragment_passenger.*
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.livedata.ViewAction
 import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
+
+const val BOTTOM_VIEW_HEIGHT = "BOTTOM_VIEW_HEIGHT"
 
 class PassengerFragment() : Fragment(),
     OnChildDrawnListener {
@@ -28,9 +31,11 @@ class PassengerFragment() : Fragment(),
     private val orderStatusFragment by lazy {
         OrderStatusFragment()
             .apply {
-            setOnChildDrawnListener(this@PassengerFragment)
-        }
+                setOnChildDrawnListener(this@PassengerFragment)
+            }
     }
+
+    private var behaviourSavedState: Parcelable? = null
 
     private val behaviour by lazy { BottomSheetBehavior.from(bottom_sheet_container) }
 
@@ -48,6 +53,17 @@ class PassengerFragment() : Fragment(),
             val fragment =
                 childFragmentManager.findFragmentById(R.id.bottom_sheet_container) as BottomSheetFragment
             fragment.setOnChildDrawnListener(this)
+            if (fragment is MakeOrderFragment) {
+                behaviour.addBottomSheetCallback(makeOrderBehaviourCallback)
+                initMakeOrderBottomSheet()
+            }
+            if (behaviourSavedState != null) {
+                behaviour.onRestoreInstanceState(
+                    bottom_sheet_coordinator,
+                    bottom_sheet_container,
+                    behaviourSavedState as Parcelable
+                )
+            }
         }
 
         if (viewModel.activeOrder.value == null) {
@@ -72,6 +88,16 @@ class PassengerFragment() : Fragment(),
                 initMakeOrderBottomSheet()
             }
         })
+    }
+
+    override fun onPause() {
+        val fragment =
+            childFragmentManager.findFragmentById(R.id.bottom_sheet_container) as BottomSheetFragment
+        fragment.removeOnChildDrawnListener(this)
+        behaviourSavedState =
+            behaviour.onSaveInstanceState(bottom_sheet_coordinator, bottom_sheet_container)
+        behaviour.removeBottomSheetCallback(makeOrderBehaviourCallback)
+        super.onPause()
     }
 
     private fun initMakeOrderBottomSheet() {

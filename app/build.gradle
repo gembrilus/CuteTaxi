@@ -24,6 +24,7 @@ android {
 
         buildConfigField "String", "GOOGLE_GEO_API_URL", '"https://maps.googleapis.com/maps/api/geocode/"'
         buildConfigField "String", "GOOGLE_DIRECTIONS_API_URL", '"https://maps.googleapis.com/maps/api/directions/"'
+        buildConfigField "String", "GOOGLE_AUTOCOMPLETE_API_URL", '"https://maps.googleapis.com/maps/api/place/autocomplete/"'
         buildConfigField "String", "GOOGLE_ROADS_API_URL", '"https://roads.googleapis.com/v1/"'
         buildConfigField "String", "GOOGLE_KEY", '"AIzaSyDUTwknPHCe9ztenzmKiBNi2cEoFMN3Nnw"'
 
