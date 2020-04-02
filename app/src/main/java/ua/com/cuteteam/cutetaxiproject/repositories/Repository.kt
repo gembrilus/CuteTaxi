@@ -1,5 +1,8 @@
 package ua.com.cuteteam.cutetaxiproject.repositories
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import ua.com.cuteteam.cutetaxiproject.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.LocationProvider
 import ua.com.cuteteam.cutetaxiproject.api.RouteProvider
@@ -17,5 +20,7 @@ open class Repository {
     val geocoder = GeocodeRequest.Builder()
     val netHelper = NetHelper(appContext)
     val spHelper = AppSettingsHelper(appContext)
+    protected val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
 
 }

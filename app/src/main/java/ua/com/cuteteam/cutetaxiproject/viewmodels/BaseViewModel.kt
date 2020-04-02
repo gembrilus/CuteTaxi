@@ -5,6 +5,7 @@ import com.google.android.gms.maps.model.LatLng
 import ua.com.cuteteam.cutetaxiproject.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.helpers.network.NetStatus
 import ua.com.cuteteam.cutetaxiproject.livedata.SingleLiveEvent
+import ua.com.cuteteam.cutetaxiproject.livedata.ViewAction
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 
 open class BaseViewModel(private val repository: Repository) : ViewModel() {
@@ -14,6 +15,8 @@ open class BaseViewModel(private val repository: Repository) : ViewModel() {
     init {
         repository.netHelper.registerNetworkListener()
     }
+
+    val viewAction = SingleLiveEvent<ViewAction>()
 
     val isGPSEnabled get() = repository.locationProvider.isGPSEnabled()
 

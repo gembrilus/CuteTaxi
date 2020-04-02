@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -22,12 +22,19 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
-        android:id="@+id/id_replaceable_view_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
-    </FrameLayout>
+    <include
+        android:id="@+id/make_order_bottom_view"
+        layout="@layout/bs_make_order_collapsed" />
+
+    <Spinner
+        android:id="@+id/sp_comfort_level"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:entries="@array/car_class_tittles" />
 
     <TextView
         android:id="@+id/tv_order_price"
