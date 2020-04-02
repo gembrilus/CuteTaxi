@@ -13,7 +13,8 @@ import java.util.*
  * Do request for geocode with this class
  * Class has a private constructor. Use GeocodeRequest.Builder() for building requests.
  */
-class GeocodeRequest private constructor(private val map: Map<String, String>) : APIRequest<GeocodeService>() {
+class GeocodeRequest private constructor(private val map: Map<String, String>) :
+    APIRequest<GeocodeService>() {
 
     /**
      * Base url for API request. Used by Retrofit
@@ -47,7 +48,11 @@ class GeocodeRequest private constructor(private val map: Map<String, String>) :
      * @return Geocode with all info you need or throw any exception when a request fails
      */
     suspend fun requestNameByCoordinates(latLng: LatLng) =
-        getService<GeocodeService>().getNameByCoordinates("${latLng.latitude}, ${latLng.longitude}", map)
+        getService<GeocodeService>()
+            .getNameByCoordinates(
+                "${latLng.latitude}, ${latLng.longitude}",
+                map
+            )
 
 
     /**
