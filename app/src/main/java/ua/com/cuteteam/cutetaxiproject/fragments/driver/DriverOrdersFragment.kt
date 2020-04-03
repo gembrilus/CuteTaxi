@@ -45,7 +45,7 @@ class DriverOrdersFragment : Fragment() {
         }
 
         model.orders.observe(requireActivity(), Observer {
-            mAdapter.setOrders(it?: emptyList())
+            mAdapter.setOrders(it ?: emptyList())
         })
     }
 }
