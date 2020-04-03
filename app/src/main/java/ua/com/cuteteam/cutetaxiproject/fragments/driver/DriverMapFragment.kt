@@ -112,11 +112,7 @@ class DriverMapFragment : Fragment() {
         InfoDialog.show(
             fm = it,
             title = getString(R.string.dialog_title_order_is_changed),
-            message = getString(
-                R.string.dialog_text_order_was_cancelled,
-                order.addressStart?.address,
-                order.addressDestination?.address
-            )
+            message = getString(R.string.dialog_text_order_was_cancelled)
         )
     }
 
