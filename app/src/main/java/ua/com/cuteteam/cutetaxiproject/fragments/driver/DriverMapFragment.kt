@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RatingBar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -11,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_map_driver.view.*
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.common.prepareDistance
+import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
 import ua.com.cuteteam.cutetaxiproject.dialogs.RateDialog
@@ -25,6 +27,14 @@ class DriverMapFragment : Fragment() {
     private val model by lazy {
         ViewModelProvider(requireActivity(), BaseViewModel.getViewModelFactory(DriverRepository()))
             .get(DriverViewModel::class.java)
+    }
+
+    private val ratingCallback by lazy {
+        object : RateDialog.OnRateCallback {
+            override fun onRate(rating: Float, ratingBar: RatingBar) {
+                model.rate(rating)
+            }
+        }
     }
 
     override fun onCreateView(
@@ -55,28 +65,14 @@ class DriverMapFragment : Fragment() {
             showUI()
             when (it.orderStatus) {
                 OrderStatus.CANCELLED -> {
-                    model.closeOrder()
                     hideUI()
-                    InfoDialog.show(
-                        childFragmentManager,
-                        getString(R.string.dialog_title_order_is_changed),
-                        getString(
-                            R.string.dialog_text_order_was_cancelled,
-                            it.addressStart?.address,
-                            it.addressDestination?.address
-                        )
-                    )
+                    showCancelDialog(it)
+                    model.closeOrder()
                 }
                 OrderStatus.FINISHED -> {
-                    model.closeOrder()
                     hideUI()
-                    RateDialog.show(
-                        childFragmentManager,
-                        null
-                    ) { ratingBar, fl, b ->
-                        // TODO: Write rating
-                    }
-
+                    showRateDialog()
+                    model.closeOrder()
                 }
                 OrderStatus.ACTIVE -> {
                     // TODO: Draw routes
@@ -90,13 +86,8 @@ class DriverMapFragment : Fragment() {
 
                     val startLocation = it.addressStart?.location?.toLatLng()
                     val endLocation = it.addressDestination?.location?.toLatLng()
-                    val start = "${startLocation?.latitude},${startLocation?.longitude}"
-                    val end = "${endLocation?.latitude},${endLocation?.longitude}"
-
-
                 }
-                else -> {
-                }
+                else -> Unit
             }
         })
     }
@@ -112,5 +103,20 @@ class DriverMapFragment : Fragment() {
         view?.info_boxes?.order_info_distance?.visibility = View.VISIBLE
         view?.bottom_sheet?.visibility = View.VISIBLE
     }
+
+    private fun showCancelDialog(order: Order) = InfoDialog.show(
+        fm = childFragmentManager,
+        title = getString(R.string.dialog_title_order_is_changed),
+        message = getString(
+            R.string.dialog_text_order_was_cancelled,
+            order.addressStart?.address,
+            order.addressDestination?.address
+        )
+    )
+
+    private fun showRateDialog() = RateDialog.show(
+        fm = childFragmentManager,
+        callback = ratingCallback
+    )
 
 }

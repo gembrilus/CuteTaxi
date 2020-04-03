@@ -1,11 +1,8 @@
 package ua.com.cuteteam.cutetaxiproject.dialogs
 
-import android.graphics.drawable.ColorDrawable
+import android.content.DialogInterface
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.view.Window
 import android.widget.RatingBar
 import androidx.fragment.app.FragmentManager
 import kotlinx.android.synthetic.main.dialog_rate_layout.*
@@ -54,13 +51,14 @@ class RateDialog : BaseDialog() {
             }
 
         btn_rate.setOnClickListener {
-            rateCallback?.onRate(rating, ratingBar)
-        }
-
-        btn_dismiss.setOnClickListener {
-            dismiss()
+            if (rating.compareTo(0.0) > 0) {
+                rateCallback?.onRate(rating, ratingBar)
+                dismiss()
+            }
         }
     }
+
+    override fun onCancel(dialog: DialogInterface) {}
 
     companion object {
 
@@ -69,11 +67,11 @@ class RateDialog : BaseDialog() {
         /**
          * Show a dialog window with a rating.
          * You can to set a callback for processing of rating.
-         * You can to set a lambda function that will be invoke when the ratinng is changed.
+         * You can to set a lambda function that will be invoke when the rating is changed.
          * @param fm An instance of FragmentManager
          * @param callback An instance of callback object that handles a positive button click.
          * @param run A function are invoked when [OnRatingBarChangeListener] event happens.
-        */
+         */
         fun show(
             fm: FragmentManager,
             callback: OnRateCallback? = null,
