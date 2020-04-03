@@ -146,7 +146,7 @@ class DriverViewModel(
     }
 
     fun closeOrder() {
-        repo.spHelper.activeOrderId = null
+        _activeOrder.value = null
         mOrder?.orderId?.let {                  //TODO: Replace with Dao-method
             FirebaseDatabase.getInstance()
                 .reference
@@ -154,6 +154,7 @@ class DriverViewModel(
                 .child(it).removeEventListener(orderListener)
         }
         currentLocation.removeObserver(locationObserver)
+        repo.spHelper.activeOrderId = null
         mOrder = null
     }
 
