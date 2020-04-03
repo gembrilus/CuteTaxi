@@ -18,39 +18,46 @@ Download
 Screens
 -------
 
+<p align="center">AUTHORIZATION</p>
+
 <p align="center">
-  AUTHORIZATION
   <img src="screens/1.png" alt="screen"/>
   <img src="screens/2.png" alt="screen"/>
 </p>
 
+<p align="center">PASSENGER PART - ENTER ORDER DETAILS</p>
+
 <p align="center">
-  PASSENGER PART - ENTER ORDER DETAILS
   <img src="screens/3.png" alt="screen"/>
 </p>
 
+<p align="center">SIDE NAVIGATION MENU</p>
+
 <p align="center">
-  SIDE NAVIGATION MENU
   <img src="screens/4.png" alt="screen"/>
 </p>
 
+<p align="center">DRIVER PART - LIST OF NEW ORDERS</p>
+
 <p align="center">
-  DRIVER PART - LIST OF NEW ORDERS
   <img src="screens/5.png" alt="screen"/>
 </p>
 
+<p align="center">DRIVER PART - MAIN SCREEN</p>
+
 <p align="center">
-  DRIVER PART - MAIN SCREEN
   <img src="screens/6.png" alt="screen"/>
 </p>
 
+<p align="center">DRIVER PART - ORDER IN PROGRESS AND TWO NEW ORDERS</p>
+
 <p align="center">
-  DRIVER PART - ORDER IN PROGRESS AND TWO NEW ORDERS
   <img src="screens/7.png" alt="screen"/>
 </p>
 
+<p align="center">RATE</p>
+
 <p align="center">
-  RATE
   <img src="screens/8.png" alt="screen"/>
 </p>
 
