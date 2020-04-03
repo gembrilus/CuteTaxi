@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">CuteTaxi</string>
-    <string name="location_permission_rationale">Для работы приложения необходимо включить определние локации (GPS)</string>
+    <string name="location_permission_rationale">Для работы приложения необходимо позволить определние локации (GPS)</string>
     <string name="location_permission_required_dialog_title">Приложениию необходимо разрешение на получение локации</string>
     <string name="location_permission_required_dialog_message">Вы запретили доступ к определению локации. Перейдите, пожалуйста, в Настройки системы, чтобы предоставить разрешение</string>
     <string name="call_phone_permission_rationale">Приложениию необходимо разрешение для совершения звонков, чтобы вы могли позвонить водителю или клиенту</string>
