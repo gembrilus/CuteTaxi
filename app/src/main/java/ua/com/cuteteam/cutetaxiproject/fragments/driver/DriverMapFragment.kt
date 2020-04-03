@@ -37,6 +37,38 @@ class DriverMapFragment : Fragment() {
         }
     }
 
+    private val activeOrderObserver = Observer<Order> {
+        when (it?.orderStatus) {
+            OrderStatus.CANCELLED -> {
+                hideUI()
+                showCancelDialog(it)
+                model.closeOrder()
+            }
+            OrderStatus.FINISHED -> {
+                hideUI()
+                showRateDialog()
+                model.closeOrder()
+            }
+            OrderStatus.ACTIVE -> {
+                showUI()
+                // TODO: Draw routes
+
+                view?.order_info_price?.text =
+                    requireActivity().getString(R.string.currency_UAH, it.price.toString())
+                view?.order_info_distance?.text = prepareDistance(requireActivity(), it)
+                view?.origin_address?.text = it.addressStart?.address
+                view?.dest_address?.text = it.addressDestination?.address
+                view?.invalidate()
+
+                val startLocation = it.addressStart?.location?.toLatLng()
+                val endLocation = it.addressDestination?.location?.toLatLng()
+
+            }
+            else -> hideUI()
+
+        }
+    }
+
     override fun onCreateView(
         inflator: LayoutInflater,
         parent: ViewGroup?,
@@ -51,7 +83,7 @@ class DriverMapFragment : Fragment() {
             findNavController().navigate(R.id.action_home_to_new_orders)
         }
 
-        model.countOfOrders.observe(requireActivity(), Observer { count ->
+        model.countOfOrders.observe(this, Observer { count ->
             with(view.cart_badge) {
                 visibility = if (count != 0) View.VISIBLE else View.GONE
                 text = count.toString()
@@ -61,35 +93,7 @@ class DriverMapFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        model.activeOrder.observe(requireActivity(), Observer {
-            showUI()
-            when (it.orderStatus) {
-                OrderStatus.CANCELLED -> {
-                    hideUI()
-                    showCancelDialog(it)
-                    model.closeOrder()
-                }
-                OrderStatus.FINISHED -> {
-                    hideUI()
-                    showRateDialog()
-                    model.closeOrder()
-                }
-                OrderStatus.ACTIVE -> {
-                    // TODO: Draw routes
-
-                    view?.order_info_price?.text =
-                        requireActivity().getString(R.string.currency_UAH, it.price.toString())
-                    view?.order_info_distance?.text = prepareDistance(requireActivity(), it)
-                    view?.origin_address?.text = it.addressStart?.address
-                    view?.dest_address?.text = it.addressDestination?.address
-                    view?.invalidate()
-
-                    val startLocation = it.addressStart?.location?.toLatLng()
-                    val endLocation = it.addressDestination?.location?.toLatLng()
-                }
-                else -> Unit
-            }
-        })
+        model.activeOrder.observe(this, activeOrderObserver)
     }
 
     private fun hideUI() {
@@ -104,19 +108,23 @@ class DriverMapFragment : Fragment() {
         view?.bottom_sheet?.visibility = View.VISIBLE
     }
 
-    private fun showCancelDialog(order: Order) = InfoDialog.show(
-        fm = childFragmentManager,
-        title = getString(R.string.dialog_title_order_is_changed),
-        message = getString(
-            R.string.dialog_text_order_was_cancelled,
-            order.addressStart?.address,
-            order.addressDestination?.address
+    private fun showCancelDialog(order: Order) = activity?.supportFragmentManager?.let {
+        InfoDialog.show(
+            fm = it,
+            title = getString(R.string.dialog_title_order_is_changed),
+            message = getString(
+                R.string.dialog_text_order_was_cancelled,
+                order.addressStart?.address,
+                order.addressDestination?.address
+            )
         )
-    )
+    }
 
-    private fun showRateDialog() = RateDialog.show(
-        fm = childFragmentManager,
-        callback = ratingCallback
-    )
+    private fun showRateDialog() = activity?.supportFragmentManager?.let {
+        RateDialog.show(
+            fm = it,
+            callback = ratingCallback
+        )
+    }
 
 }

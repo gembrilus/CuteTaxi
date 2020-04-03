@@ -58,8 +58,6 @@ class RateDialog : BaseDialog() {
         }
     }
 
-    override fun onCancel(dialog: DialogInterface) {}
-
     companion object {
 
         private const val TAG = "CuteTaxi.RateDialog"
