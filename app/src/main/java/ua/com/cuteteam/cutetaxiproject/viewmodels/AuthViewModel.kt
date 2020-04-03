@@ -4,11 +4,11 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import ua.com.cuteteam.cutetaxiproject.AuthListener
-import ua.com.cuteteam.cutetaxiproject.AuthProvider
+import ua.com.cuteteam.cutetaxiproject.providers.AuthListener
+import ua.com.cuteteam.cutetaxiproject.providers.AuthProvider
 
-class AuthViewModel: ViewModel(), AuthListener {
+class AuthViewModel: ViewModel(),
+    AuthListener {
 
     companion object {
         private const val ERROR_INVALID_PHONE_NUMBER = "ERROR_INVALID_PHONE_NUMBER"
@@ -36,7 +36,8 @@ class AuthViewModel: ViewModel(), AuthListener {
 
     var state = MutableLiveData(State.ENTERING_PHONE_NUMBER)
 
-    private val authProvider = AuthProvider().apply { authListener = this@AuthViewModel }
+    private val authProvider = AuthProvider()
+        .apply { authListener = this@AuthViewModel }
 
     val firebaseUser get() = authProvider.user
 

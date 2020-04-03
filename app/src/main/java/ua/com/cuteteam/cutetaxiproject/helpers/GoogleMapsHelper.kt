@@ -70,21 +70,25 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
         }
     }
 
-    suspend fun buildRoute(from: Marker?, to: Marker?) {
-        if (from == null || to == null) return
-        val routeProvider = buildRouteProvider(from.position, to.position)
-        withContext(Dispatchers.Main) {
-            val routeSummary = routeProvider.routes()[0]
-            googleMap.addPolyline(PolylineOptions()
+    suspend fun routeSummery(from: LatLng, to: LatLng): RouteProvider.RouteSummary {
+        val routeProvider = buildRouteProvider(from, to)
+        return withContext(Dispatchers.Main) { return@withContext routeProvider.routes()[0] }
+    }
+
+    fun buildRoute(routeSummary: RouteProvider.RouteSummary) {
+        val customCap = CustomCap(
+            BitmapDescriptorFactory.fromResource(R.drawable.circular_shape_silhouette),
+            300f
+        )
+        googleMap.addPolyline(
+            PolylineOptions()
                 .clickable(true)
                 .add(*routeSummary.polyline)
                 .color(Color.parseColor("#0288d1"))
                 .width(15f)
-                .startCap(CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.circular_shape_silhouette), 300f))
-                .endCap(CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.circular_shape_silhouette), 300f))
-            )
-            currentRoute = routeSummary
-        }
+                .startCap(customCap)
+                .endCap(customCap)
+        )
     }
 
     fun removeOnMapClickListener() {
@@ -93,7 +97,12 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
 
     fun updateCameraForCurrentRoute() {
         currentRoute?.let {
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(buildBoundaryForRoute(it), 100))
+            googleMap.animateCamera(
+                CameraUpdateFactory.newLatLngBounds(
+                    buildBoundaryForRoute(it),
+                    100
+                )
+            )
         }
     }
 

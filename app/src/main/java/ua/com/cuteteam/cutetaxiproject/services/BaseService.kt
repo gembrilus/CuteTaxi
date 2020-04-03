@@ -6,8 +6,8 @@ import android.os.IBinder
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import ua.com.cuteteam.cutetaxiproject.LocationLiveData
-import ua.com.cuteteam.cutetaxiproject.LocationProvider
+import ua.com.cuteteam.cutetaxiproject.livedata.LocationLiveData
+import ua.com.cuteteam.cutetaxiproject.providers.LocationProvider
 import ua.com.cuteteam.cutetaxiproject.helpers.NotificationUtils
 import ua.com.cuteteam.cutetaxiproject.extentions.createNotificationChannel
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper

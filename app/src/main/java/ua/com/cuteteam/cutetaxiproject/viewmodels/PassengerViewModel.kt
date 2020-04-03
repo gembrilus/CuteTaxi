@@ -1,8 +1,8 @@
 package ua.com.cuteteam.cutetaxiproject.viewmodels
 
 import com.google.firebase.auth.FirebaseAuth
-import ua.com.cuteteam.cutetaxiproject.LocationLiveData
-import ua.com.cuteteam.cutetaxiproject.LocationProvider
+import ua.com.cuteteam.cutetaxiproject.livedata.LocationLiveData
+import ua.com.cuteteam.cutetaxiproject.providers.LocationProvider
 import ua.com.cuteteam.cutetaxiproject.data.entities.Address
 import ua.com.cuteteam.cutetaxiproject.data.entities.ComfortLevel
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
@@ -15,6 +15,7 @@ import ua.com.cuteteam.cutetaxiproject.helpers.PhoneNumberHelper
 import ua.com.cuteteam.cutetaxiproject.api.geocoding.GeocodeRequest
 import ua.com.cuteteam.cutetaxiproject.application.AppClass
 import ua.com.cuteteam.cutetaxiproject.extentions.findBy
+import ua.com.cuteteam.cutetaxiproject.livedata.MapAction
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 import java.util.*
@@ -24,7 +25,15 @@ class PassengerViewModel(
     private val context: Context = AppClass.appContext()
 ) : BaseViewModel(repository) {
 
-    private var dialogShowed = false
+    fun createOrUpdateMarker(tag: Any?,
+                             icon: Int,
+                             callback: ((Marker?) -> Unit)? = null) {
+        mapAction.value = MapAction.StartMarkerUpdate(tag, icon, callback)
+    }
+
+    fun stopMarkerUpdate() {
+        mapAction.value = MapAction.StopMarkerUpdate()
+    }
 
     val userId = FirebaseAuth.getInstance().currentUser!!.uid
 
@@ -35,39 +44,8 @@ class PassengerViewModel(
     val observableLocation: LocationLiveData
         get() = repository.observableLocation
 
-    val locationProvider: LocationProvider
-        get() = repository.locationProvider
-
-    var cameraPosition: CameraPosition? = null
-
-    var markers = MutableLiveData(mutableMapOf<Int, Marker?>())
-
-    fun setMarkers(newMarkers: Map<Int, Marker?>) {
-        markers.value = newMarkers.toMutableMap()
-    }
-
-    fun setMarker(key: Int, value: Marker?) {
-        markers.value = markers.value?.plus(key to value)?.toMutableMap()
-    }
-
-    fun replaceMarkers(newMarkers: Map<Int, Marker?>) {
-        markers.value?.clear()
-        markers.value?.plusAssign(newMarkers)
-    }
-
-    fun shouldShowGPSRationale(): Boolean {
-        if (dialogShowed || repository.locationProvider.isGPSEnabled()) return false
-
-        dialogShowed = true
-        return true
-    }
-
     suspend fun currentCameraPosition(): CameraPosition {
         return cameraPosition ?: countryCameraPosition()
-    }
-
-    fun findMarkerByTag(tag: String): Marker? {
-        return markers.value?.findBy { it.value?.tag == tag }?.value
     }
 
     private suspend fun countryCameraPosition(): CameraPosition {

@@ -1,13 +1,15 @@
-package ua.com.cuteteam.cutetaxiproject
+package ua.com.cuteteam.cutetaxiproject.livedata
 
 import android.location.Location
 import androidx.lifecycle.LiveData
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
+import ua.com.cuteteam.cutetaxiproject.providers.LocationProvider
 
 class LocationLiveData : LiveData<Location>() {
 
-    private val locationProvider = LocationProvider()
+    private val locationProvider =
+        LocationProvider()
 
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult?) {

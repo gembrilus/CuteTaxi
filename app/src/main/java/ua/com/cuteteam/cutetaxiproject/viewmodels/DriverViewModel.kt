@@ -1,7 +1,6 @@
 package ua.com.cuteteam.cutetaxiproject.viewmodels
 
 import android.content.Context
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.*
 import com.google.android.gms.maps.model.LatLng
@@ -12,7 +11,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ua.com.cuteteam.cutetaxiproject.LocationLiveData
+import ua.com.cuteteam.cutetaxiproject.livedata.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.application.AppClass
 import ua.com.cuteteam.cutetaxiproject.common.arrivalTime

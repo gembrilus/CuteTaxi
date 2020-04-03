@@ -7,7 +7,6 @@ import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -15,14 +14,14 @@ import pub.devrel.easypermissions.AfterPermissionGranted
 import ua.com.cuteteam.cutetaxiproject.helpers.GoogleMapsHelper
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
-import ua.com.cuteteam.cutetaxiproject.extentions.findBy
+import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
+import ua.com.cuteteam.cutetaxiproject.livedata.MapAction
 import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission
 import ua.com.cuteteam.cutetaxiproject.permissions.PermissionProvider
-import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
-import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
-import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.PassengerViewModelFactory
+import ua.com.cuteteam.cutetaxiproject.repositories.Repository
+import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
 
-class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
+open class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
 
     companion object {
         private var shouldShowPermissionPermanentlyDeniedDialog = true
@@ -36,22 +35,17 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
         }
     }
 
-    private lateinit var passengerViewModel: PassengerViewModel
+    open val viewModel by lazy {
+        ViewModelProvider(this, BaseViewModel.getViewModelFactory(Repository()))
+            .get(BaseViewModel::class.java)
+    }
 
     private var permissionProvider: PermissionProvider? = null
 
-    private lateinit var currentLocation: Location
-
     private lateinit var mMap: GoogleMap
-
-    private val accessFineLocationPermission = AccessFineLocationPermission()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-
-        passengerViewModel = ViewModelProvider(
-            activity!!, PassengerViewModelFactory(PassengerRepository())
-        ).get(PassengerViewModel::class.java)
 
         permissionProvider = PermissionProvider(this).apply {
             onDenied = { permission, isPermanentlyDenied ->
@@ -65,7 +59,7 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
             }
 
             onGranted = {
-                if (passengerViewModel.shouldShowGPSRationale())
+                if (viewModel.shouldShowGPSRationale())
                     InfoDialog.show(
                         childFragmentManager,
                         getString(R.string.enable_gps_recommended_dialog_title),
@@ -83,52 +77,93 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        addAMarkerAndMoveTheCamera()
+        initMapData()
     }
 
     @AfterPermissionGranted(PermissionProvider.LOCATION_REQUEST_CODE)
-    private fun addAMarkerAndMoveTheCamera() {
+    private fun initMapData() {
         ::mMap.isInitialized || return
-        val googleMapsHelper = GoogleMapsHelper(mMap)
-        permissionProvider?.withPermission(accessFineLocationPermission) {
-            GlobalScope.launch(Dispatchers.Main) {
-                passengerViewModel.markers.observe(this@MapsFragment, Observer {
-                    googleMapsHelper
-                        .addMarkers(passengerViewModel.markers.value ?: emptyMap())
-                        .also { passengerViewModel.replaceMarkers(it) }
-                    GlobalScope.launch(Dispatchers.Main) {
+
+        permissionProvider?.withPermission(AccessFineLocationPermission()) {
+            val googleMapsHelper = GoogleMapsHelper(mMap)
+
+            viewModel.mapAction.observe(this@MapsFragment, Observer { mapAction ->
+                when (mapAction) {
+                    is MapAction.AddMarkers -> googleMapsHelper.addMarkers(
+                        viewModel.markers.value ?: emptyMap()
+                    ).also { viewModel.replaceMarkers(it) }
+                    is MapAction.StartMarkerUpdate -> googleMapsHelper.createOrUpdateMarkerByClick(
+                        viewModel.markers.value!!,
+                        mapAction.tag,
+                        mapAction.icon,
+                        mapAction.callback
+                    )
+                    is MapAction.StopMarkerUpdate -> googleMapsHelper.removeOnMapClickListener()
+                    is MapAction.BuildRoute -> GlobalScope.launch(Dispatchers.Main) {
                         googleMapsHelper.buildRoute(
-                            passengerViewModel.findMarkerByTag("A"),
-                            passengerViewModel.findMarkerByTag("B")
+                            viewModel.currentRoute ?:  googleMapsHelper.routeSummery(
+                                mapAction.from,
+                                mapAction.to
+                            )
                         )
                     }
-                })
-
-                currentLocation = passengerViewModel.locationProvider.getLocation() ?: return@launch
-
-                val latLng = latLng(currentLocation)
-                googleMapsHelper.onCameraMove { position ->
-                    passengerViewModel.cameraPosition = position
+                    is MapAction.UpdateCameraForRoute -> googleMapsHelper.updateCameraForCurrentRoute()
+                    is MapAction.MoveCamera -> GlobalScope.launch {
+                        googleMapsHelper.moveCameraToLocation(mapAction.latLng)
+                    }
                 }
+            })
 
-                if (passengerViewModel.markers.value?.isEmpty() == true) {
-                    val marker =
-                        googleMapsHelper.createMarker(latLng, "A", R.drawable.marker_a_icon)
-                    passengerViewModel.setMarker(R.drawable.marker_a_icon, marker)
+            GlobalScope.launch(Dispatchers.Main) {
+                if (viewModel.cameraPosition == null)
+                    googleMapsHelper.moveCameraToLocation(
+                        viewModel.currentLocation.value ?: return@launch
+                    )
+            }
 
-                    passengerViewModel.markers.value = passengerViewModel.markers.value?.plus(
-                        R.drawable.marker_a_icon to marker
-                    )?.toMutableMap()
-                }
-
-                if (passengerViewModel.cameraPosition == null)
-                    googleMapsHelper.moveCameraToLocation(latLng)
+            googleMapsHelper.onCameraMove { position ->
+                viewModel.cameraPosition = position
             }
         }
     }
 
-    private fun latLng(currentLocation: Location) =
-        LatLng(currentLocation.latitude, currentLocation.longitude)
+
+//            GlobalScope.launch(Dispatchers.Main) {
+//                passengerViewModel.markers.observe(this@MapsFragment, Observer {
+//                    googleMapsHelper
+//                        .addMarkers(passengerViewModel.markers.value ?: emptyMap())
+//                        .also { passengerViewModel.replaceMarkers(it) }
+//                    GlobalScope.launch(Dispatchers.Main) {
+//                        googleMapsHelper.buildRoute(
+//                            passengerViewModel.findMarkerByTag("A"),
+//                            passengerViewModel.findMarkerByTag("B")
+//                        )
+//                    }
+//                })
+//
+//                currentLocation = passengerViewModel.locationProvider.getLocation() ?: return@launch
+//
+//
+//
+//                if (passengerViewModel.markers.value?.isEmpty() == true) {
+//                    val marker =
+//                        googleMapsHelper.createMarker(currentLocation.toLatLng, "A", R.drawable.marker_a_icon)
+//                    passengerViewModel.setMarker(R.drawable.marker_a_icon, marker)
+//
+//                    passengerViewModel.markers.value = passengerViewModel.markers.value?.plus(
+//                        R.drawable.marker_a_icon to marker
+//                    )?.toMutableMap()
+//                }
+//
+
+//        }
+
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.addMarkers()
+    }
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,

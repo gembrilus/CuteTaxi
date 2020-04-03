@@ -20,9 +20,9 @@ import ua.com.cuteteam.cutetaxiproject.viewmodels.DriverViewModel
 
 private const val TAG = "Cute.DriverFragment"
 
-class DriverMapFragment : Fragment() {
+class DriverMapFragment : MapsFragment() {
 
-    private val model by lazy {
+    override val viewModel by lazy {
         ViewModelProvider(requireActivity(), BaseViewModel.getViewModelFactory(DriverRepository()))
             .get(DriverViewModel::class.java)
     }
@@ -41,7 +41,7 @@ class DriverMapFragment : Fragment() {
             findNavController().navigate(R.id.action_home_to_new_orders)
         }
 
-        model.countOfOrders.observe(requireActivity(), Observer { count ->
+        viewModel.countOfOrders.observe(requireActivity(), Observer { count ->
             with(view.cart_badge) {
                 visibility = if (count != 0) View.VISIBLE else View.GONE
                 text = count.toString()
@@ -51,11 +51,11 @@ class DriverMapFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        model.activeOrder.observe(requireActivity(), Observer {
+        viewModel.activeOrder.observe(requireActivity(), Observer {
             showUI()
             when (it.orderStatus) {
                 OrderStatus.CANCELLED -> {
-                    model.closeOrder()
+                    viewModel.closeOrder()
                     hideUI()
                     InfoDialog.show(
                         childFragmentManager,
@@ -68,7 +68,7 @@ class DriverMapFragment : Fragment() {
                     )
                 }
                 OrderStatus.FINISHED -> {
-                    model.closeOrder()
+                    viewModel.closeOrder()
                     hideUI()
                     RateDialog.show(
                         childFragmentManager,
