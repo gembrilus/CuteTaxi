@@ -41,7 +41,7 @@ class DriverMapFragment : Fragment() {
         when (it?.orderStatus) {
             OrderStatus.CANCELLED -> {
                 hideUI()
-                showCancelDialog(it)
+                showCancelDialog()
                 model.closeOrder()
             }
             OrderStatus.FINISHED -> {
@@ -83,7 +83,7 @@ class DriverMapFragment : Fragment() {
             findNavController().navigate(R.id.action_home_to_new_orders)
         }
 
-        model.countOfOrders.observe(this, Observer { count ->
+        model.countOfOrders.observe(requireActivity(), Observer { count ->
             with(view.cart_badge) {
                 visibility = if (count != 0) View.VISIBLE else View.GONE
                 text = count.toString()
@@ -108,7 +108,7 @@ class DriverMapFragment : Fragment() {
         view?.bottom_sheet?.visibility = View.VISIBLE
     }
 
-    private fun showCancelDialog(order: Order) = activity?.supportFragmentManager?.let {
+    private fun showCancelDialog() = activity?.supportFragmentManager?.let {
         InfoDialog.show(
             fm = it,
             title = getString(R.string.dialog_title_order_is_changed),
