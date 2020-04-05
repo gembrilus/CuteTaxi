@@ -8,21 +8,28 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.maps.GoogleMapOptions
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.fragment_map_driver.view.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.DisposableHandle
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.common.prepareDistance
 import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
 import ua.com.cuteteam.cutetaxiproject.dialogs.RateDialog
+import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
 import ua.com.cuteteam.cutetaxiproject.repositories.DriverRepository
 import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.DriverViewModel
 
 private const val TAG = "Cute.DriverFragment"
 
-class DriverMapFragment : MapsFragment() {
+class DriverMapFragment : Fragment() {
 
-    override val viewModel by lazy {
+    private val viewModel by lazy {
         ViewModelProvider(requireActivity(), BaseViewModel.getViewModelFactory(DriverRepository()))
             .get(DriverViewModel::class.java)
     }
@@ -99,6 +106,8 @@ class DriverMapFragment : MapsFragment() {
                 }
             }
         })
+
+
     }
 
     private fun hideUI() {

@@ -1,7 +1,6 @@
 package ua.com.cuteteam.cutetaxiproject.helpers
 
 import android.graphics.Color
-import androidx.navigation.ActivityNavigator
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
@@ -9,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.api.RouteProvider
+import ua.com.cuteteam.cutetaxiproject.extentions.copy
 import ua.com.cuteteam.cutetaxiproject.extentions.findBy
 
 class GoogleMapsHelper(private val googleMap: GoogleMap) {
@@ -23,14 +23,27 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
     fun addMarkers(markers: Map<Int, Marker?>): Map<Int, Marker?> {
         googleMap.clear()
         return markers
+            .copy()
             .filterValues { it != null }
             .mapValues {
                 googleMap.addMarker(MarkerOptions().position(it.value?.position!!)).apply {
                     tag = it.value?.tag
                     setIcon(BitmapDescriptorFactory.fromResource(it.key))
+                    //markers.minus(it.key)
                 }
             }
     }
+
+    /*        return markers
+            .filterValues { it != null }
+            .mapValues {
+                val marker = googleMap.addMarker(MarkerOptions().position(it.value?.position!!)).apply {
+                    tag = it.value?.tag
+                    setIcon(BitmapDescriptorFactory.fromResource(it.key))
+                }
+                it.value?.remove()
+                marker
+            }*/
 
     fun onCameraMove(callback: ((CameraPosition) -> Unit)) {
         googleMap.setOnCameraMoveListener { callback.invoke(googleMap.cameraPosition) }
@@ -48,7 +61,7 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17f), 1000, null)
     }
 
-    fun createMarker(latLng: LatLng, tag: Any?, icon: Int): Marker {
+    fun createMarkerByCoordinates(latLng: LatLng, tag: Any?, icon: Int): Marker {
         val marker = googleMap.addMarker(MarkerOptions().position(latLng))
         marker.setIcon(BitmapDescriptorFactory.fromResource(icon))
         marker.tag = tag
@@ -75,20 +88,25 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
         return withContext(Dispatchers.Main) { return@withContext routeProvider.routes()[0] }
     }
 
-    fun buildRoute(routeSummary: RouteProvider.RouteSummary) {
+    fun buildRoute(routeSummary: RouteProvider.RouteSummary): PolylineOptions? {
         val customCap = CustomCap(
             BitmapDescriptorFactory.fromResource(R.drawable.circular_shape_silhouette),
             300f
         )
-        googleMap.addPolyline(
-            PolylineOptions()
-                .clickable(true)
-                .add(*routeSummary.polyline)
-                .color(Color.parseColor("#0288d1"))
-                .width(15f)
-                .startCap(customCap)
-                .endCap(customCap)
-        )
+        val polylineOptions = PolylineOptions()
+            .clickable(true)
+            .add(*routeSummary.polyline)
+            .color(Color.parseColor("#0288d1"))
+            .width(15f)
+            .startCap(customCap)
+            .endCap(customCap)
+
+        addPolyline(polylineOptions)
+        return polylineOptions
+    }
+
+    fun addPolyline(polylineOptions: PolylineOptions) {
+        googleMap.addPolyline(polylineOptions)
     }
 
     fun removeOnMapClickListener() {
@@ -137,7 +155,7 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
         callback: ((Marker?) -> Unit)? = null
     ) {
         googleMap.setOnMapClickListener { latLng ->
-            val marker = createMarker(latLng, tag, icon)
+            val marker = createMarkerByCoordinates(latLng, tag, icon)
             callback?.invoke(marker)
         }
     }

@@ -7,6 +7,7 @@ import javax.crypto.AEADBadTagException
 sealed class MapAction {
 
     class AddMarkers : MapAction()
+    class CreateMarkerByCoordinates(val latLng: LatLng, val tag: Any?, val icon: Int) : MapAction()
     class StartMarkerUpdate(val tag: Any?,
                             val icon: Int,
                             val callback: ((Marker?) -> Unit)? = null) : MapAction()

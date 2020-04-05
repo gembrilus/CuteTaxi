@@ -1,23 +1,31 @@
 package ua.com.cuteteam.cutetaxiproject.viewmodels
 
+import android.content.Context
 import androidx.lifecycle.*
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.*
 import ua.com.cuteteam.cutetaxiproject.api.RouteProvider
-import ua.com.cuteteam.cutetaxiproject.extentions.findBy
+import ua.com.cuteteam.cutetaxiproject.api.geocoding.GeocodeRequest
+import ua.com.cuteteam.cutetaxiproject.application.AppClass
+import ua.com.cuteteam.cutetaxiproject.helpers.PhoneNumberHelper
 import ua.com.cuteteam.cutetaxiproject.livedata.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.helpers.network.NetStatus
 import ua.com.cuteteam.cutetaxiproject.livedata.MapAction
 import ua.com.cuteteam.cutetaxiproject.livedata.SingleLiveEvent
 import ua.com.cuteteam.cutetaxiproject.providers.LocationProvider
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
+import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
+import java.util.*
 
-open class BaseViewModel(private val repository: Repository) : ViewModel() {
+open class BaseViewModel(
+    private val repository: Repository,
+    private val context: Context = AppClass.appContext()
+) : ViewModel() {
 
     var currentRoute: RouteProvider.RouteSummary? = null
 
     var cameraPosition: CameraPosition? = null
+
+    var polylineOptions: PolylineOptions? = null
 
     val locationProvider: LocationProvider
         get() = repository.locationProvider
@@ -27,6 +35,14 @@ open class BaseViewModel(private val repository: Repository) : ViewModel() {
     fun replaceMarkers(newMarkers: Map<Int, Marker?>) {
         markers.value?.clear()
         markers.value?.plusAssign(newMarkers)
+    }
+
+    suspend fun currentCameraPosition(): CameraPosition {
+        return cameraPosition ?: countryCameraPosition()
+    }
+
+    fun findMarkerPositionByTag(tag: String): LatLng? {
+        return findMarkerByTag(tag)?.position
     }
 
     fun findMarkerByTag(tag: String): Marker? {
@@ -47,6 +63,25 @@ open class BaseViewModel(private val repository: Repository) : ViewModel() {
         }?.filterNotNull() ?: emptyList()
     }
 
+    private suspend fun countryCameraPosition(): CameraPosition {
+        val phone = AppSettingsHelper(context).phone
+        val country = countryNameByRegionCode(
+            PhoneNumberHelper().regionCode(phone!!)
+        )
+        val countryCoordinates = coordinatesByCountryName(country)
+        return CameraPosition.builder().target(countryCoordinates).zoom(6f).build()
+    }
+
+    private suspend fun coordinatesByCountryName(countryName: String): LatLng {
+        return GeocodeRequest.Builder().build()
+            .requestCoordinatesByName(countryName).toLatLng()
+    }
+
+    private fun countryNameByRegionCode(regionCode: String): String {
+        val local = Locale("", regionCode)
+        return local.displayCountry
+    }
+
     private var dialogShowed = false
 
     fun shouldShowGPSRationale(): Boolean {
@@ -64,9 +99,9 @@ open class BaseViewModel(private val repository: Repository) : ViewModel() {
         mapAction.value = MapAction.MoveCamera(latLng)
     }
 
-    fun buildRoute(from: Marker?, to: Marker?) {
+    fun buildRoute(from: LatLng?, to: LatLng?) {
         if (from == null || to == null) return
-        mapAction.value = MapAction.BuildRoute(from.position, to.position)
+        mapAction.value = MapAction.BuildRoute(from, to)
     }
 
     fun updateCameraForRoute() {

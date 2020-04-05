@@ -1,11 +1,9 @@
 package ua.com.cuteteam.cutetaxiproject.fragments
 
 import android.content.Context
-import android.location.Location
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -14,33 +12,22 @@ import pub.devrel.easypermissions.AfterPermissionGranted
 import ua.com.cuteteam.cutetaxiproject.helpers.GoogleMapsHelper
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
+import ua.com.cuteteam.cutetaxiproject.extentions.copy
 import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
 import ua.com.cuteteam.cutetaxiproject.livedata.MapAction
 import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission
 import ua.com.cuteteam.cutetaxiproject.permissions.PermissionProvider
-import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
 
-open class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
+abstract class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
 
     companion object {
         private var shouldShowPermissionPermanentlyDeniedDialog = true
-
-        fun newInstance(googleMapOptions: GoogleMapOptions?): MapsFragment {
-            val mapsFragment = MapsFragment()
-            var bundle: Bundle?
-            Bundle().also { bundle = it }.putParcelable("MapOptions", googleMapOptions)
-            mapsFragment.arguments = bundle
-            return mapsFragment
-        }
     }
 
-    open val viewModel by lazy {
-        ViewModelProvider(this, BaseViewModel.getViewModelFactory(Repository()))
-            .get(BaseViewModel::class.java)
-    }
+    abstract val viewModel: BaseViewModel
 
-    private var permissionProvider: PermissionProvider? = null
+    var permissionProvider: PermissionProvider? = null
 
     private lateinit var mMap: GoogleMap
 
@@ -87,11 +74,28 @@ open class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
         permissionProvider?.withPermission(AccessFineLocationPermission()) {
             val googleMapsHelper = GoogleMapsHelper(mMap)
 
+            viewModel.markers.observe(this@MapsFragment, Observer {
+                googleMapsHelper
+                    .addMarkers(viewModel.markers.value ?: emptyMap())
+                    .also { viewModel.replaceMarkers(it) }
+                GlobalScope.launch(Dispatchers.Main) {
+                    googleMapsHelper.addPolyline(viewModel.polylineOptions ?: return@launch)
+                }
+            })
+
             viewModel.mapAction.observe(this@MapsFragment, Observer { mapAction ->
                 when (mapAction) {
-                    is MapAction.AddMarkers -> googleMapsHelper.addMarkers(
-                        viewModel.markers.value ?: emptyMap()
-                    ).also { viewModel.replaceMarkers(it) }
+                    is MapAction.AddMarkers -> GlobalScope.launch(Dispatchers.Main) {
+                        restoreMapDataIfExist(googleMapsHelper)
+                    }
+                    is MapAction.CreateMarkerByCoordinates -> {
+                        googleMapsHelper.createMarkerByCoordinates(
+                            mapAction.latLng,
+                            mapAction.tag,
+                            mapAction.icon
+                        ).also { viewModel.setMarker(mapAction.icon, it) }
+                    }
+
                     is MapAction.StartMarkerUpdate -> googleMapsHelper.createOrUpdateMarkerByClick(
                         viewModel.markers.value!!,
                         mapAction.tag,
@@ -100,15 +104,15 @@ open class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
                     )
                     is MapAction.StopMarkerUpdate -> googleMapsHelper.removeOnMapClickListener()
                     is MapAction.BuildRoute -> GlobalScope.launch(Dispatchers.Main) {
-                        googleMapsHelper.buildRoute(
-                            viewModel.currentRoute ?:  googleMapsHelper.routeSummery(
+                        viewModel.polylineOptions = googleMapsHelper.buildRoute(
+                            viewModel.currentRoute ?: googleMapsHelper.routeSummery(
                                 mapAction.from,
                                 mapAction.to
                             )
                         )
                     }
                     is MapAction.UpdateCameraForRoute -> googleMapsHelper.updateCameraForCurrentRoute()
-                    is MapAction.MoveCamera -> GlobalScope.launch {
+                    is MapAction.MoveCamera -> GlobalScope.launch(Dispatchers.Main) {
                         googleMapsHelper.moveCameraToLocation(mapAction.latLng)
                     }
                 }
@@ -117,7 +121,7 @@ open class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
             GlobalScope.launch(Dispatchers.Main) {
                 if (viewModel.cameraPosition == null)
                     googleMapsHelper.moveCameraToLocation(
-                        viewModel.currentLocation.value ?: return@launch
+                        viewModel.locationProvider.getLocation()?.toLatLng ?: return@launch
                     )
             }
 
@@ -127,43 +131,12 @@ open class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
         }
     }
 
-
-//            GlobalScope.launch(Dispatchers.Main) {
-//                passengerViewModel.markers.observe(this@MapsFragment, Observer {
-//                    googleMapsHelper
-//                        .addMarkers(passengerViewModel.markers.value ?: emptyMap())
-//                        .also { passengerViewModel.replaceMarkers(it) }
-//                    GlobalScope.launch(Dispatchers.Main) {
-//                        googleMapsHelper.buildRoute(
-//                            passengerViewModel.findMarkerByTag("A"),
-//                            passengerViewModel.findMarkerByTag("B")
-//                        )
-//                    }
-//                })
-//
-//                currentLocation = passengerViewModel.locationProvider.getLocation() ?: return@launch
-//
-//
-//
-//                if (passengerViewModel.markers.value?.isEmpty() == true) {
-//                    val marker =
-//                        googleMapsHelper.createMarker(currentLocation.toLatLng, "A", R.drawable.marker_a_icon)
-//                    passengerViewModel.setMarker(R.drawable.marker_a_icon, marker)
-//
-//                    passengerViewModel.markers.value = passengerViewModel.markers.value?.plus(
-//                        R.drawable.marker_a_icon to marker
-//                    )?.toMutableMap()
-//                }
-//
-
-//        }
-
+    abstract fun restoreMapDataIfExist(googleMapsHelper: GoogleMapsHelper)
 
     override fun onResume() {
         super.onResume()
         viewModel.addMarkers()
     }
-
 
     override fun onRequestPermissionsResult(
         requestCode: Int,

@@ -6,3 +6,11 @@ fun <K, V> Map<K, V>.findBy(predicate: (Map.Entry<K, V>) -> Boolean): Map.Entry<
     }
     return null
 }
+
+fun <K, V> Map<K, V>.copy(): Map<K, V> {
+    val newMap: Map<K, V> = emptyMap()
+    for (entry in this) {
+        newMap.plus(entry.key to entry.value)
+    }
+    return newMap
+}
