@@ -28,9 +28,8 @@ open class BaseViewModel(private val repository: Repository) : ViewModel() {
         value = repository.spHelper.activeOrderId
     }
 
-    private val _currentLocation = LocationLiveData()
     val currentLocation
-        get() = Transformations.map(_currentLocation) {
+        get() = Transformations.map(repository.currentLocation) {
             LatLng(it.latitude, it.longitude)
         }
 
@@ -47,6 +46,9 @@ open class BaseViewModel(private val repository: Repository) : ViewModel() {
         super.onCleared()
         repository.netHelper.unregisterNetworkListener()
     }
+
+    fun signOut() = repository.signOut()
+    fun getSignInUser() = repository.getUser()
 
     companion object {
 

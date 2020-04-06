@@ -80,4 +80,10 @@
     <string name="name_item_light_theme">Світла</string>
     <string name="name_item_dark_theme">Темна</string>
     <string name="not_set">не встановлено</string>
+    <string name="menu_sign_out">Вийти</string>
+    <string name="call_phone_permission_required_dialog_title">Додатку необхідний дозвіл на здійснення телефонних дзвінків</string>
+    <string name="call_phone_permission_required_dialog_message">Ви заборонили доступ на здійснення телефонних дзвінків</string>
+    <string name="dialog_title_list_addresses_preference">Список улюблених адрес</string>
+    <string name="title_favorite_addresses_preference">Улюблені адреси</string>
+    <string name="summary_of_favorite_addresses_preference">Додайте ваші улюблені адреси</string>
 </resources>
