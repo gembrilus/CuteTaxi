@@ -2,7 +2,6 @@ package ua.com.cuteteam.cutetaxiproject.viewmodels
 
 import androidx.lifecycle.*
 import com.google.android.gms.maps.model.LatLng
-import ua.com.cuteteam.cutetaxiproject.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.helpers.network.NetStatus
 import ua.com.cuteteam.cutetaxiproject.livedata.SingleLiveEvent
 import ua.com.cuteteam.cutetaxiproject.livedata.ViewAction
@@ -29,7 +28,7 @@ open class BaseViewModel(private val repository: Repository) : ViewModel() {
     }
 
     val currentLocation
-        get() = Transformations.map(repository.currentLocation) {
+        get() = Transformations.map(repository.observableLocation) {
             LatLng(it.latitude, it.longitude)
         }
 
