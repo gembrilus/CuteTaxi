@@ -4,22 +4,22 @@
     <item
         android:id="@+id/backToHome"
         android:icon="@drawable/ct_back_arrow"
-        android:title="Back to Home"/>
+        android:title="@string/menu_back_to_home"/>
 
     <item
         android:id="@+id/mainInfoFragment"
         android:icon="@drawable/settings_menu_item"
-        android:title="Main info"/>
+        android:title="@string/title_main_info_category"/>
 
     <item
         android:id="@+id/driverInfoFragment"
         android:icon="@drawable/settings_menu_item"
-        android:title="Additional info"/>
+        android:title="@string/title_additional_info_category"/>
 
     <item
         android:id="@+id/systemFragment"
         android:icon="@drawable/settings_menu_item"
-        android:title="System settings"/>
+        android:title="@string/title_system_settings_category"/>
 
 
 </menu>

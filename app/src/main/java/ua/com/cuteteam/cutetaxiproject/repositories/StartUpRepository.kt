@@ -26,18 +26,19 @@ class StartUpRepository(context: Context = AppClass.appContext()) {
                 Driver(firebaseUser.displayName, firebaseUser.phoneNumber)
             }
         } else {
+            
             updateOrCreateUser(firebaseUser, passengerDAO) {
                 Passenger(firebaseUser.displayName, firebaseUser.phoneNumber)
             }
         }
     }
 
-    private suspend fun <T : User> updateOrCreateUser(
+    private suspend fun updateOrCreateUser(
         firebaseUser: FirebaseUser,
         dao: BaseDao,
-        buildUser: () -> T
+        buildUser: () -> User
     ) {
-        dao.getUser<T>(firebaseUser.uid)?.also {
+        dao.getUser(firebaseUser.uid)?.also {
             appSettingsHelper.initUser(it)
             return@updateOrCreateUser
         }

@@ -35,6 +35,8 @@ class DriverViewModel(
         getOrders()
     }
 
+    var mapOfVisibility: Map<View, Int>? = null
+
     private val orderListener by lazy {
         object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
@@ -42,7 +44,7 @@ class DriverViewModel(
             }
 
             override fun onDataChange(snapshot: DataSnapshot) {
-                snapshot.getValue(Order::class.java)?.let {
+                mOrder = snapshot.getValue(Order::class.java)?.also {
                     _activeOrder.value = it
                 }
             }
@@ -50,11 +52,11 @@ class DriverViewModel(
     }
 
     private val locationObserver by lazy {
-        Observer<LatLng> { latLng ->
-            val location = Coordinates(latLng.latitude, latLng.longitude)
-            mOrder?.orderId?.let {
-                repo.dao.updateOrder(it, DbEntries.Orders.Fields.DRIVER_LOCATION, location)
-            }
+        Observer<LatLng> {
+            updateOrder(
+                DbEntries.Orders.Fields.DRIVER_LOCATION,
+                Coordinates(it.latitude, it.longitude)
+            )
         }
     }
 
@@ -138,14 +140,13 @@ class DriverViewModel(
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        currentLocation.removeObserver(locationObserver)
-        repo.dao.removeAllListeners()
+    fun rate(rating: Float) {
+        updateOrder(DbEntries.Orders.Fields.PASSENGER_RATE, rating.toDouble())
+        calculateTripRating()
     }
 
     fun closeOrder() {
-        repo.spHelper.activeOrderId = null
+        _activeOrder.value = null
         mOrder?.orderId?.let {                  //TODO: Replace with Dao-method
             FirebaseDatabase.getInstance()
                 .reference
@@ -153,9 +154,38 @@ class DriverViewModel(
                 .child(it).removeEventListener(orderListener)
         }
         currentLocation.removeObserver(locationObserver)
+        repo.spHelper.activeOrderId = null
         mOrder = null
     }
 
-    var mapOfVisibility: Map<View, Int>? = null
+    private fun updateOrder(field: String, value: Any) {
+        mOrder?.orderId?.let {
+            repo.dao.updateOrder(it, field, value)
+        }
+    }
+
+    private fun calculateTripRating() = viewModelScope.launch {
+
+        val driver = FirebaseAuth.getInstance().currentUser?.uid?.let { repo.dao.getUser(it) }
+        val rating = mOrder?.driverRate
+        val currentRating = driver?.rate ?: 0.0
+        val currentCountOfTrips = driver?.tripsCount ?: 0
+
+        val newCountOfTrips = currentCountOfTrips + 1
+        val newRating = rating?.let { (currentCountOfTrips * currentRating + it) / newCountOfTrips }
+
+        driver?.let {user ->
+            user.tripsCount = newCountOfTrips
+            newRating?.let { user.rate = it }
+            repo.dao.writeUser(user)
+        }
+
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        currentLocation.removeObserver(locationObserver)
+        repo.dao.removeAllListeners()
+    }
 
 }

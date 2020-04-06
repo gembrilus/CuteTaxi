@@ -1,7 +1,6 @@
-package ua.com.cuteteam.cutetaxiproject.fragments
+package ua.com.cuteteam.cutetaxiproject.fragments.driver
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,7 +45,7 @@ class DriverOrdersFragment : Fragment() {
         }
 
         model.orders.observe(requireActivity(), Observer {
-            mAdapter.setOrders(it?: emptyList())
+            mAdapter.setOrders(it ?: emptyList())
         })
     }
 }

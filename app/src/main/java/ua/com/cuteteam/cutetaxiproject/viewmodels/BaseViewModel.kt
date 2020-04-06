@@ -10,10 +10,12 @@ import ua.com.cuteteam.cutetaxiproject.data.MarkerData
 import ua.com.cuteteam.cutetaxiproject.extentions.findBy
 import ua.com.cuteteam.cutetaxiproject.helpers.PhoneNumberHelper
 import ua.com.cuteteam.cutetaxiproject.livedata.LocationLiveData
+import com.google.android.gms.maps.model.LatLng
 import ua.com.cuteteam.cutetaxiproject.helpers.network.NetStatus
 import ua.com.cuteteam.cutetaxiproject.livedata.MapAction
 import ua.com.cuteteam.cutetaxiproject.livedata.SingleLiveEvent
 import ua.com.cuteteam.cutetaxiproject.providers.LocationProvider
+import ua.com.cuteteam.cutetaxiproject.livedata.ViewAction
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 import java.util.*
@@ -101,6 +103,8 @@ open class BaseViewModel(
         repository.netHelper.registerNetworkListener()
     }
 
+    val viewAction = SingleLiveEvent<ViewAction>()
+
     val isGPSEnabled get() = repository.locationProvider.isGPSEnabled()
 
     val shouldStartService: Boolean get() = repository.spHelper.isServiceEnabled
@@ -113,8 +117,9 @@ open class BaseViewModel(
 
     private val _currentLocation =
         LocationLiveData()
+
     val currentLocation
-        get() = Transformations.map(_currentLocation) {
+        get() = Transformations.map(repository.observableLocation) {
             LatLng(it.latitude, it.longitude)
         }
 
@@ -131,6 +136,9 @@ open class BaseViewModel(
         super.onCleared()
         repository.netHelper.unregisterNetworkListener()
     }
+
+    fun signOut() = repository.signOut()
+    fun getSignInUser() = repository.getUser()
 
     companion object {
 

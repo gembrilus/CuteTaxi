@@ -6,7 +6,8 @@
     // Navigation menu
     <string name="menu_home">Home</string>
     <string name="menu_orders">Orders</string>
-
+    <string name="menu_back_to_home">Back to Home</string>
+    <string name="menu_sign_out">SignOut</string>
 
     //Other
     <string name="currency_UAH">%s hrn</string>
@@ -14,8 +15,9 @@
     <string name="units_M">%s m</string>
     <string name="dialog_title_order_is_changed">Order is changed</string>
 
-    <string name="dialog_text_order_was_cancelled">Current order %s - %s was cancelled by client</string>
-    <string name="order_message_from_dirver">%s %s, color is %s, number is %s in %d minutes</string>
+    <string name="dialog_text_order_was_cancelled">Current order was cancelled by client</string>
+    <string name="order_message_from_dirver">Waiting for %s %s, color is %s, number is %s in %d minutes</string>
+
     //$carBrand $carModel, color is $carColor, number is $carNumber in ${order.arrivingTime} minutes
 
 </resources>
