@@ -16,9 +16,7 @@ open class Repository {
 
     val appContext = AppClass.appContext()
     val observableLocation = LocationLiveData()
-
     val locationProvider = LocationProvider()
-    val currentLocation = LocationLiveData()
     val routeBuilder = RouteProvider.Builder()
     val geocoder = GeocodeRequest.Builder()
     val netHelper = NetHelper(appContext)
