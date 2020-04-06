@@ -83,6 +83,10 @@ abstract class BaseActivity :
                 inflateMainMenu()
                 navController.navigateUp()
             }
+            R.id.sign_out -> {
+                model.signOut()
+                startActivity(Intent(this, MainActivity::class.java))
+            }
             else -> drawerLayout.closeDrawers()
         }
         item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
@@ -91,17 +95,13 @@ abstract class BaseActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         initTheme()
         super.onCreate(savedInstanceState)
+        NotificationUtils(this).cancelAll()
+        stopService()
         setContentView(layoutResId)
         createNotificationChannel()
         initNavigation()
         initUI()
         setObservers()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        NotificationUtils(this).cancelAll()
-        stopService()
     }
 
     override fun onResume() {
@@ -118,8 +118,8 @@ abstract class BaseActivity :
             .unregisterOnSharedPreferenceChangeListener(this)
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroy() {
+        super.onDestroy()
         startService()
     }
 
@@ -269,7 +269,7 @@ abstract class BaseActivity :
     }
 
     private fun startService(){
-        if (model.shouldStartService){
+        if (model.shouldStartService && model.getSignInUser() != null){
             val orderId = model.activeOrderId.value
             startService(Intent(this, service).apply {
                 putExtra(ORDER_ID_NAME, orderId)

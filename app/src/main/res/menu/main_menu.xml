@@ -6,14 +6,24 @@
         android:icon="@drawable/ct_home"
         android:title="@string/menu_home"/>
 
-<!--    <item
+    <item
         android:id="@+id/orders"
         android:icon="@drawable/ct_list"
-        android:title="@string/menu_orders"/>-->
+        android:title="@string/menu_orders"/>
 
     <item
         android:id="@+id/settings"
         android:icon="@drawable/settings_menu_item"
         android:title="@string/title_activity_settings"/>
+
+    <item
+        android:id="@+id/signout_group">
+        <menu>
+            <item
+                android:id="@+id/sign_out"
+                android:icon="@drawable/ct_signout"
+                android:title="@string/menu_sign_out"/>
+        </menu>
+    </item>
 
 </menu>
