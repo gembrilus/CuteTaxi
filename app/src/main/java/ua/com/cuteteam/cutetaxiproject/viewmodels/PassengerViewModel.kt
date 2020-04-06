@@ -1,27 +1,22 @@
 package ua.com.cuteteam.cutetaxiproject.viewmodels
 
-import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import ua.com.cuteteam.cutetaxiproject.livedata.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.data.entities.Address
 import ua.com.cuteteam.cutetaxiproject.data.entities.ComfortLevel
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
-import com.google.android.gms.maps.model.Marker
+import ua.com.cuteteam.cutetaxiproject.data.MarkerData
 import ua.com.cuteteam.cutetaxiproject.livedata.MapAction
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 
 class PassengerViewModel(private val repository: Repository) : BaseViewModel(repository) {
 
-    fun createMarkerByCoordinates(latLng: LatLng, tag: Any?, icon: Int) {
-        mapAction.value = MapAction.CreateMarkerByCoordinates(latLng, tag, icon)
-    }
-
-    fun createOrUpdateMarker(
-        tag: Any?,
+    fun createOrUpdateMarkerByClick(
+        tag: String,
         icon: Int,
-        callback: ((Marker?) -> Unit)? = null
+        callback: ((Pair<String, MarkerData>) -> Unit)? = null
     ) {
-        mapAction.value = MapAction.StartMarkerUpdate(tag, icon, callback)
+        mapAction.value = MapAction.CreateMarkerByClick(tag, icon, callback)
     }
 
     fun stopMarkerUpdate() {
@@ -36,20 +31,6 @@ class PassengerViewModel(private val repository: Repository) : BaseViewModel(rep
 
     val observableLocation: LocationLiveData
         get() = repository.observableLocation
-
-
-/*    fun makeOrder() {
-        val order = Order(
-            passengerId = userId,
-            comfortLevel = comfortLevel,
-            addressStart = addressStart,
-            addressDestination = addressFinish
-        )
-
-        if (order.isReady()) {
-            repository.writeOrder(order)
-        }
-    }*/
 
     private fun Order.isReady(): Boolean {
         return (this.passengerId != null &&

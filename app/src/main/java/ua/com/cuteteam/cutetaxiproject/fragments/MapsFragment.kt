@@ -12,7 +12,6 @@ import pub.devrel.easypermissions.AfterPermissionGranted
 import ua.com.cuteteam.cutetaxiproject.helpers.GoogleMapsHelper
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
-import ua.com.cuteteam.cutetaxiproject.extentions.copy
 import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
 import ua.com.cuteteam.cutetaxiproject.livedata.MapAction
 import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission
@@ -64,54 +63,45 @@ abstract class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        initMapData()
+        GlobalScope.launch(Dispatchers.Main) {
+            initMapData()
+        }
     }
 
     @AfterPermissionGranted(PermissionProvider.LOCATION_REQUEST_CODE)
-    private fun initMapData() {
+    private suspend fun initMapData() {
         ::mMap.isInitialized || return
 
         permissionProvider?.withPermission(AccessFineLocationPermission()) {
             val googleMapsHelper = GoogleMapsHelper(mMap)
 
+            initMap(googleMapsHelper)
+
             viewModel.markers.observe(this@MapsFragment, Observer {
-                googleMapsHelper
-                    .addMarkers(viewModel.markers.value ?: emptyMap())
-                    .also { viewModel.replaceMarkers(it) }
-                GlobalScope.launch(Dispatchers.Main) {
-                    googleMapsHelper.addPolyline(viewModel.polylineOptions ?: return@launch)
-                }
+                googleMapsHelper.updateMarkers(viewModel.markers.value?.values)
             })
 
             viewModel.mapAction.observe(this@MapsFragment, Observer { mapAction ->
                 when (mapAction) {
-                    is MapAction.AddMarkers -> GlobalScope.launch(Dispatchers.Main) {
-                        restoreMapDataIfExist(googleMapsHelper)
+                    is MapAction.UpdateMapObjects -> {
+                        googleMapsHelper.updateMarkers(viewModel.markers.value?.values)
+                        if (viewModel.polylineOptions != null)
+                            googleMapsHelper.addPolyline(viewModel.polylineOptions!!)
                     }
-                    is MapAction.CreateMarkerByCoordinates -> {
-                        googleMapsHelper.createMarkerByCoordinates(
-                            mapAction.latLng,
-                            mapAction.tag,
-                            mapAction.icon
-                        ).also { viewModel.setMarker(mapAction.icon, it) }
-                    }
+                    is MapAction.CreateMarkerByCoordinates -> viewModel
+                        .setMarkers(mapAction.tag to mapAction.markerData)
 
-                    is MapAction.StartMarkerUpdate -> googleMapsHelper.createOrUpdateMarkerByClick(
-                        viewModel.markers.value!!,
+                    is MapAction.CreateMarkerByClick -> googleMapsHelper.createOrUpdateMarkerByClick(
                         mapAction.tag,
                         mapAction.icon,
                         mapAction.callback
                     )
                     is MapAction.StopMarkerUpdate -> googleMapsHelper.removeOnMapClickListener()
-                    is MapAction.BuildRoute -> GlobalScope.launch(Dispatchers.Main) {
+                    is MapAction.BuildRoute -> GlobalScope.launch (Dispatchers.Main) {
                         viewModel.polylineOptions = googleMapsHelper.buildRoute(
-                            viewModel.currentRoute ?: googleMapsHelper.routeSummery(
-                                mapAction.from,
-                                mapAction.to
-                            )
+                            googleMapsHelper.routeSummary(mapAction.from, mapAction.to)
                         )
                     }
-                    is MapAction.UpdateCameraForRoute -> googleMapsHelper.updateCameraForCurrentRoute()
                     is MapAction.MoveCamera -> GlobalScope.launch(Dispatchers.Main) {
                         googleMapsHelper.moveCameraToLocation(mapAction.latLng)
                     }
@@ -131,11 +121,11 @@ abstract class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
         }
     }
 
-    abstract fun restoreMapDataIfExist(googleMapsHelper: GoogleMapsHelper)
+    abstract fun initMap(googleMapsHelper: GoogleMapsHelper)
 
     override fun onResume() {
         super.onResume()
-        viewModel.addMarkers()
+        viewModel.updateMapObjects()
     }
 
     override fun onRequestPermissionsResult(

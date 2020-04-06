@@ -27,7 +27,7 @@ class DriverMapsFragment : MapsFragment() {
             .get(DriverViewModel::class.java)
     }
 
-    override fun restoreMapDataIfExist(googleMapsHelper: GoogleMapsHelper) {
+    override fun initMap(googleMapsHelper: GoogleMapsHelper) {
         permissionProvider?.withPermission(AccessFineLocationPermission()) {
             GlobalScope.launch(Dispatchers.Main) {
                 val location = viewModel.locationProvider.getLocation()?.toLatLng ?: return@launch

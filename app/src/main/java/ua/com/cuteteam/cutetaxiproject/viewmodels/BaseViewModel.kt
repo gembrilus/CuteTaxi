@@ -6,6 +6,8 @@ import com.google.android.gms.maps.model.*
 import ua.com.cuteteam.cutetaxiproject.api.RouteProvider
 import ua.com.cuteteam.cutetaxiproject.api.geocoding.GeocodeRequest
 import ua.com.cuteteam.cutetaxiproject.application.AppClass
+import ua.com.cuteteam.cutetaxiproject.data.MarkerData
+import ua.com.cuteteam.cutetaxiproject.extentions.findBy
 import ua.com.cuteteam.cutetaxiproject.helpers.PhoneNumberHelper
 import ua.com.cuteteam.cutetaxiproject.livedata.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.helpers.network.NetStatus
@@ -30,37 +32,18 @@ open class BaseViewModel(
     val locationProvider: LocationProvider
         get() = repository.locationProvider
 
-    var markers = MutableLiveData(mutableMapOf<Int, Marker?>())
-
-    fun replaceMarkers(newMarkers: Map<Int, Marker?>) {
-        markers.value?.clear()
-        markers.value?.plusAssign(newMarkers)
-    }
+    val markers = MutableLiveData(mutableMapOf<String, MarkerData>())
 
     suspend fun currentCameraPosition(): CameraPosition {
         return cameraPosition ?: countryCameraPosition()
     }
 
-    fun findMarkerPositionByTag(tag: String): LatLng? {
-        return findMarkerByTag(tag)?.position
+    fun setMarkers(pair: Pair<String, MarkerData>) {
+        markers.value = markers.value?.plus(pair)?.toMutableMap()
     }
 
-    fun findMarkerByTag(tag: String): Marker? {
-        return markers.value?.findBy { it.value?.tag == tag }?.value
-    }
-
-    fun setMarkers(newMarkers: Map<Int, Marker?>) {
-        markers.value = newMarkers.toMutableMap()
-    }
-
-    fun setMarker(key: Int, value: Marker?) {
-        markers.value = markers.value?.plus(key to value)?.toMutableMap()
-    }
-
-    fun markerPositions(): List<LatLng> {
-        return markers.value?.map {
-            it.value?.position
-        }?.filterNotNull() ?: emptyList()
+    fun findMarkerByTag(tag: String): MarkerData? {
+        return markers.value?.findBy { it.key == tag }?.value
     }
 
     private suspend fun countryCameraPosition(): CameraPosition {
@@ -91,15 +74,17 @@ open class BaseViewModel(
         return true
     }
 
-    fun addMarkers() {
-        mapAction.value = MapAction.AddMarkers()
+    fun updateMapObjects() {
+        mapAction.value = MapAction.UpdateMapObjects()
     }
 
     fun moveCamera(latLng: LatLng) {
         mapAction.value = MapAction.MoveCamera(latLng)
     }
 
-    fun buildRoute(from: LatLng?, to: LatLng?) {
+    fun buildRoute() {
+        val from = findMarkerByTag("A")?.position
+        val to = findMarkerByTag("B")?.position
         if (from == null || to == null) return
         mapAction.value = MapAction.BuildRoute(from, to)
     }

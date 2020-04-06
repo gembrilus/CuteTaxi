@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.data.MarkerData
 import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
 import ua.com.cuteteam.cutetaxiproject.helpers.GoogleMapsHelper
 import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission
@@ -31,26 +32,14 @@ class PassengerMapsFragment : MapsFragment() {
             .get(PassengerViewModel::class.java)
     }
 
-    override fun restoreMapDataIfExist(googleMapsHelper: GoogleMapsHelper) {
+    override fun initMap(googleMapsHelper: GoogleMapsHelper) {
         permissionProvider?.withPermission(AccessFineLocationPermission()) {
             GlobalScope.launch(Dispatchers.Main) {
                 val location = viewModel.locationProvider.getLocation()?.toLatLng ?: return@launch
 
                 if (viewModel.markers.value?.isEmpty() == true) {
-                    viewModel.createMarkerByCoordinates(
-                        location,
-                        "A",
-                        R.drawable.marker_a_icon
-                    )
-
-                    viewModel.createOrUpdateMarker("B", R.drawable.marker_b_icon) {
-                        viewModel.setMarker(R.drawable.marker_b_icon, it)
-                        viewModel.buildRoute(
-                            viewModel.findMarkerPositionByTag("A"),
-                            viewModel.findMarkerPositionByTag("B")
-                        )
-                    }
-                } else viewModel.addMarkers()
+                    viewModel.setMarkers("A" to MarkerData(location, R.drawable.marker_a_icon))
+                } else viewModel.updateMapObjects()
             }
         }
     }
