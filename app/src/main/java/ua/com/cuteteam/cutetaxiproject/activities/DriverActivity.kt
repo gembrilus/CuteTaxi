@@ -16,11 +16,12 @@ import ua.com.cuteteam.cutetaxiproject.services.DriverService
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.DriverViewModel
+import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.DriverViewModelFactory
 
 class DriverActivity : BaseActivity(), OrdersAdapter.OnOrderAccept {
 
-    private val model by lazy {
-        ViewModelProvider(this, BaseViewModel.getViewModelFactory(DriverRepository()))
+    override val model by lazy {
+        ViewModelProvider(this, DriverViewModelFactory(DriverRepository()))
             .get(DriverViewModel::class.java)
     }
 

@@ -1,29 +1,28 @@
 package ua.com.cuteteam.cutetaxiproject.viewmodels
 
-import android.content.Context
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.google.android.gms.maps.model.*
+import androidx.lifecycle.Transformations
+import androidx.lifecycle.ViewModel
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PolylineOptions
 import ua.com.cuteteam.cutetaxiproject.api.RouteProvider
 import ua.com.cuteteam.cutetaxiproject.api.geocoding.GeocodeRequest
-import ua.com.cuteteam.cutetaxiproject.application.AppClass
 import ua.com.cuteteam.cutetaxiproject.data.MarkerData
 import ua.com.cuteteam.cutetaxiproject.extentions.findBy
 import ua.com.cuteteam.cutetaxiproject.helpers.PhoneNumberHelper
-import ua.com.cuteteam.cutetaxiproject.livedata.LocationLiveData
-import com.google.android.gms.maps.model.LatLng
 import ua.com.cuteteam.cutetaxiproject.helpers.network.NetStatus
 import ua.com.cuteteam.cutetaxiproject.livedata.MapAction
 import ua.com.cuteteam.cutetaxiproject.livedata.SingleLiveEvent
-import ua.com.cuteteam.cutetaxiproject.providers.LocationProvider
 import ua.com.cuteteam.cutetaxiproject.livedata.ViewAction
+import ua.com.cuteteam.cutetaxiproject.providers.LocationProvider
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
-import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 import java.util.*
 
-open class BaseViewModel(
-    private val repository: Repository,
-    private val context: Context = AppClass.appContext()
+abstract class BaseViewModel(
+    private val repository: Repository
 ) : ViewModel() {
 
     var currentRoute: RouteProvider.RouteSummary? = null
@@ -50,7 +49,7 @@ open class BaseViewModel(
     }
 
     private suspend fun countryCameraPosition(): CameraPosition {
-        val phone = AppSettingsHelper(context).phone
+        val phone = repository.spHelper.phone
         val country = countryNameByRegionCode(
             PhoneNumberHelper().regionCode(phone!!)
         )
@@ -116,9 +115,6 @@ open class BaseViewModel(
         value = repository.spHelper.activeOrderId
     }
 
-    private val _currentLocation =
-        LocationLiveData()
-
     val currentLocation
         get() = Transformations.map(repository.observableLocation) {
             LatLng(it.latitude, it.longitude)
@@ -147,31 +143,5 @@ open class BaseViewModel(
         super.onCleared()
         repository.netHelper.unregisterNetworkListener()
         role.removeObserver(roleObserver)
-    }
-
-    companion object {
-
-        @Suppress("UNCHECKED_CAST")
-        fun getViewModelFactory(repository: Repository) = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-                when {
-                    modelClass.isAssignableFrom(BaseViewModel::class.java) -> {
-                        BaseViewModel(
-                            repository
-                        ) as T
-                    }
-                    modelClass.isAssignableFrom(PassengerViewModel::class.java) -> {
-                        PassengerViewModel(
-                            repository
-                        ) as T
-                    }
-                    modelClass.isAssignableFrom(DriverViewModel::class.java) -> {
-                        DriverViewModel(
-                            repository
-                        ) as T
-                    }
-                    else -> throw IllegalArgumentException("Wrong class name")
-                }
-        }
     }
 }

@@ -10,8 +10,8 @@ import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
 import ua.com.cuteteam.cutetaxiproject.helpers.GoogleMapsHelper
 import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission
 import ua.com.cuteteam.cutetaxiproject.repositories.DriverRepository
-import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.DriverViewModel
+import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.DriverViewModelFactory
 
 class DriverMapsFragment : MapsFragment() {
     companion object {
@@ -23,7 +23,7 @@ class DriverMapsFragment : MapsFragment() {
     }
 
     override val viewModel: DriverViewModel by lazy {
-        ViewModelProvider(requireActivity(), BaseViewModel.getViewModelFactory(DriverRepository()))
+        ViewModelProvider(requireActivity(), DriverViewModelFactory(DriverRepository()))
             .get(DriverViewModel::class.java)
     }
 

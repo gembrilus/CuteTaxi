@@ -1,28 +1,24 @@
 package ua.com.cuteteam.cutetaxiproject.viewmodels
 
-import com.google.firebase.auth.FirebaseAuth
-import ua.com.cuteteam.cutetaxiproject.livedata.LocationLiveData
-import ua.com.cuteteam.cutetaxiproject.data.entities.Address
-import ua.com.cuteteam.cutetaxiproject.data.entities.Order
-import ua.com.cuteteam.cutetaxiproject.data.MarkerData
-import ua.com.cuteteam.cutetaxiproject.livedata.MapAction
-import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import ua.com.cuteteam.cutetaxiproject.api.geocoding.GeocodeRequest
+import ua.com.cuteteam.cutetaxiproject.data.MarkerData
+import ua.com.cuteteam.cutetaxiproject.data.entities.Address
 import ua.com.cuteteam.cutetaxiproject.data.entities.Coordinates
+import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.extentions.mutation
 import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
+import ua.com.cuteteam.cutetaxiproject.livedata.LocationLiveData
+import ua.com.cuteteam.cutetaxiproject.livedata.MapAction
 import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
 import java.io.IOException
-import java.util.*
 
-class PassengerViewModel(private val repository: Repository) : BaseViewModel(repository) {
+class PassengerViewModel(private val repository: PassengerRepository) : BaseViewModel(repository) {
 
     fun createOrUpdateMarkerByClick(
         tag: String,
@@ -35,12 +31,11 @@ class PassengerViewModel(private val repository: Repository) : BaseViewModel(rep
     fun stopMarkerUpdate() {
         mapAction.value = MapAction.StopMarkerUpdate()
     }
-    private val repo = repository as PassengerRepository
 
     private var dialogShowed = false
 
     val activeOrder: MutableLiveData<Order?>
-        get() = repo.activeOrder
+        get() = repository.activeOrder
 
 
     val newOrder =
@@ -51,11 +46,11 @@ class PassengerViewModel(private val repository: Repository) : BaseViewModel(rep
     val observableLocation: LocationLiveData
         get() = repository.observableLocation
 
-    private fun Order.isReady(): Boolean {
+/*    private fun Order.isReady(): Boolean {
         return (this.passengerId != null &&
                 this.addressStart?.location != null &&
                 this.addressDestination?.location != null)
-    }
+    }*/
 
     fun fetchCurrentAddress() = viewModelScope.launch {
 
@@ -64,7 +59,7 @@ class PassengerViewModel(private val repository: Repository) : BaseViewModel(rep
         if (coordinates != null) {
 
             val address =
-                repo.geocoder.build().requestNameByCoordinates(coordinates.toLatLng).toAddress()
+                repository.geocoder.build().requestNameByCoordinates(coordinates.toLatLng).toAddress()
             newOrder.mutation {
                 it.value?.addressStart = address
             }
@@ -77,7 +72,7 @@ class PassengerViewModel(private val repository: Repository) : BaseViewModel(rep
 
         withContext(Dispatchers.IO) {
             try {
-                val geocodeResults = repo.geocoder.build().requestCoordinatesByName(value).results
+                val geocodeResults = repository.geocoder.build().requestCoordinatesByName(value).results
 
                 for (result in geocodeResults) {
                     list.add(
@@ -104,7 +99,7 @@ class PassengerViewModel(private val repository: Repository) : BaseViewModel(rep
         if (newOrder.value!!.isReady() &&
             activeOrder.value == null
         ) {
-            repo.makeOrder(newOrder.value!!)
+            repository.makeOrder(newOrder.value!!)
         }
     }
 }
