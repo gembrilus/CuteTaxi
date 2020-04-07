@@ -57,16 +57,6 @@ class PassengerViewModel(private val repository: Repository) : BaseViewModel(rep
                 this.addressDestination?.location != null)
     }
 
-    private suspend fun coordinatesByCountryName(countryName: String): LatLng {
-        return GeocodeRequest.Builder().build()
-            .requestCoordinatesByName(countryName).toLatLng()
-    }
-
-    private fun countryNameByRegionCode(regionCode: String): String {
-        val local = Locale("", regionCode)
-        return local.displayCountry
-    }
-
     fun fetchCurrentAddress() = viewModelScope.launch {
 
         val coordinates = locationProvider.getLocation()
