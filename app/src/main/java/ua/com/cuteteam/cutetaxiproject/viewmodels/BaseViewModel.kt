@@ -2,6 +2,7 @@ package ua.com.cuteteam.cutetaxiproject.viewmodels
 
 import android.content.Context
 import androidx.lifecycle.*
+import androidx.lifecycle.Observer
 import com.google.android.gms.maps.model.*
 import ua.com.cuteteam.cutetaxiproject.api.RouteProvider
 import ua.com.cuteteam.cutetaxiproject.api.geocoding.GeocodeRequest
