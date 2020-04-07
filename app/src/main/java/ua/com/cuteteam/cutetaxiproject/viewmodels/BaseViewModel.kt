@@ -123,22 +123,30 @@ open class BaseViewModel(
             LatLng(it.latitude, it.longitude)
         }
 
-    private val _role = MutableLiveData(repository.spHelper.role)
+    fun signOut() = repository.signOut()
+    fun getSignInUser() = repository.getUser()
 
     fun changeRole(role: Boolean) {
-        _role.value = role
-        repository.spHelper.role = role
+        this.role.value = role
     }
 
-    val isChecked = _role.value ?: false
+    private var _isChecked = false
+    val isChecked get() = _isChecked
+
+    private val roleObserver = Observer<Boolean> {
+        _isChecked = it
+        repository.spHelper.role = it
+    }
+
+    private val role = MutableLiveData(repository.spHelper.role).apply {
+        observeForever(roleObserver)
+    }
 
     override fun onCleared() {
         super.onCleared()
         repository.netHelper.unregisterNetworkListener()
+        role.removeObserver(roleObserver)
     }
-
-    fun signOut() = repository.signOut()
-    fun getSignInUser() = repository.getUser()
 
     companion object {
 
