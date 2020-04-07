@@ -6,3 +6,4 @@ fun <K, V> Map<K, V>.findBy(predicate: (Map.Entry<K, V>) -> Boolean): Map.Entry<
     }
     return null
 }
+

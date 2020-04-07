@@ -10,11 +10,12 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ua.com.cuteteam.cutetaxiproject.LocationLiveData
+import ua.com.cuteteam.cutetaxiproject.livedata.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.common.arrivalTime
 import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
 import ua.com.cuteteam.cutetaxiproject.data.entities.Coordinates
+import ua.com.cuteteam.cutetaxiproject.data.entities.Driver
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.extentions.distanceTo
@@ -23,9 +24,8 @@ import ua.com.cuteteam.cutetaxiproject.repositories.DriverRepository
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 
 class DriverViewModel(
-    repository: Repository
-) : BaseViewModel(repository) {
-    private val repo = repository as DriverRepository
+    private val repo: DriverRepository
+) : BaseViewModel(repo) {
     private var mOrder: Order? = null
 
     init {
