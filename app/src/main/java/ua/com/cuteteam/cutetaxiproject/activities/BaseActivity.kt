@@ -243,6 +243,7 @@ abstract class BaseActivity :
 
     private fun onRoleChanged(isDriver: Boolean) {
         model.changeRole(isDriver)
+        stopService()
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
