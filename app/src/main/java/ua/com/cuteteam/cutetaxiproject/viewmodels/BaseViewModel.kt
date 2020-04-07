@@ -7,7 +7,7 @@ import ua.com.cuteteam.cutetaxiproject.livedata.SingleLiveEvent
 import ua.com.cuteteam.cutetaxiproject.livedata.ViewAction
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 
-open class BaseViewModel(private val repository: Repository) : ViewModel() {
+abstract class BaseViewModel(private val repository: Repository) : ViewModel() {
 
     var shouldShowPermissionPermanentlyDeniedDialog = true
 
@@ -55,31 +55,5 @@ open class BaseViewModel(private val repository: Repository) : ViewModel() {
         super.onCleared()
         repository.netHelper.unregisterNetworkListener()
         role.removeObserver(roleObserver)
-    }
-
-    companion object {
-
-        @Suppress("UNCHECKED_CAST")
-        fun getViewModelFactory(repository: Repository) = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-                when {
-                    modelClass.isAssignableFrom(BaseViewModel::class.java) -> {
-                        BaseViewModel(
-                            repository
-                        ) as T
-                    }
-                    modelClass.isAssignableFrom(PassengerViewModel::class.java) -> {
-                        PassengerViewModel(
-                            repository
-                        ) as T
-                    }
-                    modelClass.isAssignableFrom(DriverViewModel::class.java) -> {
-                        DriverViewModel(
-                            repository
-                        ) as T
-                    }
-                    else -> throw IllegalArgumentException("Wrong class name")
-                }
-        }
     }
 }

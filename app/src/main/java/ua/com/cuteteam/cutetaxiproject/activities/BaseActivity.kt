@@ -8,7 +8,6 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -31,7 +30,6 @@ import ua.com.cuteteam.cutetaxiproject.helpers.NotificationUtils
 import ua.com.cuteteam.cutetaxiproject.helpers.network.NetStatus
 import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission
 import ua.com.cuteteam.cutetaxiproject.permissions.PermissionProvider
-import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 import ua.com.cuteteam.cutetaxiproject.services.ORDER_ID_NAME
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
@@ -67,10 +65,7 @@ abstract class BaseActivity :
     private lateinit var drawerLayout: DrawerLayout
     protected lateinit var header: View
 
-    private val model by lazy {
-        ViewModelProvider(this, BaseViewModel.getViewModelFactory(Repository()))
-            .get(BaseViewModel::class.java)
-    }
+    abstract val model: BaseViewModel
 
     private val appSettingsHelper by lazy { AppSettingsHelper(this) }
 
@@ -264,7 +259,7 @@ abstract class BaseActivity :
         navigationView.inflateMenu(menuResId)
     }
 
-    protected fun stopService(){
+    private fun stopService(){
         stopService(Intent(this, service))
     }
 

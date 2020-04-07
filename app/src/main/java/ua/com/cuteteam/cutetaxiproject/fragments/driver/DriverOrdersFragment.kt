@@ -14,6 +14,7 @@ import ua.com.cuteteam.cutetaxiproject.fragments.adapters.OrdersAdapter
 import ua.com.cuteteam.cutetaxiproject.repositories.DriverRepository
 import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.DriverViewModel
+import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.DriverViewModelFactory
 
 private const val TAG = "Cute.OrdersFragment"
 
@@ -22,7 +23,7 @@ class DriverOrdersFragment : Fragment() {
     private lateinit var mAdapter: OrdersAdapter
 
     private val model by lazy {
-        ViewModelProvider(requireActivity(), BaseViewModel.getViewModelFactory(DriverRepository()))
+        ViewModelProvider(requireActivity(), DriverViewModelFactory(DriverRepository()))
             .get(DriverViewModel::class.java)
     }
 

@@ -6,7 +6,7 @@ import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
 import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
 
 @Suppress("UNCHECKED_CAST")
-class PassengerViewModelFactory(private val passengerRepository: PassengerRepository): ViewModelProvider.NewInstanceFactory() {
+class PassengerViewModelFactory(private val passengerRepository: PassengerRepository): ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return PassengerViewModel(passengerRepository) as T
     }
