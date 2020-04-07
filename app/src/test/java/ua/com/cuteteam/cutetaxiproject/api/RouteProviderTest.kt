@@ -10,18 +10,16 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.hamcrest.Matchers
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-import ua.com.cuteteam.cutetaxiproject.TestCoroutineDispatcher
+import ua.com.cuteteam.cutetaxiproject.CuteTestCoroutineDispatcher
 import ua.com.cuteteam.cutetaxiproject.api.directions.*
 import ua.com.cuteteam.cutetaxiproject.api.roads.Roads
 import ua.com.cuteteam.cutetaxiproject.api.roads.RoadsRequest
-import java.util.*
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -39,7 +37,7 @@ class RouteProviderTest {
     @Before
     fun init() {
 
-        Dispatchers.setMain(TestCoroutineDispatcher)
+        Dispatchers.setMain(CuteTestCoroutineDispatcher)
 
         route = Route(
             status = "OK",
