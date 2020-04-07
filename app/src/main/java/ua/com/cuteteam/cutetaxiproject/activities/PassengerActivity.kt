@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
 import ua.com.cuteteam.cutetaxiproject.services.PassengerService
-import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.PassengerViewModelFactory
 

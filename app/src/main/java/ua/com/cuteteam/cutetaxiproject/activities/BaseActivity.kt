@@ -4,12 +4,10 @@ import android.app.Service
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -26,13 +24,12 @@ import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
 import ua.com.cuteteam.cutetaxiproject.data.database.DriverDao
 import ua.com.cuteteam.cutetaxiproject.data.database.PassengerDao
 import ua.com.cuteteam.cutetaxiproject.data.entities.ComfortLevel
-import ua.com.cuteteam.cutetaxiproject.helpers.network.NetStatus
-import ua.com.cuteteam.cutetaxiproject.helpers.NotificationUtils
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
 import ua.com.cuteteam.cutetaxiproject.extentions.createNotificationChannel
+import ua.com.cuteteam.cutetaxiproject.helpers.NotificationUtils
+import ua.com.cuteteam.cutetaxiproject.helpers.network.NetStatus
 import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission
 import ua.com.cuteteam.cutetaxiproject.permissions.PermissionProvider
-import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 import ua.com.cuteteam.cutetaxiproject.services.ORDER_ID_NAME
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
@@ -262,7 +259,7 @@ abstract class BaseActivity :
         navigationView.inflateMenu(menuResId)
     }
 
-    protected fun stopService(){
+    private fun stopService(){
         stopService(Intent(this, service))
     }
 

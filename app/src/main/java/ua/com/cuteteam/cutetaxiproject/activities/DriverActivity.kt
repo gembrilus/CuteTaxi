@@ -2,19 +2,15 @@ package ua.com.cuteteam.cutetaxiproject.activities
 
 import android.app.Service
 import android.content.SharedPreferences
-import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.fragment_map_driver.*
 import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.extentions.showInfoSnackBar
 import ua.com.cuteteam.cutetaxiproject.fragments.adapters.OrdersAdapter
 import ua.com.cuteteam.cutetaxiproject.repositories.DriverRepository
 import ua.com.cuteteam.cutetaxiproject.services.ACCEPTED_ORDER_ID
 import ua.com.cuteteam.cutetaxiproject.services.DriverService
-import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
-import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.DriverViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.DriverViewModelFactory
 

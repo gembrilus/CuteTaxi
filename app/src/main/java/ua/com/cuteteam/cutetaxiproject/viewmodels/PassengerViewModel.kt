@@ -32,8 +32,6 @@ class PassengerViewModel(private val repository: PassengerRepository) : BaseView
         mapAction.value = MapAction.StopMarkerUpdate()
     }
 
-    private var dialogShowed = false
-
     val activeOrder: MutableLiveData<Order?>
         get() = repository.activeOrder
 
@@ -45,12 +43,6 @@ class PassengerViewModel(private val repository: PassengerRepository) : BaseView
 
     val observableLocation: LocationLiveData
         get() = repository.observableLocation
-
-/*    private fun Order.isReady(): Boolean {
-        return (this.passengerId != null &&
-                this.addressStart?.location != null &&
-                this.addressDestination?.location != null)
-    }*/
 
     fun fetchCurrentAddress() = viewModelScope.launch {
 

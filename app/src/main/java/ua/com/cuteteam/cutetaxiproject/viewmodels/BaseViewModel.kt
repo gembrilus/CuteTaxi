@@ -1,3 +1,4 @@
+
 package ua.com.cuteteam.cutetaxiproject.viewmodels
 
 import androidx.lifecycle.LiveData
@@ -70,7 +71,7 @@ abstract class BaseViewModel(
     private var dialogShowed = false
 
     fun shouldShowGPSRationale(): Boolean {
-        if (dialogShowed || repository.locationProvider.isGPSEnabled()) return false
+        if (dialogShowed || isGPSEnabled) return false
 
         dialogShowed = true
         return true

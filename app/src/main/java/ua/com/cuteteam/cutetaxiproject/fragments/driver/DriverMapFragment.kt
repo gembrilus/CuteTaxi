@@ -17,7 +17,6 @@ import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
 import ua.com.cuteteam.cutetaxiproject.dialogs.RateDialog
 import ua.com.cuteteam.cutetaxiproject.repositories.DriverRepository
-import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.DriverViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.DriverViewModelFactory
 
