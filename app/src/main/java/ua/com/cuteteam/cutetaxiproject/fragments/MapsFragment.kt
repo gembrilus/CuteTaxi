@@ -1,13 +1,10 @@
 package ua.com.cuteteam.cutetaxiproject.fragments
 
 import android.content.Context
-import android.location.Location
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -15,43 +12,26 @@ import pub.devrel.easypermissions.AfterPermissionGranted
 import ua.com.cuteteam.cutetaxiproject.helpers.GoogleMapsHelper
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
-import ua.com.cuteteam.cutetaxiproject.extentions.findBy
+import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
+import ua.com.cuteteam.cutetaxiproject.livedata.MapAction
 import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission
 import ua.com.cuteteam.cutetaxiproject.permissions.PermissionProvider
-import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
-import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
-import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.PassengerViewModelFactory
+import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
 
-class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
+abstract class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
 
     companion object {
         private var shouldShowPermissionPermanentlyDeniedDialog = true
-
-        fun newInstance(googleMapOptions: GoogleMapOptions?): MapsFragment {
-            val mapsFragment = MapsFragment()
-            var bundle: Bundle?
-            Bundle().also { bundle = it }.putParcelable("MapOptions", googleMapOptions)
-            mapsFragment.arguments = bundle
-            return mapsFragment
-        }
     }
 
-    private lateinit var passengerViewModel: PassengerViewModel
+    abstract val viewModel: BaseViewModel
 
-    private var permissionProvider: PermissionProvider? = null
-
-    private lateinit var currentLocation: Location
+    var permissionProvider: PermissionProvider? = null
 
     private lateinit var mMap: GoogleMap
 
-    private val accessFineLocationPermission = AccessFineLocationPermission()
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
-
-        passengerViewModel = ViewModelProvider(
-            activity!!, PassengerViewModelFactory(PassengerRepository())
-        ).get(PassengerViewModel::class.java)
 
         permissionProvider = PermissionProvider(this).apply {
             onDenied = { permission, isPermanentlyDenied ->
@@ -65,7 +45,7 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
             }
 
             onGranted = {
-                if (passengerViewModel.shouldShowGPSRationale())
+                if (viewModel.shouldShowGPSRationale())
                     InfoDialog.show(
                         childFragmentManager,
                         getString(R.string.enable_gps_recommended_dialog_title),
@@ -83,52 +63,70 @@ class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        addAMarkerAndMoveTheCamera()
+        GlobalScope.launch(Dispatchers.Main) {
+            initMapData()
+        }
     }
 
     @AfterPermissionGranted(PermissionProvider.LOCATION_REQUEST_CODE)
-    private fun addAMarkerAndMoveTheCamera() {
+    private suspend fun initMapData() {
         ::mMap.isInitialized || return
-        val googleMapsHelper = GoogleMapsHelper(mMap)
-        permissionProvider?.withPermission(accessFineLocationPermission) {
-            GlobalScope.launch(Dispatchers.Main) {
-                passengerViewModel.markers.observe(this@MapsFragment, Observer {
-                    googleMapsHelper
-                        .addMarkers(passengerViewModel.markers.value ?: emptyMap())
-                        .also { passengerViewModel.replaceMarkers(it) }
-                    GlobalScope.launch(Dispatchers.Main) {
-                        googleMapsHelper.buildRoute(
-                            passengerViewModel.findMarkerByTag("A"),
-                            passengerViewModel.findMarkerByTag("B")
+
+        permissionProvider?.withPermission(AccessFineLocationPermission()) {
+            val googleMapsHelper = GoogleMapsHelper(mMap)
+
+            initMap(googleMapsHelper)
+
+            viewModel.markers.observe(this@MapsFragment, Observer {
+                googleMapsHelper.updateMarkers(viewModel.markers.value?.values)
+            })
+
+            viewModel.mapAction.observe(this@MapsFragment, Observer { mapAction ->
+                when (mapAction) {
+                    is MapAction.UpdateMapObjects -> {
+                        googleMapsHelper.updateMarkers(viewModel.markers.value?.values)
+                        if (viewModel.polylineOptions != null)
+                            googleMapsHelper.addPolyline(viewModel.polylineOptions!!)
+                    }
+                    is MapAction.CreateMarkerByCoordinates -> viewModel
+                        .setMarkers(mapAction.tag to mapAction.markerData)
+
+                    is MapAction.CreateMarkerByClick -> googleMapsHelper.createOrUpdateMarkerByClick(
+                        mapAction.tag,
+                        mapAction.icon,
+                        mapAction.callback
+                    )
+                    is MapAction.StopMarkerUpdate -> googleMapsHelper.removeOnMapClickListener()
+                    is MapAction.BuildRoute -> GlobalScope.launch (Dispatchers.Main) {
+                        viewModel.polylineOptions = googleMapsHelper.buildRoute(
+                            googleMapsHelper.routeSummary(mapAction.from, mapAction.to)
                         )
                     }
-                })
-
-                currentLocation = passengerViewModel.locationProvider.getLocation() ?: return@launch
-
-                val latLng = latLng(currentLocation)
-                googleMapsHelper.onCameraMove { position ->
-                    passengerViewModel.cameraPosition = position
+                    is MapAction.MoveCamera -> GlobalScope.launch(Dispatchers.Main) {
+                        googleMapsHelper.moveCameraToLocation(mapAction.latLng)
+                    }
                 }
+            })
 
-                if (passengerViewModel.markers.value?.isEmpty() == true) {
-                    val marker =
-                        googleMapsHelper.createMarker(latLng, "A", R.drawable.marker_a_icon)
-                    passengerViewModel.setMarker(R.drawable.marker_a_icon, marker)
+            GlobalScope.launch(Dispatchers.Main) {
+                if (viewModel.cameraPosition == null)
+                    googleMapsHelper.moveCameraToLocation(
+                        viewModel.locationProvider.getLocation()?.toLatLng ?: return@launch
+                    )
+            }
 
-                    passengerViewModel.markers.value = passengerViewModel.markers.value?.plus(
-                        R.drawable.marker_a_icon to marker
-                    )?.toMutableMap()
-                }
-
-                if (passengerViewModel.cameraPosition == null)
-                    googleMapsHelper.moveCameraToLocation(latLng)
+            googleMapsHelper.onCameraMove { position ->
+                viewModel.cameraPosition = position
             }
         }
     }
 
-    private fun latLng(currentLocation: Location) =
-        LatLng(currentLocation.latitude, currentLocation.longitude)
+    abstract fun initMap(googleMapsHelper: GoogleMapsHelper)
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.updateMapObjects()
+    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,

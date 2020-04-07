@@ -7,11 +7,12 @@ import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
 import ua.com.cuteteam.cutetaxiproject.services.PassengerService
 import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
 import ua.com.cuteteam.cutetaxiproject.viewmodels.PassengerViewModel
+import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.PassengerViewModelFactory
 
 class PassengerActivity : BaseActivity() {
 
-    private val model by lazy {
-        ViewModelProvider(this, BaseViewModel.getViewModelFactory(PassengerRepository()))
+    override val model by lazy {
+        ViewModelProvider(this, PassengerViewModelFactory(PassengerRepository()))
             .get(PassengerViewModel::class.java)
     }
 

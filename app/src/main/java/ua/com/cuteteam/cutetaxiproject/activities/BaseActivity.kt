@@ -68,10 +68,7 @@ abstract class BaseActivity :
     private lateinit var drawerLayout: DrawerLayout
     protected lateinit var header: View
 
-    private val model by lazy {
-        ViewModelProvider(this, BaseViewModel.getViewModelFactory(Repository()))
-            .get(BaseViewModel::class.java)
-    }
+    abstract val model: BaseViewModel
 
     private val appSettingsHelper by lazy { AppSettingsHelper(this) }
 

@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject
+package ua.com.cuteteam.cutetaxiproject.providers
 
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.TaskExecutors

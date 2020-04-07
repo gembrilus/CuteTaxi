@@ -1,7 +1,6 @@
 package ua.com.cuteteam.cutetaxiproject.helpers
 
 import android.graphics.Color
-import androidx.navigation.ActivityNavigator
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
@@ -9,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.api.RouteProvider
-import ua.com.cuteteam.cutetaxiproject.extentions.findBy
+import ua.com.cuteteam.cutetaxiproject.data.MarkerData
 
 class GoogleMapsHelper(private val googleMap: GoogleMap) {
 
@@ -20,80 +19,87 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
 
     private var currentRoute: RouteProvider.RouteSummary? = null
 
-    fun addMarkers(markers: Map<Int, Marker?>): Map<Int, Marker?> {
+    fun updateMarkers(markers: MutableCollection<MarkerData>?) {
         googleMap.clear()
-        return markers
-            .filterValues { it != null }
-            .mapValues {
-                googleMap.addMarker(MarkerOptions().position(it.value?.position!!)).apply {
-                    tag = it.value?.tag
-                    setIcon(BitmapDescriptorFactory.fromResource(it.key))
-                }
-            }
+        markers?.forEach { addMarker(it) }
     }
 
     fun onCameraMove(callback: ((CameraPosition) -> Unit)) {
         googleMap.setOnCameraMoveListener { callback.invoke(googleMap.cameraPosition) }
     }
 
-    fun addMarker(markerOptions: MarkerOptions) {
-        googleMap.addMarker(markerOptions)
-    }
-
-    fun addMarker(latLng: LatLng, title: String? = null) {
-        googleMap.addMarker(MarkerOptions().position(latLng).title(title))
+    private fun addMarker(markerData: MarkerData) {
+        googleMap.addMarker(
+            MarkerOptions()
+                .position(markerData.position)
+                .icon(BitmapDescriptorFactory.fromResource(markerData.icon))
+        )
     }
 
     fun moveCameraToLocation(latLng: LatLng) {
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17f), 1000, null)
     }
 
-    fun createMarker(latLng: LatLng, tag: Any?, icon: Int): Marker {
-        val marker = googleMap.addMarker(MarkerOptions().position(latLng))
-        marker.setIcon(BitmapDescriptorFactory.fromResource(icon))
-        marker.tag = tag
-        return marker
+    fun createMarker(markerData: MarkerData) {
+        googleMap.addMarker(
+            MarkerOptions()
+                .position(markerData.position)
+                .icon(BitmapDescriptorFactory.fromResource(markerData.icon))
+        )
     }
 
     fun createOrUpdateMarkerByClick(
-        markers: MutableMap<Int, Marker?>,
-        tag: Any?,
+        tag: String,
         icon: Int,
-        callback: ((Marker?) -> Unit)? = null
+        callback: ((Pair<String, MarkerData>) -> Unit)? = null
     ) {
-        val marker = markers.findBy { it.value?.tag == tag }
-
-        if (marker != null) {
-            updateMarkerByClick(marker.value!!, icon, callback)
-        } else {
-            createMarkerByClick(tag, icon, callback)
+        googleMap.setOnMapClickListener { latLng ->
+            MarkerData(latLng, icon).also {
+                createMarker(it)
+                callback?.invoke(tag to it)
+            }
         }
     }
 
-    suspend fun buildRoute(from: Marker?, to: Marker?) {
-        if (from == null || to == null) return
-        val routeProvider = buildRouteProvider(from.position, to.position)
-        withContext(Dispatchers.Main) {
-            val routeSummary = routeProvider.routes()[0]
-            googleMap.addPolyline(PolylineOptions()
-                .clickable(true)
-                .add(*routeSummary.polyline)
-                .color(Color.parseColor("#0288d1"))
-                .width(15f)
-                .startCap(CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.circular_shape_silhouette), 300f))
-                .endCap(CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.circular_shape_silhouette), 300f))
-            )
-            currentRoute = routeSummary
-        }
+    suspend fun routeSummary(from: LatLng, to: LatLng): RouteProvider.RouteSummary {
+        val routeProvider = buildRouteProvider(from, to)
+        return withContext(Dispatchers.Main) { return@withContext routeProvider.routes()[0] }
+    }
+
+    fun buildRoute(routeSummary: RouteProvider.RouteSummary): PolylineOptions? {
+        val customCap = CustomCap(
+            BitmapDescriptorFactory.fromResource(R.drawable.circular_shape_silhouette),
+            300f
+        )
+        val polylineOptions = PolylineOptions()
+            .clickable(true)
+            .add(*routeSummary.polyline)
+            .color(Color.parseColor("#0288d1"))
+            .width(15f)
+            .startCap(customCap)
+            .endCap(customCap)
+
+        addPolyline(polylineOptions)
+        updateCameraForCurrentRoute(routeSummary)
+        return polylineOptions
+    }
+
+    fun addPolyline(polylineOptions: PolylineOptions) {
+        googleMap.addPolyline(polylineOptions)
     }
 
     fun removeOnMapClickListener() {
         googleMap.setOnMapClickListener(null)
     }
 
-    fun updateCameraForCurrentRoute() {
-        currentRoute?.let {
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(buildBoundaryForRoute(it), 100))
+    private fun updateCameraForCurrentRoute(routeSummary: RouteProvider.RouteSummary?) {
+        routeSummary?.let {
+            googleMap.animateCamera(
+                CameraUpdateFactory.newLatLngBounds(
+                    buildBoundaryForRoute(it),
+                    100
+                )
+            )
         }
     }
 
@@ -111,25 +117,5 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
             .addOrigin(from)
             .addDestination(to)
             .build()
-    }
-
-    private fun updateMarkerByClick(
-        marker: Marker,
-        icon: Int,
-        callback: ((Marker?) -> Unit)? = null
-    ) {
-        marker.remove()
-        createMarkerByClick(marker.tag, icon, callback)
-    }
-
-    private fun createMarkerByClick(
-        tag: Any?,
-        icon: Int,
-        callback: ((Marker?) -> Unit)? = null
-    ) {
-        googleMap.setOnMapClickListener { latLng ->
-            val marker = createMarker(latLng, tag, icon)
-            callback?.invoke(marker)
-        }
     }
 }

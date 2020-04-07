@@ -1,4 +1,4 @@
-package ua.com.cuteteam.cutetaxiproject
+package ua.com.cuteteam.cutetaxiproject.providers
 
 import android.content.Context
 import android.location.Location
