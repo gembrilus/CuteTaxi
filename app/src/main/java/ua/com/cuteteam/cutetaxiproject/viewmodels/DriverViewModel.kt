@@ -130,7 +130,7 @@ class DriverViewModel(
             mOrder = repo.dao.getOrder(orderId)?.apply {
                 if (orderStatus == OrderStatus.NEW) {
                     orderStatus = OrderStatus.ACCEPTED
-                    driverId = FirebaseAuth.getInstance().currentUser?.uid
+                    driverId = getSignInUser()?.uid
                     arrivingTime = arrivalTime(this)
                     carInfo = with(repo.spHelper) {
                         repo.appContext.getString(
@@ -183,7 +183,7 @@ class DriverViewModel(
 
     private fun calculateTripRating() = viewModelScope.launch {
 
-        val driver = FirebaseAuth.getInstance().currentUser?.uid?.let { repo.dao.getUser(it) }
+        val driver = getSignInUser()?.uid?.let { repo.dao.getUser(it) }
         val rating = mOrder?.driverRate
         val currentRating = driver?.rate ?: 0.0
         val currentCountOfTrips = driver?.tripsCount ?: 0
