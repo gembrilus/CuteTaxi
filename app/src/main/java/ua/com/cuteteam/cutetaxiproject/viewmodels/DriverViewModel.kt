@@ -61,7 +61,9 @@ class DriverViewModel(
     val activeOrder: LiveData<Order> get() = _activeOrder
 
     private val _orders = MutableLiveData<List<Order>>()
-    val orders = MediatorLiveData<List<Order>>()
+    val orders = MediatorLiveData<List<Order>>().apply {
+        value = emptyList()
+    }
 
     val countOfOrders = Transformations.map(orders) {
         it?.size
