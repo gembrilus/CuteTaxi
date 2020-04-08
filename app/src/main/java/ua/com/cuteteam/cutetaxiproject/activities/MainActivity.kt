@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
             override fun run() {
                 GlobalScope.launch(Dispatchers.Main) {
                     if (authViewModel.verifyCurrentUser()) {
-                        updateUserAndStartActivity(authViewModel.firebaseUser!!)
+                        authViewModel.firebaseUser?.let { updateUserAndStartActivity(it) }
                     }
                     else startAuthorization()
                 }
@@ -55,10 +55,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun startAuthorization() {
         val intent = Intent(this, AuthActivity::class.java)
-        startActivityForResult(intent, AUTH_REQUEST_CODE)
+        startActivity(intent)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+/*    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode != AUTH_REQUEST_CODE && resultCode != AUTH_RESULT_CODE) return
 
@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         GlobalScope.launch(Dispatchers.Main) {
             updateUserAndStartActivity(user)
         }
-    }
+    }*/
 
     private suspend fun updateUserAndStartActivity(firebaseUser: FirebaseUser) {
         startUpViewModel.updateOrCreateUser(firebaseUser)

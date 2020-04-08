@@ -56,8 +56,9 @@ class AuthActivity : AppCompatActivity() {
 
     private fun returnToStartUpActivity() {
         val intent = Intent(this, MainActivity::class.java)
-        intent.putExtra("user", authViewModel.firebaseUser)
-        setResult(2, intent)
+        startActivity(intent)
+/*        intent.putExtra("user", authViewModel.firebaseUser)
+        setResult(2, intent)*/
         finish()
     }
 
