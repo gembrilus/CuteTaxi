@@ -1,4 +1,3 @@
-
 package ua.com.cuteteam.cutetaxiproject.viewmodels
 
 import androidx.lifecycle.LiveData
@@ -22,6 +21,10 @@ import ua.com.cuteteam.cutetaxiproject.livedata.ViewAction
 import ua.com.cuteteam.cutetaxiproject.providers.LocationProvider
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 import java.util.*
+import kotlin.collections.mutableMapOf
+import kotlin.collections.plus
+import kotlin.collections.set
+import kotlin.collections.toMutableMap
 
 abstract class BaseViewModel(
     private val repository: Repository
@@ -113,7 +116,6 @@ abstract class BaseViewModel(
     }
 
 
-
     var shouldShowPermissionPermanentlyDeniedDialog = true
 
     val mapAction = SingleLiveEvent<MapAction>()
@@ -148,7 +150,6 @@ abstract class BaseViewModel(
 
     private var _isChecked = false
     val isChecked get() = _isChecked
-
     private val roleObserver = Observer<Boolean> {
         _isChecked = it
         repository.spHelper.role = it
@@ -156,6 +157,13 @@ abstract class BaseViewModel(
 
     private val role = MutableLiveData(repository.spHelper.role).apply {
         observeForever(roleObserver)
+    }
+
+
+    private val _isMainMenu = MutableLiveData<Boolean>()
+    val isMainMenu: LiveData<Boolean> get() = _isMainMenu
+    fun rememberMenu(isMainMenu: Boolean) {
+        _isMainMenu.value = isMainMenu
     }
 
     override fun onCleared() {
