@@ -61,7 +61,6 @@ class DriverMapFragment : Fragment() {
             }
             OrderStatus.STARTED -> changeButtons()
             else -> hideUI()
-
         }
     }
 
@@ -84,8 +83,10 @@ class DriverMapFragment : Fragment() {
 
         model.countOfOrders.observe(requireActivity(), Observer { count ->
             with(view.cart_badge) {
-                visibility = if (count != 0) View.VISIBLE else View.GONE
-                text = count.toString()
+                if (view.btn_order_accept.visibility == View.GONE) {
+                    visibility = if (count != 0) View.VISIBLE else View.GONE
+                    text = count.toString()
+                }
             }
         })
     }
@@ -97,8 +98,8 @@ class DriverMapFragment : Fragment() {
 
     private fun hideUI() {
         view?.btn_order_accept?.visibility = View.GONE
-        view?.info_boxes?.order_info_price?.visibility = View.GONE
-        view?.info_boxes?.order_info_distance?.visibility = View.GONE
+        view?.info_boxes?.order_info_price?.visibility = View.INVISIBLE
+        view?.info_boxes?.order_info_distance?.visibility = View.INVISIBLE
         view?.bottom_sheet?.visibility = View.GONE
     }
 
