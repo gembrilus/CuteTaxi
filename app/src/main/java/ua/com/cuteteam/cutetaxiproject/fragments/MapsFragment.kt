@@ -108,7 +108,7 @@ abstract class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
                     is MapAction.RemoveOnMapClickListener -> googleMapsHelper.removeOnMapClickListener()
                     is MapAction.BuildRoute -> GlobalScope.launch (Dispatchers.Main) {
                         viewModel.polylineOptions = googleMapsHelper.buildRoute(
-                            googleMapsHelper.routeSummary(mapAction.from, mapAction.to)
+                            googleMapsHelper.routeSummary(mapAction.from, mapAction.to, mapAction.wayPoints)
                         )
                     }
                     is MapAction.MoveCamera -> GlobalScope.launch(Dispatchers.Main) {

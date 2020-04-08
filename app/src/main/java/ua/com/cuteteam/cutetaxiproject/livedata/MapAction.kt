@@ -11,6 +11,6 @@ sealed class MapAction {
     class AddOnMapClickListener(val callback: ((LatLng) -> Unit)) : MapAction()
     object RemoveOnMapClickListener : MapAction()
     class MoveCamera(val latLng: LatLng) : MapAction()
-    class BuildRoute(val from: LatLng, val to: LatLng): MapAction()
+    class BuildRoute(val from: LatLng, val to: LatLng, val wayPoints: List<LatLng> = emptyList()): MapAction()
     object UpdateCameraForRoute : MapAction()
 }

@@ -58,8 +58,12 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
         }
     }
 
-    suspend fun routeSummary(from: LatLng, to: LatLng): RouteProvider.RouteSummary {
-        val routeProvider = buildRouteProvider(from, to)
+    suspend fun routeSummary(
+        from: LatLng,
+        to: LatLng,
+        wayPoints: List<LatLng>
+    ): RouteProvider.RouteSummary {
+        val routeProvider = buildRouteProvider(from, to, wayPoints)
         return withContext(Dispatchers.Main) { return@withContext routeProvider.routes()[0] }
     }
 
@@ -109,8 +113,13 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
             .build()
     }
 
-    private fun buildRouteProvider(from: LatLng, to: LatLng): RouteProvider {
-        return RouteProvider.Builder()
+    private fun buildRouteProvider(from: LatLng, to: LatLng, wayPoints: List<LatLng>)
+            : RouteProvider {
+        val routeProviderBuilder = RouteProvider.Builder()
+        wayPoints.forEach {
+            routeProviderBuilder.addWayPoint(it)
+        }
+        return routeProviderBuilder
             .addOrigin(from)
             .addDestination(to)
             .build()

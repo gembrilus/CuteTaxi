@@ -19,6 +19,7 @@ import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.extentions.distanceTo
 import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
 import ua.com.cuteteam.cutetaxiproject.livedata.LocationLiveData
+import ua.com.cuteteam.cutetaxiproject.livedata.MapAction
 import ua.com.cuteteam.cutetaxiproject.repositories.DriverRepository
 
 class DriverViewModel(
@@ -31,6 +32,10 @@ class DriverViewModel(
     }
 
     var mapOfVisibility: Map<View, Int>? = null
+
+    fun buildRoute(from: LatLng, to: LatLng, wayPoints: List<LatLng>) {
+        mapAction.value = MapAction.BuildRoute(from, to, wayPoints)
+    }
 
     private val orderListener by lazy {
         object : ValueEventListener {
@@ -199,6 +204,4 @@ class DriverViewModel(
         currentLocation.removeObserver(locationObserver)
         repo.dao.removeAllListeners()
     }
-
-
 }
