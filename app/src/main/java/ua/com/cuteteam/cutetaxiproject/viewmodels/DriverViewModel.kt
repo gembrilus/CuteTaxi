@@ -109,7 +109,7 @@ class DriverViewModel(
         if (repo.netHelper.hasInternet) {
             mOrder = repo.dao.getOrder(orderId)?.apply {
                 if (orderStatus == OrderStatus.NEW) {
-                    orderStatus = OrderStatus.ACTIVE
+                    orderStatus = OrderStatus.ACCEPTED
                     driverId = FirebaseAuth.getInstance().currentUser?.uid
                     arrivingTime = arrivalTime(this)
                     carInfo = with(repo.spHelper) {
@@ -155,7 +155,7 @@ class DriverViewModel(
         mOrder = null
     }
 
-    private fun updateOrder(field: String, value: Any) {
+    fun updateOrder(field: String, value: Any) {
         mOrder?.orderId?.let {
             repo.dao.updateOrder(it, field, value)
         }
