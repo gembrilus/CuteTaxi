@@ -38,8 +38,7 @@ import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
 
 abstract class BaseActivity :
     AppCompatActivity(),
-    SharedPreferences.OnSharedPreferenceChangeListener
-{
+    SharedPreferences.OnSharedPreferenceChangeListener {
 
     protected abstract val menuResId: Int
     protected abstract val layoutResId: Int
@@ -49,17 +48,18 @@ abstract class BaseActivity :
     protected abstract fun onNetworkAvailable()
     protected abstract fun onNetworkLost()
 
-    protected val permissionProvider get() = PermissionProvider(this).apply {
-        onDenied = { permission, isPermanentlyDenied ->
-            if (isPermanentlyDenied && model.shouldShowPermissionPermanentlyDeniedDialog) {
-                InfoDialog.show(
-                    supportFragmentManager,
-                    permission.requiredPermissionDialogTitle,
-                    permission.requiredPermissionDialogMessage
-                ) { model.shouldShowPermissionPermanentlyDeniedDialog = false }
+    protected val permissionProvider
+        get() = PermissionProvider(this).apply {
+            onDenied = { permission, isPermanentlyDenied ->
+                if (isPermanentlyDenied && model.shouldShowPermissionPermanentlyDeniedDialog) {
+                    InfoDialog.show(
+                        supportFragmentManager,
+                        permission.requiredPermissionDialogTitle,
+                        permission.requiredPermissionDialogMessage
+                    ) { model.shouldShowPermissionPermanentlyDeniedDialog = false }
+                }
             }
         }
-    }
 
     protected lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -73,12 +73,9 @@ abstract class BaseActivity :
 
     private val onNavigationListener = NavigationView.OnNavigationItemSelectedListener { item ->
         item.isChecked = true
-        when(item.itemId){
-            R.id.settings -> inflateSettingsSubMenu()
-            R.id.backToHome -> {
-                inflateMainMenu()
-                navController.navigateUp()
-            }
+        when (item.itemId) {
+            R.id.settings -> model.rememberMenu(false)
+            R.id.backToHome -> model.rememberMenu(true).run { navController.navigateUp() }
             R.id.sign_out -> {
                 model.signOut()
                 startActivity(Intent(this, MainActivity::class.java))
@@ -144,22 +141,23 @@ abstract class BaseActivity :
             DbEntries.Car.CAR_CLASS to "${DbEntries.Drivers.Fields.CAR}/${DbEntries.Car.CAR_CLASS}"
         )
         paths[key]?.let {
-            val value = when(key){
+            val value = when (key) {
                 DbEntries.Passengers.Fields.COMFORT_LEVEL,
-                DbEntries.Car.CAR_CLASS -> sharedPreferences?.getString(key, null)?.toInt()?.let { ordinal ->
-                    ComfortLevel.values()[ordinal].name
-                }
+                DbEntries.Car.CAR_CLASS -> sharedPreferences?.getString(key, null)?.toInt()
+                    ?.let { ordinal ->
+                        ComfortLevel.values()[ordinal].name
+                    }
                 else -> sharedPreferences?.getString(key, null)
             }
 
             if (model.isChecked) {
                 DriverDao().writeField(it, value)
             } else {
-                PassengerDao().writeField(it,value)
+                PassengerDao().writeField(it, value)
             }
         }
 
-        when(key){
+        when (key) {
             getString(R.string.key_user_name_preference) -> {
                 val name = sharedPreferences?.getString(key, null)
                 header.tv_nav_header_name.text = name
@@ -168,15 +166,16 @@ abstract class BaseActivity :
                 val phone = sharedPreferences?.getString(key, null)
                 header.tv_nav_header_phone.text = phone
             }
-            getString(R.string.key_app_theme_preference) -> recreate()
+            getString(R.string.key_app_theme_preference) -> {
+                model.rememberMenu(false)
+                recreate()
+            }
         }
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
-        if (navigationView.menu.findItem(R.menu.main_menu) == null){
-            inflateMainMenu()
-        }
+        model.rememberMenu(navigationView.menu.findItem(R.id.home) == null)
     }
 
     private fun initNavigation() {
@@ -211,22 +210,31 @@ abstract class BaseActivity :
         }
     }
 
-    private fun setObservers(){
+    private fun setObservers() {
+
+        model.isMainMenu.observe(this, Observer {
+            when (it) {
+                true -> inflateMainMenu()
+                false -> inflateSettingsSubMenu()
+            }
+        })
+
         permissionProvider.withPermission(AccessFineLocationPermission()) {
-                if (!model.isGPSEnabled) {
-                    InfoDialog.show(
-                        supportFragmentManager,
-                        getString(R.string.enable_gps_recommended_dialog_title),
-                        getString(R.string.enable_gps_recommended_dialog_message)
-                    )
-                }
+            if (!model.isGPSEnabled) {
+                InfoDialog.show(
+                    supportFragmentManager,
+                    getString(R.string.enable_gps_recommended_dialog_title),
+                    getString(R.string.enable_gps_recommended_dialog_message)
+                )
+            }
         }
 
         model.netStatus.observe(this, Observer {
-            when(it){
+            when (it) {
                 NetStatus.AVAILABLE -> onNetworkAvailable()
                 NetStatus.LOST, NetStatus.UNAVAILABLE -> onNetworkLost()
-                else -> {}
+                else -> {
+                }
             }
         })
 
@@ -250,23 +258,23 @@ abstract class BaseActivity :
         }
     }
 
-    private fun inflateMainMenu(){
+    private fun inflateMainMenu() {
         navigationView.menu.clear()
         navigationView.inflateMenu(R.menu.main_menu)
     }
 
-    private fun inflateSettingsSubMenu(){
+    private fun inflateSettingsSubMenu() {
         navigationView.menu.clear()
         navigationView.inflateMenu(menuResId)
     }
 
-    private fun stopService(){
+    private fun stopService() {
         stopService(Intent(this, PassengerService::class.java))
         stopService(Intent(this, DriverService::class.java))
     }
 
-    private fun startService(){
-        if (model.shouldStartService && model.getSignInUser() != null){
+    private fun startService() {
+        if (model.shouldStartService && model.getSignInUser() != null) {
             val orderId = model.activeOrderId.value
             startService(Intent(this, service).apply {
                 putExtra(ORDER_ID_NAME, orderId)
