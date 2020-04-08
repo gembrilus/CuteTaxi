@@ -48,7 +48,7 @@ class PassengerService : BaseService() {
 
     private fun processOrder(order: Order) {
 
-        if (order.orderStatus == OrderStatus.ACTIVE && !isAlreadyWillShownNotification) {
+        if (order.orderStatus == OrderStatus.ACCEPTED && !isAlreadyWillShownNotification) {
             notifyThatOrderWasAccepted(order)
             isAlreadyWillShownNotification = true
         }
