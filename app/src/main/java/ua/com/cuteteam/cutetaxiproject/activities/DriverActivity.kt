@@ -44,6 +44,7 @@ class DriverActivity : BaseActivity(), OrdersAdapter.OnOrderAccept {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         model.openHomeOrOrders.observe(this, Observer{
             if (!it) {
                 navController.navigate(R.id.action_home_to_new_orders)

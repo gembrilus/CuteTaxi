@@ -58,7 +58,8 @@ class DriverViewModel(
     private val countObserver by lazy {
         object : Observer<Int?> {
             override fun onChanged(count: Int?) {
-                _openHomeOrOrders.value = (count == null || count == 0)
+                count ?: return
+                _openHomeOrOrders.value = (count == 0)
                 countOfOrders.removeObserver(this)
             }
         }
@@ -72,12 +73,24 @@ class DriverViewModel(
 
     private val _orders = MutableLiveData<List<Order>>()
     val orders = MediatorLiveData<List<Order>>().apply {
-        value = emptyList()
+        addSource(_orders) { list ->
+            value = list?.filter { it.comfortLevel == repo.spHelper.carClass }
+        }
+        addSource(LocationLiveData()) { loc ->
+            value = value?.map {
+                it.apply {
+                    driverLocation = Coordinates(loc.latitude, loc.longitude)
+                }
+            }
+        }
     }
 
-    val countOfOrders = Transformations.map(orders) {
-        it?.size
+    private val _countOfOrders = MediatorLiveData<Int?>().apply {
+        addSource(orders) { list ->
+            value = list?.size
+        }
     }
+    val countOfOrders: LiveData<Int?> get() = _countOfOrders
 
     fun updateOrders() {
         _orders.value = _orders.value
@@ -103,16 +116,6 @@ class DriverViewModel(
                                 Coordinates(currentLocation?.latitude, currentLocation?.longitude)
                         }
                     }
-            }
-            orders.addSource(_orders) { list ->
-                orders.value = list?.filter { it.comfortLevel == repo.spHelper.carClass }
-            }
-            orders.addSource(LocationLiveData()) { loc ->
-                orders.value = orders.value?.map {
-                    it.apply {
-                        driverLocation = Coordinates(loc.latitude, loc.longitude)
-                    }
-                }
             }
         }
     }
