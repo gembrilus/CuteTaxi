@@ -50,8 +50,9 @@ class OrderStatusFragment : Fragment(),
 
             when (it?.orderStatus) {
                 OrderStatus.NEW -> showWaitMessage()
-                OrderStatus.ACTIVE -> showDriverMessage(it)
-                OrderStatus.FINISHED -> rateTrip()
+                OrderStatus.ACCEPTED -> showDriverMessage(it)
+                OrderStatus.STARTED -> showTripMessage(it)
+                OrderStatus.FINISHED -> rateTrip(it)
             }
         })
     }
@@ -66,8 +67,9 @@ class OrderStatusFragment : Fragment(),
         super.onPause()
     }
 
-    private fun rateTrip() {
-
+    private fun showWaitMessage() {
+        tv_order_info.text = getString(R.string.wait_for_driver_message)
+        tv_arriving_time.text = ""
     }
 
     private fun showDriverMessage(order: Order) {
@@ -75,9 +77,12 @@ class OrderStatusFragment : Fragment(),
         tv_arriving_time.text = getString(R.string.time_in_minutes, order.arrivingTime)
     }
 
-    private fun showWaitMessage() {
-        tv_order_info.text = getString(R.string.wait_for_driver_message)
-        tv_arriving_time.text = ""
+    private fun showTripMessage(order: Order) {
+
+    }
+
+    private fun rateTrip(order: Order) {
+
     }
 
     override fun setOnChildDrawnListener(callback: OnChildDrawnListener) {
