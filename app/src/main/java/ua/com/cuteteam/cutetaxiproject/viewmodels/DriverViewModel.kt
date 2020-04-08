@@ -10,18 +10,16 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ua.com.cuteteam.cutetaxiproject.livedata.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.common.arrivalTime
 import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
 import ua.com.cuteteam.cutetaxiproject.data.entities.Coordinates
-import ua.com.cuteteam.cutetaxiproject.data.entities.Driver
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.extentions.distanceTo
 import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
+import ua.com.cuteteam.cutetaxiproject.livedata.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.repositories.DriverRepository
-import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 
 class DriverViewModel(
     private val repo: DriverRepository
@@ -56,6 +54,18 @@ class DriverViewModel(
             )
         }
     }
+
+    private val countObserver by lazy {
+        object : Observer<Int?> {
+            override fun onChanged(count: Int?) {
+                _openHomeOrOrders.value = (count == null || count == 0)
+                countOfOrders.removeObserver(this)
+            }
+        }
+    }
+    private val _openHomeOrOrders = MutableLiveData<Boolean>()
+    val openHomeOrOrders: LiveData<Boolean> get() = _openHomeOrOrders
+    fun openHomeOrOrders() = countOfOrders.observeForever(countObserver)
 
     private val _activeOrder = MutableLiveData<Order>()
     val activeOrder: LiveData<Order> get() = _activeOrder
@@ -173,7 +183,7 @@ class DriverViewModel(
         val newCountOfTrips = currentCountOfTrips + 1
         val newRating = rating?.let { (currentCountOfTrips * currentRating + it) / newCountOfTrips }
 
-        driver?.let {user ->
+        driver?.let { user ->
             user.tripsCount = newCountOfTrips
             newRating?.let { user.rate = it }
             repo.dao.writeUser(user)
@@ -186,5 +196,6 @@ class DriverViewModel(
         currentLocation.removeObserver(locationObserver)
         repo.dao.removeAllListeners()
     }
+
 
 }
