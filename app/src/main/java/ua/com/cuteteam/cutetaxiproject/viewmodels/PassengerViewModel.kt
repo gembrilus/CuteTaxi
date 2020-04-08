@@ -3,10 +3,12 @@ package ua.com.cuteteam.cutetaxiproject.viewmodels
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.data.MarkerData
 import ua.com.cuteteam.cutetaxiproject.data.entities.Address
 import ua.com.cuteteam.cutetaxiproject.data.entities.Coordinates
@@ -20,16 +22,22 @@ import java.io.IOException
 
 class PassengerViewModel(private val repository: PassengerRepository) : BaseViewModel(repository) {
 
-    fun createOrUpdateMarkerByClick(
-        tag: String,
-        icon: Int,
-        callback: ((Pair<String, MarkerData>) -> Unit)? = null
-    ) {
-        mapAction.value = MapAction.CreateMarkerByClick(tag, icon, callback)
+    fun nextMarker(latLng: LatLng): Pair<String, MarkerData> {
+        return if ( findMarkerDataByTag("A") == null )
+            "A" to MarkerData(latLng, R.drawable.marker_a_icon)
+        else "B" to MarkerData(latLng, R.drawable.marker_b_icon)
     }
 
-    fun stopMarkerUpdate() {
-        mapAction.value = MapAction.StopMarkerUpdate()
+    fun createMarker(pair: Pair<String, MarkerData>) {
+        mapAction.value = MapAction.CreateMarker(pair)
+    }
+
+    fun addOnMapClickListener(callback: ((LatLng) -> Unit)) {
+        mapAction.value = MapAction.AddOnMapClickListener(callback)
+    }
+
+    fun removeOnMapClickListener() {
+        mapAction.value = MapAction.RemoveOnMapClickListener
     }
 
     val activeOrder: MutableLiveData<Order?>
@@ -51,7 +59,8 @@ class PassengerViewModel(private val repository: PassengerRepository) : BaseView
         if (coordinates != null) {
 
             val address =
-                repository.geocoder.build().requestNameByCoordinates(coordinates.toLatLng).toAddress()
+                repository.geocoder.build().requestNameByCoordinates(coordinates.toLatLng)
+                    .toAddress()
             newOrder.mutation {
                 it.value?.addressStart = address
             }
@@ -64,7 +73,8 @@ class PassengerViewModel(private val repository: PassengerRepository) : BaseView
 
         withContext(Dispatchers.IO) {
             try {
-                val geocodeResults = repository.geocoder.build().requestCoordinatesByName(value).results
+                val geocodeResults =
+                    repository.geocoder.build().requestCoordinatesByName(value).results
 
                 for (result in geocodeResults) {
                     list.add(

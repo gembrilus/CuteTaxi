@@ -40,24 +40,21 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17f), 1000, null)
     }
 
-    fun createMarker(markerData: MarkerData) {
-        googleMap.addMarker(
+    fun createMarker(markerData: MarkerData): Marker? {
+        return googleMap.addMarker(
             MarkerOptions()
                 .position(markerData.position)
                 .icon(BitmapDescriptorFactory.fromResource(markerData.icon))
         )
     }
 
-    fun createOrUpdateMarkerByClick(
-        tag: String,
-        icon: Int,
-        callback: ((Pair<String, MarkerData>) -> Unit)? = null
-    ) {
+    fun removeMarker(marker: Marker?) {
+        marker?.remove()
+    }
+
+    fun addOnMapClickListener(callback: ((LatLng) -> Unit)) {
         googleMap.setOnMapClickListener { latLng ->
-            MarkerData(latLng, icon).also {
-                createMarker(it)
-                callback?.invoke(tag to it)
-            }
+            callback.invoke(latLng)
         }
     }
 
@@ -97,7 +94,7 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
             googleMap.animateCamera(
                 CameraUpdateFactory.newLatLngBounds(
                     buildBoundaryForRoute(it),
-                    100
+                    50
                 )
             )
         }
