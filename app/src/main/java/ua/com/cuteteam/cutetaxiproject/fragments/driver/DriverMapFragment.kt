@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_map_driver.view.*
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.common.prepareDistance
+import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.dialogs.InfoDialog
@@ -49,21 +50,16 @@ class DriverMapFragment : Fragment() {
                 showRateDialog()
                 model.closeOrder()
             }
-            OrderStatus.ACTIVE -> {
+            OrderStatus.ACCEPTED -> {
                 showUI()
-                // TODO: Draw routes
-
                 view?.order_info_price?.text =
                     requireActivity().getString(R.string.currency_UAH, it.price.toString())
                 view?.order_info_distance?.text = prepareDistance(requireActivity(), it)
                 view?.origin_address?.text = it.addressStart?.address
                 view?.dest_address?.text = it.addressDestination?.address
                 view?.invalidate()
-
-                val startLocation = it.addressStart?.location?.toLatLng()
-                val endLocation = it.addressDestination?.location?.toLatLng()
-
             }
+            OrderStatus.STARTED -> changeButtons()
             else -> hideUI()
 
         }
@@ -82,6 +78,9 @@ class DriverMapFragment : Fragment() {
         view.btn_orders_list.setOnClickListener {
             findNavController().navigate(R.id.action_home_to_new_orders)
         }
+        view.btn_order_accept.setOnClickListener {
+            model.updateOrder(DbEntries.Orders.Fields.ORDER_STATUS, OrderStatus.STARTED)
+        }
 
         model.countOfOrders.observe(requireActivity(), Observer { count ->
             with(view.cart_badge) {
@@ -97,15 +96,25 @@ class DriverMapFragment : Fragment() {
     }
 
     private fun hideUI() {
-        view?.info_boxes?.order_info_price?.visibility = View.INVISIBLE
+        view?.btn_order_accept?.visibility = View.GONE
+        view?.info_boxes?.order_info_price?.visibility = View.GONE
         view?.info_boxes?.order_info_distance?.visibility = View.GONE
         view?.bottom_sheet?.visibility = View.GONE
     }
 
     private fun showUI() {
+        view?.btn_order_accept?.visibility = View.VISIBLE
+        view?.btn_orders_list?.visibility = View.GONE
+        view?.cart_badge?.visibility = View.GONE
         view?.info_boxes?.order_info_price?.visibility = View.VISIBLE
         view?.info_boxes?.order_info_distance?.visibility = View.VISIBLE
         view?.bottom_sheet?.visibility = View.VISIBLE
+    }
+
+    private fun changeButtons(){
+        view?.btn_order_accept?.visibility = View.GONE
+        view?.btn_orders_list?.visibility = View.VISIBLE
+        view?.cart_badge?.visibility = View.VISIBLE
     }
 
     private fun showCancelDialog() = activity?.supportFragmentManager?.let {
