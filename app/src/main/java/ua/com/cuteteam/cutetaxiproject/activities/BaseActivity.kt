@@ -30,7 +30,9 @@ import ua.com.cuteteam.cutetaxiproject.helpers.NotificationUtils
 import ua.com.cuteteam.cutetaxiproject.helpers.network.NetStatus
 import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission
 import ua.com.cuteteam.cutetaxiproject.permissions.PermissionProvider
+import ua.com.cuteteam.cutetaxiproject.services.DriverService
 import ua.com.cuteteam.cutetaxiproject.services.ORDER_ID_NAME
+import ua.com.cuteteam.cutetaxiproject.services.PassengerService
 import ua.com.cuteteam.cutetaxiproject.shPref.AppSettingsHelper
 import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
 
@@ -237,7 +239,6 @@ abstract class BaseActivity :
 
     private fun onRoleChanged(isDriver: Boolean) {
         model.changeRole(isDriver)
-        stopService()
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
@@ -260,7 +261,8 @@ abstract class BaseActivity :
     }
 
     private fun stopService(){
-        stopService(Intent(this, service))
+        stopService(Intent(this, PassengerService::class.java))
+        stopService(Intent(this, DriverService::class.java))
     }
 
     private fun startService(){
