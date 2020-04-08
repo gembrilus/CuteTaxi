@@ -59,6 +59,7 @@ class DriverActivity : BaseActivity(), OrdersAdapter.OnOrderAccept {
         info_boxes?.visibility = View.GONE
         bottom_sheet?.visibility = View.GONE
         btn_orders_list?.visibility = View.GONE
+        btn_order_accept?.visibility = View.GONE
         cart_badge?.visibility = View.GONE
 
         container?.let {
@@ -71,6 +72,7 @@ class DriverActivity : BaseActivity(), OrdersAdapter.OnOrderAccept {
             info_boxes to info_boxes.visibility,
             bottom_sheet to bottom_sheet.visibility,
             btn_orders_list to btn_orders_list.visibility,
+            btn_order_accept to btn_order_accept.visibility,
             cart_badge to cart_badge.visibility
         )
         model.mapOfVisibility = map
@@ -81,6 +83,7 @@ class DriverActivity : BaseActivity(), OrdersAdapter.OnOrderAccept {
         info_boxes?.visibility = map.getValue(info_boxes)
         bottom_sheet?.visibility = map.getValue(bottom_sheet)
         btn_orders_list?.visibility = map.getValue(btn_orders_list)
+        btn_order_accept?.visibility = map.getValue(btn_order_accept)
         cart_badge?.visibility = map.getValue(cart_badge)
     }
 
