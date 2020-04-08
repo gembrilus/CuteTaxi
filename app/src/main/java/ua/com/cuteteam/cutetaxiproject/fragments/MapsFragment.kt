@@ -77,26 +77,33 @@ abstract class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
 
             initMap(googleMapsHelper)
 
-            viewModel.markers.observe(this@MapsFragment, Observer {
-                googleMapsHelper.updateMarkers(viewModel.markers.value?.values)
+            viewModel.markersData.observe(this@MapsFragment, Observer {
+                googleMapsHelper.updateMarkers(viewModel.markersData.value?.values)
             })
 
             viewModel.mapAction.observe(this@MapsFragment, Observer { mapAction ->
                 when (mapAction) {
                     is MapAction.UpdateMapObjects -> {
-                        googleMapsHelper.updateMarkers(viewModel.markers.value?.values)
+                        googleMapsHelper.updateMarkers(viewModel.markersData.value?.values)
                         if (viewModel.polylineOptions != null)
                             googleMapsHelper.addPolyline(viewModel.polylineOptions!!)
                     }
                     is MapAction.CreateMarkerByCoordinates -> viewModel
-                        .setMarkers(mapAction.tag to mapAction.markerData)
+                        .setMarkersData(mapAction.tag to mapAction.markerData)
 
-                    is MapAction.CreateMarkerByClick -> googleMapsHelper.createOrUpdateMarkerByClick(
-                        mapAction.tag,
-                        mapAction.icon,
+                    is MapAction.CreateMarker -> {
+                        val marker = googleMapsHelper.createMarker(mapAction.pair.second)
+                        viewModel.setMarkers(mapAction.pair.first to marker)
+                        viewModel.setMarkersData(mapAction.pair)
+                    }
+
+                    is MapAction.RemoveMarker -> googleMapsHelper
+                        .removeMarker(viewModel.findMarkerByTag(mapAction.tag))
+
+                    is MapAction.AddOnMapClickListener -> googleMapsHelper.addOnMapClickListener(
                         mapAction.callback
                     )
-                    is MapAction.StopMarkerUpdate -> googleMapsHelper.removeOnMapClickListener()
+                    is MapAction.RemoveOnMapClickListener -> googleMapsHelper.removeOnMapClickListener()
                     is MapAction.BuildRoute -> GlobalScope.launch (Dispatchers.Main) {
                         viewModel.polylineOptions = googleMapsHelper.buildRoute(
                             googleMapsHelper.routeSummary(mapAction.from, mapAction.to)

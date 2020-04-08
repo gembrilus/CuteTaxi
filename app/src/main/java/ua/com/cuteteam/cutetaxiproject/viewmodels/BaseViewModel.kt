@@ -7,6 +7,7 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.PolylineOptions
 import ua.com.cuteteam.cutetaxiproject.api.RouteProvider
 import ua.com.cuteteam.cutetaxiproject.api.geocoding.GeocodeRequest
@@ -34,18 +35,47 @@ abstract class BaseViewModel(
     val locationProvider: LocationProvider
         get() = repository.locationProvider
 
-    val markers = MutableLiveData(mutableMapOf<String, MarkerData>())
+    val markersData = MutableLiveData(mutableMapOf<String, MarkerData>())
+
+    private val markers = mutableMapOf<String, Marker?>()
+
+    fun setMarkers(pair: Pair<String, Marker?>) {
+        markers[pair.first] = pair.second
+    }
+
+    fun findMarkerByTag(tag: String): Marker? {
+        return markers.findBy { it.key == tag }?.value
+    }
+
+    fun updateMapObjects() {
+        mapAction.value = MapAction.UpdateMapObjects
+    }
+
+    fun moveCamera(latLng: LatLng) {
+        mapAction.value = MapAction.MoveCamera(latLng)
+    }
+
+    fun buildRoute() {
+        val from = findMarkerDataByTag("A")?.position
+        val to = findMarkerDataByTag("B")?.position
+        if (from == null || to == null) return
+        mapAction.value = MapAction.BuildRoute(from, to)
+    }
+
+    fun updateCameraForRoute() {
+        mapAction.value = MapAction.UpdateCameraForRoute
+    }
 
     suspend fun currentCameraPosition(): CameraPosition {
         return cameraPosition ?: countryCameraPosition()
     }
 
-    fun setMarkers(pair: Pair<String, MarkerData>) {
-        markers.value = markers.value?.plus(pair)?.toMutableMap()
+    fun setMarkersData(pair: Pair<String, MarkerData>) {
+        markersData.value = markersData.value?.plus(pair)?.toMutableMap()
     }
 
-    fun findMarkerByTag(tag: String): MarkerData? {
-        return markers.value?.findBy { it.key == tag }?.value
+    fun findMarkerDataByTag(tag: String): MarkerData? {
+        return markersData.value?.findBy { it.key == tag }?.value
     }
 
     private suspend fun countryCameraPosition(): CameraPosition {
@@ -76,24 +106,7 @@ abstract class BaseViewModel(
         return true
     }
 
-    fun updateMapObjects() {
-        mapAction.value = MapAction.UpdateMapObjects()
-    }
 
-    fun moveCamera(latLng: LatLng) {
-        mapAction.value = MapAction.MoveCamera(latLng)
-    }
-
-    fun buildRoute() {
-        val from = findMarkerByTag("A")?.position
-        val to = findMarkerByTag("B")?.position
-        if (from == null || to == null) return
-        mapAction.value = MapAction.BuildRoute(from, to)
-    }
-
-    fun updateCameraForRoute() {
-        mapAction.value = MapAction.UpdateCameraForRoute()
-    }
 
     var shouldShowPermissionPermanentlyDeniedDialog = true
 

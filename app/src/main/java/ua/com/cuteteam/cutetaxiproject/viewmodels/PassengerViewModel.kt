@@ -3,10 +3,13 @@ package ua.com.cuteteam.cutetaxiproject.viewmodels
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.data.MarkerData
 import ua.com.cuteteam.cutetaxiproject.data.entities.Address
 import ua.com.cuteteam.cutetaxiproject.data.entities.Coordinates
@@ -20,16 +23,26 @@ import java.io.IOException
 
 class PassengerViewModel(private val repository: PassengerRepository) : BaseViewModel(repository) {
 
-    fun createOrUpdateMarkerByClick(
-        tag: String,
-        icon: Int,
-        callback: ((Pair<String, MarkerData>) -> Unit)? = null
-    ) {
-        mapAction.value = MapAction.CreateMarkerByClick(tag, icon, callback)
+    fun nextMarker(latLng: LatLng): Pair<String, MarkerData> {
+        return if ( markersData.value?.isEmpty() == true )
+            "A" to MarkerData(latLng, R.drawable.marker_a_icon)
+        else "B" to MarkerData(latLng, R.drawable.marker_b_icon)
     }
 
-    fun stopMarkerUpdate() {
-        mapAction.value = MapAction.StopMarkerUpdate()
+    fun createMarker(pair: Pair<String, MarkerData>) {
+        mapAction.value = MapAction.CreateMarker(pair)
+    }
+
+    fun addOnMapClickListener(callback: ((LatLng) -> Unit)) {
+        mapAction.value = MapAction.AddOnMapClickListener( callback)
+    }
+
+    fun removeOnMapClickListener() {
+        mapAction.value = MapAction.RemoveOnMapClickListener
+    }
+
+    fun removeMarker(tag: String) {
+        mapAction.value = MapAction.RemoveMarker(tag)
     }
 
     private var dialogShowed = false
@@ -45,12 +58,6 @@ class PassengerViewModel(private val repository: PassengerRepository) : BaseView
 
     val observableLocation: LocationLiveData
         get() = repository.observableLocation
-
-/*    private fun Order.isReady(): Boolean {
-        return (this.passengerId != null &&
-                this.addressStart?.location != null &&
-                this.addressDestination?.location != null)
-    }*/
 
     fun fetchCurrentAddress() = viewModelScope.launch {
 

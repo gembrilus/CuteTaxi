@@ -35,10 +35,14 @@ class PassengerMapsFragment : MapsFragment() {
     override fun initMap(googleMapsHelper: GoogleMapsHelper) {
         permissionProvider?.withPermission(AccessFineLocationPermission()) {
             GlobalScope.launch(Dispatchers.Main) {
+                viewModel.addOnMapClickListener {
+                    val markerData = viewModel.nextMarker(it)
+                    viewModel.createMarker(markerData)
+                }
                 val location = viewModel.locationProvider.getLocation()?.toLatLng ?: return@launch
 
-                if (viewModel.markers.value?.isEmpty() == true) {
-                    viewModel.setMarkers("A" to MarkerData(location, R.drawable.marker_a_icon))
+                if (viewModel.markersData.value?.isEmpty() == true) {
+                    viewModel.setMarkersData("A" to MarkerData(location, R.drawable.marker_a_icon))
                 } else viewModel.updateMapObjects()
             }
         }
