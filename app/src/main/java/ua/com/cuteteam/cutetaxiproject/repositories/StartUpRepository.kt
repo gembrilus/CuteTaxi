@@ -21,14 +21,14 @@ class StartUpRepository(context: Context = AppClass.appContext()) {
         get() = appSettingsHelper.role
 
     suspend fun updateOrCreateUser(firebaseUser: FirebaseUser) {
+        val name = appSettingsHelper.name
         if (appSettingsHelper.role) {
             updateOrCreateUser(firebaseUser, driverDAO) {
-                Driver(firebaseUser.displayName, firebaseUser.phoneNumber)
+                Driver(name, firebaseUser.phoneNumber)
             }
         } else {
-            
             updateOrCreateUser(firebaseUser, passengerDAO) {
-                Passenger(firebaseUser.displayName, firebaseUser.phoneNumber)
+                Passenger(name, firebaseUser.phoneNumber)
             }
         }
     }

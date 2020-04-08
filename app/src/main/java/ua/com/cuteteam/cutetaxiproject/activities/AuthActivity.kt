@@ -1,15 +1,15 @@
 package ua.com.cuteteam.cutetaxiproject.activities
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.fragments.PhoneNumberFragment
 import ua.com.cuteteam.cutetaxiproject.fragments.VerificationCodeFragment
 import ua.com.cuteteam.cutetaxiproject.viewmodels.AuthViewModel
-import ua.com.cuteteam.cutetaxiproject.viewmodels.AuthViewModel.*
+import ua.com.cuteteam.cutetaxiproject.viewmodels.AuthViewModel.State
 import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.AuthViewModelFactory
 
 class AuthActivity : AppCompatActivity() {
@@ -57,8 +57,6 @@ class AuthActivity : AppCompatActivity() {
     private fun returnToStartUpActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
-/*        intent.putExtra("user", authViewModel.firebaseUser)
-        setResult(2, intent)*/
         finish()
     }
 

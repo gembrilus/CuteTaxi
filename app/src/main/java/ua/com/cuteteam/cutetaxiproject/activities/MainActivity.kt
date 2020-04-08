@@ -1,8 +1,8 @@
 package ua.com.cuteteam.cutetaxiproject.activities
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.Dispatchers
@@ -17,11 +17,6 @@ import ua.com.cuteteam.cutetaxiproject.viewmodels.viewmodelsfactories.StartUpVie
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
-
-    companion object {
-        private const val AUTH_REQUEST_CODE = 1
-        private const val AUTH_RESULT_CODE = 2
-    }
 
     private val authViewModel by lazy {
         ViewModelProvider(this, AuthViewModelFactory())
@@ -57,16 +52,6 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, AuthActivity::class.java)
         startActivity(intent)
     }
-
-/*    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode != AUTH_REQUEST_CODE && resultCode != AUTH_RESULT_CODE) return
-
-        val user = data?.extras?.get("user") as FirebaseUser
-        GlobalScope.launch(Dispatchers.Main) {
-            updateUserAndStartActivity(user)
-        }
-    }*/
 
     private suspend fun updateUserAndStartActivity(firebaseUser: FirebaseUser) {
         startUpViewModel.updateOrCreateUser(firebaseUser)

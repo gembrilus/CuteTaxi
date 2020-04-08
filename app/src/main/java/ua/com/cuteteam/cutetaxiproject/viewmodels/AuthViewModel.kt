@@ -16,15 +16,6 @@ class AuthViewModel: ViewModel(),
         private const val ERROR_INVALID_VERIFICATION_CODE = "ERROR_INVALID_VERIFICATION_CODE"
     }
 
-/*    init {
-        FirebaseAuth.getInstance().addAuthStateListener{
-            if (it.currentUser != null) {
-                Log.d(AuthViewModel::javaClass.name, "user is not null")
-                state.value = State.LOGGED_IN
-            }
-        }
-    }*/
-
     enum class State {
         ENTERING_PHONE_NUMBER,
         INVALID_PHONE_NUMBER,
@@ -41,7 +32,7 @@ class AuthViewModel: ViewModel(),
         .apply { authListener = this@AuthViewModel }
 
     private var _firebaseUser: FirebaseUser? = null
-    val firebaseUser get() = authProvider.user ?: _firebaseUser /*authProvider.user*/
+    val firebaseUser get() = authProvider.user ?: _firebaseUser
 
     var phoneNumber: String = ""
     var smsCode: String = ""
