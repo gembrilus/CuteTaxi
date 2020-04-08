@@ -94,7 +94,7 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
             googleMap.animateCamera(
                 CameraUpdateFactory.newLatLngBounds(
                     buildBoundaryForRoute(it),
-                    100
+                    50
                 )
             )
         }

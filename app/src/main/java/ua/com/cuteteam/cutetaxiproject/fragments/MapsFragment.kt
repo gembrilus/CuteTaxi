@@ -97,8 +97,10 @@ abstract class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
                         viewModel.setMarkersData(mapAction.pair)
                     }
 
-                    is MapAction.RemoveMarker -> googleMapsHelper
-                        .removeMarker(viewModel.findMarkerByTag(mapAction.tag))
+                    is MapAction.RemoveMarker -> {
+                        googleMapsHelper.removeMarker(viewModel.findMarkerByTag(mapAction.tag))
+                        viewModel.removeMarker(mapAction.tag)
+                    }
 
                     is MapAction.AddOnMapClickListener -> googleMapsHelper.addOnMapClickListener(
                         mapAction.callback

@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,7 +23,7 @@ import java.io.IOException
 class PassengerViewModel(private val repository: PassengerRepository) : BaseViewModel(repository) {
 
     fun nextMarker(latLng: LatLng): Pair<String, MarkerData> {
-        return if ( markersData.value?.isEmpty() == true )
+        return if ( findMarkerDataByTag("A") == null )
             "A" to MarkerData(latLng, R.drawable.marker_a_icon)
         else "B" to MarkerData(latLng, R.drawable.marker_b_icon)
     }
@@ -34,15 +33,11 @@ class PassengerViewModel(private val repository: PassengerRepository) : BaseView
     }
 
     fun addOnMapClickListener(callback: ((LatLng) -> Unit)) {
-        mapAction.value = MapAction.AddOnMapClickListener( callback)
+        mapAction.value = MapAction.AddOnMapClickListener(callback)
     }
 
     fun removeOnMapClickListener() {
         mapAction.value = MapAction.RemoveOnMapClickListener
-    }
-
-    fun removeMarker(tag: String) {
-        mapAction.value = MapAction.RemoveMarker(tag)
     }
 
     private var dialogShowed = false
@@ -66,7 +61,8 @@ class PassengerViewModel(private val repository: PassengerRepository) : BaseView
         if (coordinates != null) {
 
             val address =
-                repository.geocoder.build().requestNameByCoordinates(coordinates.toLatLng).toAddress()
+                repository.geocoder.build().requestNameByCoordinates(coordinates.toLatLng)
+                    .toAddress()
             newOrder.mutation {
                 it.value?.addressStart = address
             }
@@ -79,7 +75,8 @@ class PassengerViewModel(private val repository: PassengerRepository) : BaseView
 
         withContext(Dispatchers.IO) {
             try {
-                val geocodeResults = repository.geocoder.build().requestCoordinatesByName(value).results
+                val geocodeResults =
+                    repository.geocoder.build().requestCoordinatesByName(value).results
 
                 for (result in geocodeResults) {
                     list.add(

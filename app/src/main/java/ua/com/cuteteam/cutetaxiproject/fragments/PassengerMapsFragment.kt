@@ -38,6 +38,7 @@ class PassengerMapsFragment : MapsFragment() {
                 viewModel.addOnMapClickListener {
                     val markerData = viewModel.nextMarker(it)
                     viewModel.createMarker(markerData)
+                    viewModel.buildRoute()
                 }
                 val location = viewModel.locationProvider.getLocation()?.toLatLng ?: return@launch
 

@@ -43,6 +43,11 @@ abstract class BaseViewModel(
         markers[pair.first] = pair.second
     }
 
+    fun removeMarker(tag: String) {
+        markers.remove(tag)
+        markersData.value?.remove(tag)
+    }
+
     fun findMarkerByTag(tag: String): Marker? {
         return markers.findBy { it.key == tag }?.value
     }
