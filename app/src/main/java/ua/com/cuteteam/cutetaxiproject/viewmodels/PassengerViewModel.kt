@@ -15,7 +15,6 @@ import ua.com.cuteteam.cutetaxiproject.data.entities.Coordinates
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.extentions.mutation
 import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
-import ua.com.cuteteam.cutetaxiproject.livedata.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.livedata.MapAction
 import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
 import java.io.IOException
@@ -26,6 +25,13 @@ class PassengerViewModel(private val repository: PassengerRepository) : BaseView
         return if ( findMarkerDataByTag("A") == null )
             "A" to MarkerData(latLng, R.drawable.marker_a_icon)
         else "B" to MarkerData(latLng, R.drawable.marker_b_icon)
+    }
+
+    fun buildRoute() {
+        val from = findMarkerDataByTag("A")?.position
+        val to = findMarkerDataByTag("B")?.position
+        if (from == null || to == null) return
+        mapAction.value = MapAction.BuildRoute(from, to)
     }
 
     fun createMarker(pair: Pair<String, MarkerData>) {
@@ -43,14 +49,10 @@ class PassengerViewModel(private val repository: PassengerRepository) : BaseView
     val activeOrder: MutableLiveData<Order?>
         get() = repository.activeOrder
 
-
     val newOrder =
         MutableLiveData(Order(passengerId = FirebaseAuth.getInstance().currentUser!!.uid))
 
     val addresses = MutableLiveData<List<Address>>()
-
-    val observableLocation: LocationLiveData
-        get() = repository.observableLocation
 
     fun fetchCurrentAddress() = viewModelScope.launch {
 

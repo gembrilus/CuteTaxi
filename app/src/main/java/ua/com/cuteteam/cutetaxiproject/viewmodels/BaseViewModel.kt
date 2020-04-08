@@ -15,6 +15,7 @@ import ua.com.cuteteam.cutetaxiproject.data.MarkerData
 import ua.com.cuteteam.cutetaxiproject.extentions.findBy
 import ua.com.cuteteam.cutetaxiproject.helpers.PhoneNumberHelper
 import ua.com.cuteteam.cutetaxiproject.helpers.network.NetStatus
+import ua.com.cuteteam.cutetaxiproject.livedata.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.livedata.MapAction
 import ua.com.cuteteam.cutetaxiproject.livedata.SingleLiveEvent
 import ua.com.cuteteam.cutetaxiproject.livedata.ViewAction
@@ -29,6 +30,9 @@ import kotlin.collections.toMutableMap
 abstract class BaseViewModel(
     private val repository: Repository
 ) : ViewModel() {
+
+    val observableLocation: LocationLiveData
+        get() = repository.observableLocation
 
     var currentRoute: RouteProvider.RouteSummary? = null
 
@@ -64,13 +68,6 @@ abstract class BaseViewModel(
         mapAction.value = MapAction.MoveCamera(latLng)
     }
 
-    fun buildRoute() {
-        val from = findMarkerDataByTag("A")?.position
-        val to = findMarkerDataByTag("B")?.position
-        if (from == null || to == null) return
-        mapAction.value = MapAction.BuildRoute(from, to)
-    }
-
     fun updateCameraForRoute() {
         mapAction.value = MapAction.UpdateCameraForRoute
     }
@@ -80,6 +77,7 @@ abstract class BaseViewModel(
     }
 
     fun setMarkersData(pair: Pair<String, MarkerData>) {
+        if (findMarkerDataByTag(pair.first)?.equals(pair.second) == true) return
         markersData.value = markersData.value?.plus(pair)?.toMutableMap()
     }
 
@@ -114,7 +112,6 @@ abstract class BaseViewModel(
         dialogShowed = true
         return true
     }
-
 
     var shouldShowPermissionPermanentlyDeniedDialog = true
 
