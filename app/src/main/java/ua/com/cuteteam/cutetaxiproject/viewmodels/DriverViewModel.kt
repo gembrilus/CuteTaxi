@@ -81,7 +81,7 @@ class DriverViewModel(
         addSource(_orders) { list ->
             value = list?.filter { it.comfortLevel == repo.spHelper.carClass }
         }
-        addSource(LocationLiveData()) { loc ->
+        addSource(repo.observableLocation) { loc ->
             value = value?.map {
                 it.apply {
                     driverLocation = Coordinates(loc.latitude, loc.longitude)
