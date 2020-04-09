@@ -111,14 +111,14 @@ class DriverMapFragment : Fragment() {
         view?.bottom_sheet?.visibility = View.VISIBLE
     }
 
-    private fun changeButtons(){
+    private fun changeButtons() {
         showUI()
         view?.btn_order_accept?.visibility = View.GONE
         view?.btn_orders_list?.visibility = View.VISIBLE
         view?.cart_badge?.visibility = View.VISIBLE
     }
 
-    private fun fillInfo(order: Order){
+    private fun fillInfo(order: Order) {
         view?.order_info_price?.text =
             requireActivity().getString(R.string.currency_UAH, order.price.toString())
         view?.order_info_distance?.text = prepareDistance(requireActivity(), order)
@@ -141,5 +141,4 @@ class DriverMapFragment : Fragment() {
             callback = ratingCallback
         )
     }
-
 }

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/white">
@@ -19,7 +18,7 @@
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"/>
+        app:layout_constraintVertical_bias="0.0" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_make_order_coll"
@@ -31,10 +30,10 @@
         android:text="Make order"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
         android:theme="@style/Widget.MaterialComponents.Button"
-        app:layout_constraintTop_toTopOf="@id/sp_comfort_level_coll"
         app:layout_constraintBottom_toBottomOf="@id/sp_comfort_level_coll"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/sp_comfort_level_coll"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/sp_comfort_level_coll" />
 
     <ImageButton
         android:id="@+id/btn_start_point"
@@ -44,33 +43,35 @@
         android:backgroundTint="@android:color/transparent"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_start_point"
+        app:layout_constraintBottom_toBottomOf="@id/input_layout_start_address"
         app:layout_constraintEnd_toStartOf="@id/input_layout_start_address"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/input_layout_start_address"
-        app:layout_constraintBottom_toBottomOf="@id/input_layout_start_address" />
+        app:layout_constraintTop_toTopOf="@id/input_layout_start_address" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/input_layout_start_address"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:hint="Your start address..."
-        app:hintTextAppearance="@style/TextAppearance.MaterialComponents.Overline"
-        app:layout_constraintTop_toBottomOf="@id/sp_comfort_level_coll"
-        app:layout_constraintStart_toEndOf="@id/btn_start_point"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/input_layout_destination_address"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp" >
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:hint="Your start address..."
+        app:endIconMode="custom"
+        app:endIconDrawable="@drawable/ct_cancel"
+        app:hintTextAppearance="@style/TextAppearance.MaterialComponents.Overline"
+        app:layout_constraintBottom_toTopOf="@id/input_layout_destination_address"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btn_start_point"
+        app:layout_constraintTop_toBottomOf="@id/sp_comfort_level_coll">
 
         <AutoCompleteTextView
             android:id="@+id/et_start_address"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="textAutoComplete"
-            android:imeOptions="actionDone"/>
+            android:imeOptions="actionDone"
+            android:inputType="textAutoComplete" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -78,14 +79,14 @@
         android:id="@+id/btn_end_point"
         android:layout_width="@android:dimen/notification_large_icon_width"
         android:layout_height="@android:dimen/notification_large_icon_height"
+        android:layout_marginStart="@dimen/margin_16dp"
         android:backgroundTint="@android:color/transparent"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_end_point"
-        android:layout_marginStart="@dimen/margin_16dp"
+        app:layout_constraintBottom_toBottomOf="@id/input_layout_destination_address"
         app:layout_constraintEnd_toStartOf="@id/input_layout_destination_address"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/input_layout_destination_address"
-        app:layout_constraintBottom_toBottomOf="@id/input_layout_destination_address"/>
+        app:layout_constraintTop_toTopOf="@id/input_layout_destination_address" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/input_layout_destination_address"
@@ -96,18 +97,20 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:hint="Your destination address..."
+        app:endIconMode="custom"
+        app:endIconDrawable="@drawable/ct_cancel"
         app:hintTextAppearance="@style/TextAppearance.MaterialComponents.Overline"
-        app:layout_constraintTop_toBottomOf="@id/input_layout_start_address"
-        app:layout_constraintStart_toEndOf="@id/btn_end_point"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintStart_toEndOf="@id/btn_end_point"
+        app:layout_constraintTop_toBottomOf="@id/input_layout_start_address">
 
         <AutoCompleteTextView
             android:id="@+id/et_destination_address"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="textAutoComplete"
-            android:imeOptions="actionDone"/>
+            android:imeOptions="actionDone"
+            android:inputType="textAutoComplete" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

@@ -38,6 +38,10 @@ class PassengerMapsFragment : MapsFragment() {
             GlobalScope.launch(Dispatchers.Main) {
                 viewModel.addOnMapClickListener {
                     val markerData = viewModel.nextMarker(it)
+                    when (markerData.first) {
+                        "A" -> viewModel.setStartAddress(markerData.second.position)
+                        "B" -> viewModel.setDestAddress(markerData.second.position)
+                    }
                     viewModel.createMarker(markerData)
                     viewModel.updateCameraForRoute()
                 }
@@ -45,6 +49,7 @@ class PassengerMapsFragment : MapsFragment() {
 
                 if (viewModel.markersData.value?.isEmpty() == true) {
                     viewModel.setMarkersData("A" to MarkerData(location, R.drawable.marker_a_icon))
+                    viewModel.setStartAddress(location)
                 } else viewModel.updateMapObjects()
 
                 viewModel.activeOrder.observe(viewLifecycleOwner, Observer {
@@ -53,5 +58,33 @@ class PassengerMapsFragment : MapsFragment() {
                 })
             }
         }
+
+        viewModel.startAddressData.observe(viewLifecycleOwner, Observer {
+            if (it != null) {
+                viewModel.createMarker("A" to MarkerData(it, R.drawable.marker_a_icon))
+                if (viewModel.markersData.value?.containsKey("B") == true) {
+                    viewModel.buildRoute()
+                    viewModel.updateCameraForRoute()
+                }
+            } else {
+                viewModel.removeMarker("A")
+                viewModel.polylineOptions = null
+                viewModel.updateMapObjects()
+            }
+        })
+
+        viewModel.destAddressData.observe(viewLifecycleOwner, Observer {
+            if (it != null) {
+                viewModel.createMarker("B" to MarkerData(it, R.drawable.marker_b_icon))
+                if (viewModel.markersData.value?.containsKey("A") == true) {
+                    viewModel.buildRoute()
+                    viewModel.updateCameraForRoute()
+                }
+            } else {
+                viewModel.removeMarker("B")
+                viewModel.polylineOptions = null
+                viewModel.updateMapObjects()
+            }
+        })
     }
 }

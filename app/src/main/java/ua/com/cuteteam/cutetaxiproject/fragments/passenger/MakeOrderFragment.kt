@@ -55,8 +55,6 @@ class MakeOrderFragment : Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.fetchCurrentAddress()
-
         initUI()
         setObservers()
         showCollapsed()
@@ -99,16 +97,14 @@ class MakeOrderFragment : Fragment(),
             btn_make_order.isEnabled = order.isReady()
             btn_make_order_coll.isEnabled = order.isReady()
 
+            input_layout_start_address.isEndIconVisible = order.addressStart != null
+            input_layout_destination_address.isEndIconVisible = order.addressDestination != null
+
             setSpinnersValue(order.comfortLevel)
         })
 
         viewModel.addresses.observe(viewLifecycleOwner, Observer {
             adapter.setAddresses(it)
-            if (et_start_address.isActivated) {
-                et_start_address.showDropDown()
-            } else if (et_destination_address.isActivated) {
-                et_destination_address.showDropDown()
-            }
         })
     }
 
@@ -132,6 +128,14 @@ class MakeOrderFragment : Fragment(),
                 }
                 false
             } else true
+        }
+
+        input_layout_start_address.setEndIconOnClickListener {
+            viewModel.newOrder.mutation { it.value?.addressStart = null }
+        }
+
+        input_layout_destination_address.setEndIconOnClickListener {
+            viewModel.newOrder.mutation { it.value?.addressDestination = null }
         }
 
         input_layout_destination_address.editText?.setOnEditorActionListener { v, actionId, event ->
@@ -169,12 +173,14 @@ class MakeOrderFragment : Fragment(),
             AdapterView.OnItemClickListener { parent, view, position, id ->
                 val address = parent?.getItemAtPosition(position) as Address
                 viewModel.newOrder.mutation { it.value?.addressStart = address }
+                et_start_address.dismissDropDown()
             }
 
         et_destination_address.onItemClickListener =
             AdapterView.OnItemClickListener { parent, view, position, id ->
                 val address = parent?.getItemAtPosition(position) as Address
                 viewModel.newOrder.mutation { it.value?.addressDestination = address }
+                et_destination_address.dismissDropDown()
             }
 
         et_start_address.doAfterTextChanged {
@@ -192,8 +198,6 @@ class MakeOrderFragment : Fragment(),
 
     fun showCollapsed() {
 
-        make_order_bottom_view.viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)
-
         sp_comfort_level_coll.visibility = View.VISIBLE
         btn_make_order_coll.visibility = View.VISIBLE
         btn_start_point.visibility = View.VISIBLE
@@ -202,6 +206,7 @@ class MakeOrderFragment : Fragment(),
     }
 
     fun showExpanded() {
+
         sp_comfort_level_coll.visibility = View.GONE
         btn_make_order_coll.visibility = View.GONE
         btn_start_point.visibility = View.GONE

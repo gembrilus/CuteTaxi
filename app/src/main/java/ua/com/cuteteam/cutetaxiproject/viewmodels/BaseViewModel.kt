@@ -13,6 +13,7 @@ import ua.com.cuteteam.cutetaxiproject.api.RouteProvider
 import ua.com.cuteteam.cutetaxiproject.api.geocoding.GeocodeRequest
 import ua.com.cuteteam.cutetaxiproject.data.MarkerData
 import ua.com.cuteteam.cutetaxiproject.extentions.findBy
+import ua.com.cuteteam.cutetaxiproject.extentions.mutation
 import ua.com.cuteteam.cutetaxiproject.helpers.PhoneNumberHelper
 import ua.com.cuteteam.cutetaxiproject.helpers.network.NetStatus
 import ua.com.cuteteam.cutetaxiproject.livedata.LocationLiveData
@@ -26,6 +27,7 @@ import kotlin.collections.mutableMapOf
 import kotlin.collections.plus
 import kotlin.collections.set
 import kotlin.collections.toMutableMap
+import kotlin.collections.set
 
 abstract class BaseViewModel(
     private val repository: Repository
@@ -57,7 +59,7 @@ abstract class BaseViewModel(
 
     fun removeMarker(tag: String) {
         markers.remove(tag)
-        markersData.value?.remove(tag)
+        markersData.mutation { it.value?.remove(tag) }
     }
 
     fun findMarkerByTag(tag: String): Marker? {
