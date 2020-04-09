@@ -42,7 +42,7 @@ class DriverMapFragment : Fragment() {
 
     private val onGlobalLayoutListener by lazy {
         ViewTreeObserver.OnGlobalLayoutListener {
-            changeMapHeight(bottom_sheet.measuredHeight)
+            changeMapPadding(bottom_sheet.measuredHeight)
         }
     }
 
@@ -150,11 +150,7 @@ class DriverMapFragment : Fragment() {
         )
     }
 
-    private fun changeMapHeight(height: Int) {
-        if (height != 0) {
-            val mapLayoutParams = map_fragment.layoutParams
-            mapLayoutParams.height = view!!.measuredHeight - height
-            map_fragment.layoutParams = mapLayoutParams
-        }
+    private fun changeMapPadding(height: Int) {
+        map_fragment.setPadding(0, 0, 0, height)
     }
 }
