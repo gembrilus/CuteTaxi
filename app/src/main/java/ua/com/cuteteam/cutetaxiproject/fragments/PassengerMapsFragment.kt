@@ -1,6 +1,7 @@
 package ua.com.cuteteam.cutetaxiproject.fragments
 
 import android.os.Bundle
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.GoogleMapOptions
 import kotlinx.coroutines.Dispatchers
@@ -45,6 +46,11 @@ class PassengerMapsFragment : MapsFragment() {
                 if (viewModel.markersData.value?.isEmpty() == true) {
                     viewModel.setMarkersData("A" to MarkerData(location, R.drawable.marker_a_icon))
                 } else viewModel.updateMapObjects()
+
+                viewModel.activeOrder.observe(viewLifecycleOwner, Observer {
+                    if (it?.driverLocation == null) return@Observer
+                    viewModel.showCar(it?.driverLocation?.toLatLng()!!, R.drawable.marker_car_icon)
+                })
             }
         }
     }

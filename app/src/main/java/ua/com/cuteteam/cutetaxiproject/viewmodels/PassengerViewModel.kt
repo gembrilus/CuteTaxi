@@ -18,8 +18,12 @@ import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
 import ua.com.cuteteam.cutetaxiproject.livedata.MapAction
 import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
 import java.io.IOException
+import kotlin.math.abs
+import kotlin.math.atan
 
 class PassengerViewModel(private val repository: PassengerRepository) : BaseViewModel(repository) {
+
+    private lateinit var previousDriverPosition: LatLng
 
     fun nextMarker(latLng: LatLng): Pair<String, MarkerData> {
         return if (findMarkerDataByTag("A") == null)
@@ -37,6 +41,18 @@ class PassengerViewModel(private val repository: PassengerRepository) : BaseView
 
     fun removeOnMapClickListener() {
         mapAction.value = MapAction.RemoveOnMapClickListener
+    }
+
+    fun showCar(currentDriverPosition: LatLng, icon: Int) {
+        ::previousDriverPosition.isInitialized ?: return
+        val bearing = getBearing(previousDriverPosition, currentDriverPosition)
+        mapAction.value = MapAction.ShowCar(
+            bearing,
+            MarkerData(currentDriverPosition, icon),
+            previousDriverPosition,
+            currentDriverPosition
+        )
+        previousDriverPosition = currentDriverPosition
     }
 
     val activeOrder: MutableLiveData<Order?>
@@ -98,5 +114,21 @@ class PassengerViewModel(private val repository: PassengerRepository) : BaseView
         ) {
             repository.makeOrder(newOrder.value!!)
         }
+    }
+
+    private fun getBearing(begin: LatLng, end: LatLng): Float {
+        val lat = abs(begin.latitude - end.latitude)
+        val lng = abs(begin.longitude - end.longitude)
+        if (begin.latitude < end.latitude && begin.longitude < end.longitude) return Math.toDegrees(
+            atan(lng / lat)
+        )
+            .toFloat() else if (begin.latitude >= end.latitude && begin.longitude < end.longitude) return (90 - Math.toDegrees(
+            atan(lng / lat)
+        ) + 90).toFloat() else if (begin.latitude >= end.latitude && begin.longitude >= end.longitude) return (Math.toDegrees(
+            atan(lng / lat)
+        ) + 180).toFloat() else if (begin.latitude < end.latitude && begin.longitude >= end.longitude) return (90 - Math.toDegrees(
+            atan(lng / lat)
+        ) + 270).toFloat()
+        return (-1).toFloat()
     }
 }
