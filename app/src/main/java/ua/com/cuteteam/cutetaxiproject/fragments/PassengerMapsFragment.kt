@@ -1,7 +1,6 @@
 package ua.com.cuteteam.cutetaxiproject.fragments
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.GoogleMapOptions
@@ -9,7 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import ua.com.cuteteam.cutetaxiproject.R
-import ua.com.cuteteam.cutetaxiproject.application.AppClass
 import ua.com.cuteteam.cutetaxiproject.data.MarkerData
 import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
 import ua.com.cuteteam.cutetaxiproject.helpers.GoogleMapsHelper
@@ -45,7 +43,7 @@ class PassengerMapsFragment : MapsFragment() {
                         "B" -> viewModel.setDestAddress(markerData.second.position)
                     }
                     viewModel.createMarker(markerData)
-                    viewModel.buildRoute()
+//                    viewModel.buildRoute()
                 }
                 val location = viewModel.locationProvider.getLocation()?.toLatLng ?: return@launch
 
@@ -59,16 +57,20 @@ class PassengerMapsFragment : MapsFragment() {
         viewModel.startAddressData.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 viewModel.setMarkersData("A" to MarkerData(it, R.drawable.marker_a_icon))
+                viewModel.buildRoute()
             } else {
                 viewModel.removeMarker("A")
+                viewModel.updateMapObjects()
             }
         })
 
         viewModel.destAddressData.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 viewModel.setMarkersData("B" to MarkerData(it, R.drawable.marker_b_icon))
+                viewModel.buildRoute()
             } else {
                 viewModel.removeMarker("B")
+                viewModel.updateMapObjects()
             }
         })
     }

@@ -22,10 +22,7 @@ import ua.com.cuteteam.cutetaxiproject.livedata.ViewAction
 import ua.com.cuteteam.cutetaxiproject.providers.LocationProvider
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 import java.util.*
-import kotlin.collections.mutableMapOf
-import kotlin.collections.plus
 import kotlin.collections.set
-import kotlin.collections.toMutableMap
 
 abstract class BaseViewModel(
     private val repository: Repository

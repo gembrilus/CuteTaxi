@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.RatingBar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import kotlinx.android.synthetic.main.fragment_map_driver.*
 import kotlinx.android.synthetic.main.fragment_map_driver.view.*
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.common.prepareDistance
@@ -36,6 +38,22 @@ class DriverMapFragment : Fragment() {
                 model.rate(rating)
             }
         }
+    }
+
+    private val onGlobalLayoutListener by lazy {
+        ViewTreeObserver.OnGlobalLayoutListener {
+            changeMapHeight(bottom_sheet.measuredHeight)
+        }
+    }
+
+    override fun onStart() {
+        bottom_sheet.viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)
+        super.onStart()
+    }
+
+    override fun onPause() {
+        bottom_sheet.viewTreeObserver.removeOnGlobalLayoutListener(onGlobalLayoutListener)
+        super.onPause()
     }
 
     private val activeOrderObserver = Observer<Order> {
@@ -111,7 +129,7 @@ class DriverMapFragment : Fragment() {
         view?.bottom_sheet?.visibility = View.VISIBLE
     }
 
-    private fun changeButtons(){
+    private fun changeButtons() {
         view?.btn_order_accept?.visibility = View.GONE
         view?.btn_orders_list?.visibility = View.VISIBLE
         view?.cart_badge?.visibility = View.VISIBLE
@@ -132,4 +150,11 @@ class DriverMapFragment : Fragment() {
         )
     }
 
+    private fun changeMapHeight(height: Int) {
+        if (height != 0) {
+            val mapLayoutParams = map_fragment.layoutParams
+            mapLayoutParams.height = view!!.measuredHeight - height
+            map_fragment.layoutParams = mapLayoutParams
+        }
+    }
 }
