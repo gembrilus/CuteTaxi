@@ -26,8 +26,10 @@ class OrdersAdapter(private var orders: List<Order> = emptyList()) :
         view = holder.itemView
         val order = orders[position]
         with(holder.itemView) {
-            order_info_price.text = context.getString(R.string.currency_UAH, order.price?.toInt().toString())
-            order_info_route.text = context.getString(R.string.units_KM, order.distance?.toInt().toString())
+            order_info_price.text =
+                context.getString(R.string.currency_UAH, order.price?.toInt().toString())
+            order_info_route.text =
+                context.getString(R.string.units_KM, order.distance?.toInt().toString())
             order_info_distance.text = prepareDistance(view?.context, order)
             origin_address.text = order.addressStart?.address
             destination_address.text = order.addressDestination?.address
@@ -39,7 +41,7 @@ class OrdersAdapter(private var orders: List<Order> = emptyList()) :
         notifyDataSetChanged()
     }
 
-    fun setAcceptListener(listener: OnOrderAccept){
+    fun setAcceptListener(listener: OnOrderAccept) {
         acceptListener = listener
     }
 
@@ -50,26 +52,27 @@ class OrdersAdapter(private var orders: List<Order> = emptyList()) :
                 showAcceptButton(itemView)
             }
             view.btn_accept.setOnClickListener {
-                acceptListener?.onAccept(orders[adapterPosition].orderId!!)
+                orders[adapterPosition].orderId?.let { id ->
+                    acceptListener?.onAccept(id)
+                }
             }
         }
 
-        private fun showAcceptButton(view: View){
+        private fun showAcceptButton(view: View) {
             view.btn_accept.visibility = if (view.btn_accept.visibility == View.GONE) {
-                if (prev != null){
+                if (prev != null) {
                     prev?.btn_accept?.visibility = View.GONE
                 }
                 prev = view
                 View.VISIBLE
-            }
-            else {
+            } else {
                 prev = null
                 View.GONE
             }
         }
     }
 
-    interface OnOrderAccept{
+    interface OnOrderAccept {
         fun onAccept(orderId: String)
     }
 

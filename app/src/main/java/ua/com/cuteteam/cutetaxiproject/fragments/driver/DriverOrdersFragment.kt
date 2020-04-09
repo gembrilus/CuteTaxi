@@ -44,7 +44,10 @@ class DriverOrdersFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireActivity())
             adapter = mAdapter
         }
+    }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         model.orders.observe(requireActivity(), Observer {
             mAdapter.setOrders(it)
         })
