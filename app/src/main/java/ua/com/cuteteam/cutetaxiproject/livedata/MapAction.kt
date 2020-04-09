@@ -15,4 +15,5 @@ sealed class MapAction {
         MapAction()
     object UpdateCameraForRoute : MapAction()
     class ShowCar(val bearing: Float, val markerData: MarkerData, val from: LatLng, val to: LatLng) : MapAction()
+    object ClearMap : MapAction()
 }
