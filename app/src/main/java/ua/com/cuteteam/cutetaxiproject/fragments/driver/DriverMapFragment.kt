@@ -4,13 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.widget.RatingBar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import kotlinx.android.synthetic.main.fragment_map_driver.*
 import kotlinx.android.synthetic.main.fragment_map_driver.view.*
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.common.prepareDistance
@@ -38,22 +36,6 @@ class DriverMapFragment : Fragment() {
                 model.rate(rating)
             }
         }
-    }
-
-    private val onGlobalLayoutListener by lazy {
-        ViewTreeObserver.OnGlobalLayoutListener {
-            changeMapPadding(bottom_sheet.measuredHeight)
-        }
-    }
-
-    override fun onStart() {
-        bottom_sheet.viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)
-        super.onStart()
-    }
-
-    override fun onPause() {
-        bottom_sheet.viewTreeObserver.removeOnGlobalLayoutListener(onGlobalLayoutListener)
-        super.onPause()
     }
 
     private val activeOrderObserver = Observer<Order> {
@@ -96,20 +78,21 @@ class DriverMapFragment : Fragment() {
         view.btn_order_accept.setOnClickListener {
             model.updateOrder(DbEntries.Orders.Fields.ORDER_STATUS, OrderStatus.STARTED)
         }
-
-        model.countOfOrders.observe(requireActivity(), Observer { count ->
-            with(view.cart_badge) {
-                if (view.btn_order_accept.visibility == View.GONE) {
-                    visibility = if (count != 0) View.VISIBLE else View.GONE
-                    text = count.toString()
-                }
-            }
-        })
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        model.activeOrder.observe(this, activeOrderObserver)
+
+        model.countOfOrders.observe(requireActivity(), Observer { count ->
+            with(view?.cart_badge) {
+                if (view?.btn_order_accept?.visibility == View.GONE) {
+                    this?.visibility = if (count != 0) View.VISIBLE else View.GONE
+                    this?.text = count.toString()
+                }
+            }
+        })
+
+        model.activeOrder.observe(requireActivity(), activeOrderObserver)
     }
 
     private fun hideUI() {
@@ -128,14 +111,14 @@ class DriverMapFragment : Fragment() {
         view?.bottom_sheet?.visibility = View.VISIBLE
     }
 
-    private fun changeButtons(){
+    private fun changeButtons() {
         showUI()
         view?.btn_order_accept?.visibility = View.GONE
         view?.btn_orders_list?.visibility = View.VISIBLE
         view?.cart_badge?.visibility = View.VISIBLE
     }
 
-    private fun fillInfo(order: Order){
+    private fun fillInfo(order: Order) {
         view?.order_info_price?.text =
             requireActivity().getString(R.string.currency_UAH, order.price.toString())
         view?.order_info_distance?.text = prepareDistance(requireActivity(), order)
@@ -157,9 +140,5 @@ class DriverMapFragment : Fragment() {
             fm = it,
             callback = ratingCallback
         )
-    }
-
-    private fun changeMapPadding(height: Int) {
-        map_fragment.setPadding(0, 0, 0, height)
     }
 }

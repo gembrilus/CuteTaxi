@@ -117,6 +117,10 @@ abstract class BaseViewModel(
         return local.displayCountry
     }
 
+    fun clearMap() {
+        mapAction.value = MapAction.ClearMap
+    }
+
     private var dialogShowed = false
 
     fun shouldShowGPSRationale(): Boolean {

@@ -34,7 +34,7 @@ abstract class APIRequest<T> where T: APIService {
     private val okHttpClient = OkHttpClient.Builder()
         .protocols(listOf(Protocol.HTTP_1_1))
         .addInterceptor(AuthInterceptor())
-        .addInterceptor(ChuckerInterceptor(AppClass.appContext()))
+//        .addInterceptor(ChuckerInterceptor(AppClass.appContext()))
         .build()
 
     protected fun buildRetrofit(): Retrofit = Retrofit.Builder()

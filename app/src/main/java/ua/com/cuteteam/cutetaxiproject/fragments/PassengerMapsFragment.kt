@@ -51,6 +51,11 @@ class PassengerMapsFragment : MapsFragment() {
                     viewModel.setMarkersData("A" to MarkerData(location, R.drawable.marker_a_icon))
                     viewModel.setStartAddress(location)
                 } else viewModel.updateMapObjects()
+
+                viewModel.activeOrder.observe(viewLifecycleOwner, Observer {
+                    if (it?.driverLocation == null) return@Observer
+                    viewModel.showCar(it?.driverLocation?.toLatLng()!!, R.drawable.marker_car_icon)
+                })
             }
         }
 

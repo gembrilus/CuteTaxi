@@ -2,7 +2,9 @@ package ua.com.cuteteam.cutetaxiproject.helpers
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.animation.ValueAnimator
 import android.graphics.Color
+import android.view.animation.LinearInterpolator
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
@@ -124,5 +126,32 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
     private fun resizeMapIcons(iconId: Int, width: Int, height: Int): Bitmap? {
         val b = BitmapFactory.decodeResource(AppClass.appContext().resources, iconId)
         return Bitmap.createScaledBitmap(b, width, height, false)
+
+    }
+
+    fun animateCarOnMap(bearing: Float, markerData: MarkerData, from: LatLng, to: LatLng) {
+        val carMarker = googleMap.addMarker(
+            MarkerOptions()
+                .position(markerData.position)
+                .icon(BitmapDescriptorFactory.fromResource(markerData.icon))
+        )
+        val valueAnimator = ValueAnimator.ofFloat(0f, 1f)
+        valueAnimator.duration = 1000
+        valueAnimator.interpolator = LinearInterpolator()
+        valueAnimator.addUpdateListener ( object : ValueAnimator.AnimatorUpdateListener {
+            override fun onAnimationUpdate(animation: ValueAnimator?) {
+                val animatedFraction = valueAnimator.animatedFraction
+                val lat = (animatedFraction * to.latitude) + (1 - animatedFraction) * from.latitude
+                val lng = (animatedFraction * to.longitude) + (1 - animatedFraction) * from.longitude
+
+                val newPosition = LatLng(lat, lng)
+
+                carMarker.position = newPosition
+                carMarker.setAnchor(0.5f, 0.5f)
+                carMarker.rotation = bearing
+            }
+        })
+
+        valueAnimator.start()
     }
 }
