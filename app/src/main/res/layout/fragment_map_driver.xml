@@ -10,8 +10,9 @@
         android:id="@+id/map_fragment"
         android:name="ua.com.cuteteam.cutetaxiproject.fragments.DriverMapsFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottom_sheet"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/cart_badge"

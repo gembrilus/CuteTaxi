@@ -39,6 +39,7 @@
             android:layout_height="wrap_content"
             android:max="5"
             android:numStars="5"
+            android:progressDrawable="@drawable/ct_ratingbar_image"
             android:progressTint="#FFC107"
             android:rating="0.0"
             android:stepSize="0.1" />
