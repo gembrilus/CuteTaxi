@@ -124,6 +124,7 @@ abstract class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
                             mapAction.from,
                             mapAction.to)
                     }
+                    is MapAction.ClearMap -> mMap.clear()
                 }
             })
 

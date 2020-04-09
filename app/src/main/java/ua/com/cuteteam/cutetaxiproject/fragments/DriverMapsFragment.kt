@@ -37,7 +37,10 @@ class DriverMapsFragment : MapsFragment() {
                 val location = viewModel.locationProvider.getLocation()?.toLatLng ?: return@launch
 
                 viewModel.activeOrder.observe(this@DriverMapsFragment, Observer {
-                    it ?: return@Observer
+                    if (it == null) {
+                        viewModel.clearMap()
+                        return@Observer
+                    }
 
                     val startPoint = it.addressStart?.location?.toLatLng()!!
                     val destinationPoint = it.addressDestination?.location?.toLatLng()!!
