@@ -78,7 +78,7 @@ abstract class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
             initMap(googleMapsHelper)
 
             viewModel.markersData.observe(this@MapsFragment, Observer {
-                googleMapsHelper.updateMarkers(viewModel.markersData.value?.values)
+                googleMapsHelper.updateMarkers(it?.values)
                 viewModel.buildRoute()
             })
 
@@ -116,6 +116,13 @@ abstract class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
                             if (it != null)
                                 googleMapsHelper.updateCameraForCurrentRoute(it)
                         })
+                    }
+                    is MapAction.ShowCar -> {
+                        googleMapsHelper.animateCarOnMap(
+                            mapAction.bearing,
+                            mapAction.markerData,
+                            mapAction.from,
+                            mapAction.to)
                     }
                 }
             })
