@@ -78,20 +78,21 @@ class DriverMapFragment : Fragment() {
         view.btn_order_accept.setOnClickListener {
             model.updateOrder(DbEntries.Orders.Fields.ORDER_STATUS, OrderStatus.STARTED)
         }
-
-        model.countOfOrders.observe(requireActivity(), Observer { count ->
-            with(view.cart_badge) {
-                if (view.btn_order_accept.visibility == View.GONE) {
-                    visibility = if (count != 0) View.VISIBLE else View.GONE
-                    text = count.toString()
-                }
-            }
-        })
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        model.activeOrder.observe(this, activeOrderObserver)
+
+        model.countOfOrders.observe(requireActivity(), Observer { count ->
+            with(view?.cart_badge) {
+                if (view?.btn_order_accept?.visibility == View.GONE) {
+                    this?.visibility = if (count != 0) View.VISIBLE else View.GONE
+                    this?.text = count.toString()
+                }
+            }
+        })
+
+        model.activeOrder.observe(requireActivity(), activeOrderObserver)
     }
 
     private fun hideUI() {
