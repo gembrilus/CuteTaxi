@@ -105,11 +105,6 @@ class MakeOrderFragment : Fragment(),
 
         viewModel.addresses.observe(viewLifecycleOwner, Observer {
             adapter.setAddresses(it)
-/*            if (et_start_address.isFocused) {
-                et_start_address.showDropDown()
-            } else if (et_destination_address.isFocused) {
-                et_destination_address.showDropDown()
-            }*/
         })
     }
 
@@ -193,14 +188,12 @@ class MakeOrderFragment : Fragment(),
         et_start_address.doAfterTextChanged {
             if (!it.isNullOrEmpty() && it.length > 5) {
                 viewModel.fetchAddresses(it.toString())
-//                et_start_address.showDropDown()
             }
         }
 
         et_destination_address.doAfterTextChanged {
             if (!it.isNullOrEmpty() && it.length > 5) {
                 viewModel.fetchAddresses(it.toString())
-//                et_destination_address.showDropDown()
             }
         }
     }
