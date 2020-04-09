@@ -44,5 +44,5 @@ fun prepareDistance(context: Context?, order: Order): String? {
 
 fun arrivalTime(order: Order): Long? {
     val distance = calcDistance(order)
-    return distance?.div(speed)?.toLong()
+    return distance?.div(speed)?.toLong() ?: 0
 }

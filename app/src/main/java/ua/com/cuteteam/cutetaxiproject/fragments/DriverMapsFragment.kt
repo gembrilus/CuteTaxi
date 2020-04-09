@@ -1,11 +1,15 @@
 package ua.com.cuteteam.cutetaxiproject.fragments
 
 import android.os.Bundle
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.GoogleMapOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import ua.com.cuteteam.cutetaxiproject.R
+import ua.com.cuteteam.cutetaxiproject.data.MarkerData
+import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
 import ua.com.cuteteam.cutetaxiproject.helpers.GoogleMapsHelper
 import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission
@@ -31,6 +35,29 @@ class DriverMapsFragment : MapsFragment() {
         permissionProvider?.withPermission(AccessFineLocationPermission()) {
             GlobalScope.launch(Dispatchers.Main) {
                 val location = viewModel.locationProvider.getLocation()?.toLatLng ?: return@launch
+
+                viewModel.activeOrder.observe(this@DriverMapsFragment, Observer {
+                    if (it.orderStatus == OrderStatus.FINISHED) return@Observer
+
+                    val startPoint = it.addressStart?.location?.toLatLng()!!
+                    val destinationPoint = it.addressDestination?.location?.toLatLng()!!
+
+
+                    viewModel.setMarkersData(
+                        "A" to MarkerData(
+                            startPoint,
+                            R.drawable.marker_a_icon
+                        )
+                    )
+                    viewModel.setMarkersData(
+                        "B" to MarkerData(
+                            destinationPoint,
+                            R.drawable.marker_b_icon
+                        )
+                    )
+                    viewModel.buildRoute(location, destinationPoint, listOf(startPoint))
+                    viewModel.updateCameraForRoute()
+                })
             }
         }
     }

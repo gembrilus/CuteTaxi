@@ -16,19 +16,27 @@ import ua.com.cuteteam.cutetaxiproject.extentions.findBy
 import ua.com.cuteteam.cutetaxiproject.extentions.mutation
 import ua.com.cuteteam.cutetaxiproject.helpers.PhoneNumberHelper
 import ua.com.cuteteam.cutetaxiproject.helpers.network.NetStatus
+import ua.com.cuteteam.cutetaxiproject.livedata.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.livedata.MapAction
 import ua.com.cuteteam.cutetaxiproject.livedata.SingleLiveEvent
 import ua.com.cuteteam.cutetaxiproject.livedata.ViewAction
 import ua.com.cuteteam.cutetaxiproject.providers.LocationProvider
 import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 import java.util.*
+import kotlin.collections.mutableMapOf
+import kotlin.collections.plus
+import kotlin.collections.set
+import kotlin.collections.toMutableMap
 import kotlin.collections.set
 
 abstract class BaseViewModel(
     private val repository: Repository
 ) : ViewModel() {
 
-    var currentRoute: RouteProvider.RouteSummary? = null
+    val observableLocation: LocationLiveData
+        get() = repository.observableLocation
+
+    var currentRoute = MutableLiveData<RouteProvider.RouteSummary>()
 
     var cameraPosition: CameraPosition? = null
 
@@ -40,6 +48,10 @@ abstract class BaseViewModel(
     val markersData = MutableLiveData(mutableMapOf<String, MarkerData>())
 
     private val markers = mutableMapOf<String, Marker?>()
+
+    fun setCurrentRoute(routeSummary: RouteProvider.RouteSummary) {
+        currentRoute.value = routeSummary
+    }
 
     fun setMarkers(pair: Pair<String, Marker?>) {
         markers[pair.first] = pair.second
@@ -58,19 +70,12 @@ abstract class BaseViewModel(
         mapAction.value = MapAction.UpdateMapObjects
     }
 
-    fun moveCamera(latLng: LatLng) {
-        mapAction.value = MapAction.MoveCamera(latLng)
-    }
-
-    fun buildRoute() {
-        val from = findMarkerDataByTag("A")?.position
-        val to = findMarkerDataByTag("B")?.position
-        if (from == null || to == null) return
-        mapAction.value = MapAction.BuildRoute(from, to)
-    }
-
     fun updateCameraForRoute() {
         mapAction.value = MapAction.UpdateCameraForRoute
+    }
+
+    fun moveCamera(latLng: LatLng) {
+        mapAction.value = MapAction.MoveCamera(latLng)
     }
 
     suspend fun currentCameraPosition(): CameraPosition {
@@ -78,7 +83,15 @@ abstract class BaseViewModel(
     }
 
     fun setMarkersData(pair: Pair<String, MarkerData>) {
+        if (findMarkerDataByTag(pair.first)?.equals(pair.second) == true) return
         markersData.value = markersData.value?.plus(pair)?.toMutableMap()
+    }
+
+    fun buildRoute() {
+        val from = findMarkerDataByTag("A")?.position
+        val to = findMarkerDataByTag("B")?.position
+        if (from == null || to == null) return
+        mapAction.value = MapAction.BuildRoute(from, to)
     }
 
     fun findMarkerDataByTag(tag: String): MarkerData? {
@@ -112,7 +125,6 @@ abstract class BaseViewModel(
         dialogShowed = true
         return true
     }
-
 
     var shouldShowPermissionPermanentlyDeniedDialog = true
 
@@ -148,7 +160,6 @@ abstract class BaseViewModel(
 
     private var _isChecked = false
     val isChecked get() = _isChecked
-
     private val roleObserver = Observer<Boolean> {
         _isChecked = it
         repository.spHelper.role = it
@@ -156,6 +167,13 @@ abstract class BaseViewModel(
 
     private val role = MutableLiveData(repository.spHelper.role).apply {
         observeForever(roleObserver)
+    }
+
+
+    private val _isMainMenu = MutableLiveData<Boolean>()
+    val isMainMenu: LiveData<Boolean> get() = _isMainMenu
+    fun rememberMenu(isMainMenu: Boolean) {
+        _isMainMenu.value = isMainMenu
     }
 
     override fun onCleared() {

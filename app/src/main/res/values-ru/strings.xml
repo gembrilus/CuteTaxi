@@ -11,7 +11,7 @@
     <string name="menu_orders">Заказы</string>
     <string name="currency_UAH">%s грн</string>
     <string name="units_KM">%s км</string>
-    <string name="units_M">%sму м</string>
+    <string name="units_M">%s м</string>
     <string name="dialog_title_order_is_changed">Заказ обновился</string>
     <string name="dialog_text_order_was_cancelled">Текущий заказ был отменен клиентом</string>
     <string name="order_message_from_dirver">Ожидайте %s %s, цвет - %s, номер - %s через %d минут</string>

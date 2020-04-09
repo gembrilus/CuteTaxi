@@ -173,7 +173,6 @@ class MakeOrderFragment : Fragment(),
             AdapterView.OnItemClickListener { parent, view, position, id ->
                 val address = parent?.getItemAtPosition(position) as Address
                 viewModel.newOrder.mutation { it.value?.addressStart = address }
-                viewModel.addMarkerByTag("A", address.location?.toLatLng()!!)
                 et_start_address.dismissDropDown()
             }
 
@@ -181,7 +180,6 @@ class MakeOrderFragment : Fragment(),
             AdapterView.OnItemClickListener { parent, view, position, id ->
                 val address = parent?.getItemAtPosition(position) as Address
                 viewModel.newOrder.mutation { it.value?.addressDestination = address }
-                viewModel.addMarkerByTag("B", address.location?.toLatLng()!!)
                 et_destination_address.dismissDropDown()
             }
 
@@ -200,8 +198,6 @@ class MakeOrderFragment : Fragment(),
 
     fun showCollapsed() {
 
-        make_order_bottom_view.viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)
-
         sp_comfort_level_coll.visibility = View.VISIBLE
         btn_make_order_coll.visibility = View.VISIBLE
         btn_start_point.visibility = View.VISIBLE
@@ -210,6 +206,7 @@ class MakeOrderFragment : Fragment(),
     }
 
     fun showExpanded() {
+
         sp_comfort_level_coll.visibility = View.GONE
         btn_make_order_coll.visibility = View.GONE
         btn_start_point.visibility = View.GONE

@@ -43,7 +43,7 @@ class PassengerMapsFragment : MapsFragment() {
                         "B" -> viewModel.setDestAddress(markerData.second.position)
                     }
                     viewModel.createMarker(markerData)
-//                    viewModel.buildRoute()
+                    viewModel.updateCameraForRoute()
                 }
                 val location = viewModel.locationProvider.getLocation()?.toLatLng ?: return@launch
 
@@ -56,20 +56,28 @@ class PassengerMapsFragment : MapsFragment() {
 
         viewModel.startAddressData.observe(viewLifecycleOwner, Observer {
             if (it != null) {
-                viewModel.setMarkersData("A" to MarkerData(it, R.drawable.marker_a_icon))
-                viewModel.buildRoute()
+                viewModel.createMarker("A" to MarkerData(it, R.drawable.marker_a_icon))
+                if (viewModel.markersData.value?.containsKey("B") == true) {
+                    viewModel.buildRoute()
+                    viewModel.updateCameraForRoute()
+                }
             } else {
                 viewModel.removeMarker("A")
+                viewModel.polylineOptions = null
                 viewModel.updateMapObjects()
             }
         })
 
         viewModel.destAddressData.observe(viewLifecycleOwner, Observer {
             if (it != null) {
-                viewModel.setMarkersData("B" to MarkerData(it, R.drawable.marker_b_icon))
-                viewModel.buildRoute()
+                viewModel.createMarker("B" to MarkerData(it, R.drawable.marker_b_icon))
+                if (viewModel.markersData.value?.containsKey("A") == true) {
+                    viewModel.buildRoute()
+                    viewModel.updateCameraForRoute()
+                }
             } else {
                 viewModel.removeMarker("B")
+                viewModel.polylineOptions = null
                 viewModel.updateMapObjects()
             }
         })

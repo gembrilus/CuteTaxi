@@ -70,16 +70,13 @@ class DriverMapFragment : Fragment() {
             }
             OrderStatus.ACCEPTED -> {
                 showUI()
-                view?.order_info_price?.text =
-                    requireActivity().getString(R.string.currency_UAH, it.price.toString())
-                view?.order_info_distance?.text = prepareDistance(requireActivity(), it)
-                view?.origin_address?.text = it.addressStart?.address
-                view?.dest_address?.text = it.addressDestination?.address
-                view?.invalidate()
+                fillInfo(it)
             }
-            OrderStatus.STARTED -> changeButtons()
+            OrderStatus.STARTED -> {
+                changeButtons()
+                fillInfo(it)
+            }
             else -> hideUI()
-
         }
     }
 
@@ -102,8 +99,10 @@ class DriverMapFragment : Fragment() {
 
         model.countOfOrders.observe(requireActivity(), Observer { count ->
             with(view.cart_badge) {
-                visibility = if (count != 0) View.VISIBLE else View.GONE
-                text = count.toString()
+                if (view.btn_order_accept.visibility == View.GONE) {
+                    visibility = if (count != 0) View.VISIBLE else View.GONE
+                    text = count.toString()
+                }
             }
         })
     }
@@ -115,8 +114,8 @@ class DriverMapFragment : Fragment() {
 
     private fun hideUI() {
         view?.btn_order_accept?.visibility = View.GONE
-        view?.info_boxes?.order_info_price?.visibility = View.GONE
-        view?.info_boxes?.order_info_distance?.visibility = View.GONE
+        view?.info_boxes?.order_info_price?.visibility = View.INVISIBLE
+        view?.info_boxes?.order_info_distance?.visibility = View.INVISIBLE
         view?.bottom_sheet?.visibility = View.GONE
     }
 
@@ -129,10 +128,20 @@ class DriverMapFragment : Fragment() {
         view?.bottom_sheet?.visibility = View.VISIBLE
     }
 
-    private fun changeButtons() {
+    private fun changeButtons(){
+        showUI()
         view?.btn_order_accept?.visibility = View.GONE
         view?.btn_orders_list?.visibility = View.VISIBLE
         view?.cart_badge?.visibility = View.VISIBLE
+    }
+
+    private fun fillInfo(order: Order){
+        view?.order_info_price?.text =
+            requireActivity().getString(R.string.currency_UAH, order.price.toString())
+        view?.order_info_distance?.text = prepareDistance(requireActivity(), order)
+        view?.origin_address?.text = order.addressStart?.address
+        view?.dest_address?.text = order.addressDestination?.address
+        view?.invalidate()
     }
 
     private fun showCancelDialog() = activity?.supportFragmentManager?.let {

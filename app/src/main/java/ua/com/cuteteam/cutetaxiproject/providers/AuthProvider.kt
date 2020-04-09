@@ -10,7 +10,7 @@ import kotlin.coroutines.suspendCoroutine
 
 interface AuthListener {
     fun onStarted()
-    fun onSuccess()
+    fun onSuccess(user: FirebaseUser?)
     fun onFailure(errorCode: String)
     fun onResendCode()
     fun onTimeOut()
@@ -50,7 +50,7 @@ class AuthProvider {
             }
         }
 
-    fun isUserSignedIn() = user != null
+    fun isUserSignedIn() = firebaseAuth.currentUser != null
 
     suspend fun verifyCurrentUser(): Boolean {
         return suspendCoroutine {
@@ -90,7 +90,7 @@ class AuthProvider {
             .addOnCompleteListener(TaskExecutors.MAIN_THREAD, OnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val user = task.result?.user
-                    authListener?.onSuccess()
+                    authListener?.onSuccess(user)
                 } else {
                     if (task.exception is FirebaseAuthInvalidCredentialsException) {
                         authListener?.onFailure((task.exception as FirebaseAuthInvalidCredentialsException).errorCode)

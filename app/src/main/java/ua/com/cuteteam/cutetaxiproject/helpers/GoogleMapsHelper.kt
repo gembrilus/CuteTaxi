@@ -1,5 +1,7 @@
 package ua.com.cuteteam.cutetaxiproject.helpers
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -8,7 +10,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.api.RouteProvider
+import ua.com.cuteteam.cutetaxiproject.application.AppClass
 import ua.com.cuteteam.cutetaxiproject.data.MarkerData
+
 
 class GoogleMapsHelper(private val googleMap: GoogleMap) {
 
@@ -21,19 +25,11 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
 
     fun updateMarkers(markers: MutableCollection<MarkerData>?) {
         googleMap.clear()
-        markers?.forEach { addMarker(it) }
+        markers?.forEach { createMarker(it) }
     }
 
     fun onCameraMove(callback: ((CameraPosition) -> Unit)) {
         googleMap.setOnCameraMoveListener { callback.invoke(googleMap.cameraPosition) }
-    }
-
-    private fun addMarker(markerData: MarkerData) {
-        googleMap.addMarker(
-            MarkerOptions()
-                .position(markerData.position)
-                .icon(BitmapDescriptorFactory.fromResource(markerData.icon))
-        )
     }
 
     fun moveCameraToLocation(latLng: LatLng) {
@@ -44,7 +40,8 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
         return googleMap.addMarker(
             MarkerOptions()
                 .position(markerData.position)
-                .icon(BitmapDescriptorFactory.fromResource(markerData.icon))
+                .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons(markerData.icon, 150, 150)))
+
         )
     }
 
@@ -58,8 +55,12 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
         }
     }
 
-    suspend fun routeSummary(from: LatLng, to: LatLng): RouteProvider.RouteSummary {
-        val routeProvider = buildRouteProvider(from, to)
+    suspend fun routeSummary(
+        from: LatLng,
+        to: LatLng,
+        wayPoints: List<LatLng>
+    ): RouteProvider.RouteSummary {
+        val routeProvider = buildRouteProvider(from, to, wayPoints)
         return withContext(Dispatchers.Main) { return@withContext routeProvider.routes()[0] }
     }
 
@@ -77,7 +78,6 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
             .endCap(customCap)
 
         addPolyline(polylineOptions)
-        updateCameraForCurrentRoute(routeSummary)
         return polylineOptions
     }
 
@@ -89,7 +89,7 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
         googleMap.setOnMapClickListener(null)
     }
 
-    private fun updateCameraForCurrentRoute(routeSummary: RouteProvider.RouteSummary?) {
+    fun updateCameraForCurrentRoute(routeSummary: RouteProvider.RouteSummary?) {
         routeSummary?.let {
             googleMap.animateCamera(
                 CameraUpdateFactory.newLatLngBounds(
@@ -109,10 +109,20 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
             .build()
     }
 
-    private fun buildRouteProvider(from: LatLng, to: LatLng): RouteProvider {
-        return RouteProvider.Builder()
+    private fun buildRouteProvider(from: LatLng, to: LatLng, wayPoints: List<LatLng>)
+            : RouteProvider {
+        val routeProviderBuilder = RouteProvider.Builder()
+        wayPoints.forEach {
+            routeProviderBuilder.addWayPoint(it)
+        }
+        return routeProviderBuilder
             .addOrigin(from)
             .addDestination(to)
             .build()
+    }
+
+    private fun resizeMapIcons(iconId: Int, width: Int, height: Int): Bitmap? {
+        val b = BitmapFactory.decodeResource(AppClass.appContext().resources, iconId)
+        return Bitmap.createScaledBitmap(b, width, height, false)
     }
 }
