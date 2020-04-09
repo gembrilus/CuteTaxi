@@ -43,7 +43,7 @@ class PassengerMapsFragment : MapsFragment() {
                         "B" -> viewModel.setDestAddress(markerData.second.position)
                     }
                     viewModel.createMarker(markerData)
-//                    viewModel.buildRoute()
+                    viewModel.updateCameraForRoute()
                 }
                 val location = viewModel.locationProvider.getLocation()?.toLatLng ?: return@launch
 

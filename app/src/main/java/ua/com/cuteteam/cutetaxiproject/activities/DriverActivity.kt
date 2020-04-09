@@ -2,7 +2,9 @@ package ua.com.cuteteam.cutetaxiproject.activities
 
 import android.app.Service
 import android.content.SharedPreferences
+import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.fragment_map_driver.*
 import ua.com.cuteteam.cutetaxiproject.R
@@ -33,13 +35,21 @@ class DriverActivity : BaseActivity(), OrdersAdapter.OnOrderAccept {
         model.subscribeOnOrder(orderId)
         navController.setGraph(R.navigation.nav_graph_driver)
     }
-    override fun onNoActiveOrder() =
-        navController.navigate(R.id.action_home_to_new_orders)
-
+    override fun onNoActiveOrder() = model.openHomeOrOrders()
 
     override fun onAccept(orderId: String) {
         model.obtainOrder(orderId)
         navController.navigate(R.id.action_new_orders_to_home)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        model.openHomeOrOrders.observe(this, Observer{
+            if (!it) {
+                navController.navigate(R.id.action_home_to_new_orders)
+            }
+        })
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {

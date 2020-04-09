@@ -10,18 +10,17 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ua.com.cuteteam.cutetaxiproject.livedata.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.R
 import ua.com.cuteteam.cutetaxiproject.common.arrivalTime
 import ua.com.cuteteam.cutetaxiproject.data.database.DbEntries
 import ua.com.cuteteam.cutetaxiproject.data.entities.Coordinates
-import ua.com.cuteteam.cutetaxiproject.data.entities.Driver
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.data.entities.OrderStatus
 import ua.com.cuteteam.cutetaxiproject.extentions.distanceTo
 import ua.com.cuteteam.cutetaxiproject.extentions.toLatLng
+import ua.com.cuteteam.cutetaxiproject.livedata.LocationLiveData
+import ua.com.cuteteam.cutetaxiproject.livedata.MapAction
 import ua.com.cuteteam.cutetaxiproject.repositories.DriverRepository
-import ua.com.cuteteam.cutetaxiproject.repositories.Repository
 
 class DriverViewModel(
     private val repo: DriverRepository
@@ -33,6 +32,10 @@ class DriverViewModel(
     }
 
     var mapOfVisibility: Map<View, Int>? = null
+
+    fun buildRoute(from: LatLng, to: LatLng, wayPoints: List<LatLng>) {
+        mapAction.value = MapAction.BuildRoute(from, to, wayPoints)
+    }
 
     private val orderListener by lazy {
         object : ValueEventListener {
@@ -57,15 +60,42 @@ class DriverViewModel(
         }
     }
 
+    private val countObserver by lazy {
+        object : Observer<Int?> {
+            override fun onChanged(count: Int?) {
+                count ?: return
+                _openHomeOrOrders.value = (count == 0)
+                countOfOrders.removeObserver(this)
+            }
+        }
+    }
+    private val _openHomeOrOrders = MutableLiveData<Boolean>()
+    val openHomeOrOrders: LiveData<Boolean> get() = _openHomeOrOrders
+    fun openHomeOrOrders() = countOfOrders.observeForever(countObserver)
+
     private val _activeOrder = MutableLiveData<Order>()
     val activeOrder: LiveData<Order> get() = _activeOrder
 
     private val _orders = MutableLiveData<List<Order>>()
-    val orders = MediatorLiveData<List<Order>>()
-
-    val countOfOrders = Transformations.map(orders) {
-        it?.size
+    val orders = MediatorLiveData<List<Order>>().apply {
+        addSource(_orders) { list ->
+            value = list?.filter { it.comfortLevel == repo.spHelper.carClass }
+        }
+        addSource(LocationLiveData()) { loc ->
+            value = value?.map {
+                it.apply {
+                    driverLocation = Coordinates(loc.latitude, loc.longitude)
+                }
+            }
+        }
     }
+
+    private val _countOfOrders = MediatorLiveData<Int?>().apply {
+        addSource(orders) { list ->
+            value = list?.size
+        }
+    }
+    val countOfOrders: LiveData<Int?> get() = _countOfOrders
 
     fun updateOrders() {
         _orders.value = _orders.value
@@ -92,16 +122,6 @@ class DriverViewModel(
                         }
                     }
             }
-            orders.addSource(_orders) { list ->
-                orders.value = list?.filter { it.comfortLevel == repo.spHelper.carClass }
-            }
-            orders.addSource(LocationLiveData()) { loc ->
-                orders.value = orders.value?.map {
-                    it.apply {
-                        driverLocation = Coordinates(loc.latitude, loc.longitude)
-                    }
-                }
-            }
         }
     }
 
@@ -110,7 +130,7 @@ class DriverViewModel(
             mOrder = repo.dao.getOrder(orderId)?.apply {
                 if (orderStatus == OrderStatus.NEW) {
                     orderStatus = OrderStatus.ACCEPTED
-                    driverId = FirebaseAuth.getInstance().currentUser?.uid
+                    driverId = getSignInUser()?.uid
                     arrivingTime = arrivalTime(this)
                     carInfo = with(repo.spHelper) {
                         repo.appContext.getString(
@@ -163,7 +183,7 @@ class DriverViewModel(
 
     private fun calculateTripRating() = viewModelScope.launch {
 
-        val driver = FirebaseAuth.getInstance().currentUser?.uid?.let { repo.dao.getUser(it) }
+        val driver = getSignInUser()?.uid?.let { repo.dao.getUser(it) }
         val rating = mOrder?.driverRate
         val currentRating = driver?.rate ?: 0.0
         val currentCountOfTrips = driver?.tripsCount ?: 0
@@ -171,7 +191,7 @@ class DriverViewModel(
         val newCountOfTrips = currentCountOfTrips + 1
         val newRating = rating?.let { (currentCountOfTrips * currentRating + it) / newCountOfTrips }
 
-        driver?.let {user ->
+        driver?.let { user ->
             user.tripsCount = newCountOfTrips
             newRating?.let { user.rate = it }
             repo.dao.writeUser(user)
@@ -184,5 +204,4 @@ class DriverViewModel(
         currentLocation.removeObserver(locationObserver)
         repo.dao.removeAllListeners()
     }
-
 }

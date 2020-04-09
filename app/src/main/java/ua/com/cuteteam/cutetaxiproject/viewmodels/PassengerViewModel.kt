@@ -16,7 +16,6 @@ import ua.com.cuteteam.cutetaxiproject.data.entities.Address
 import ua.com.cuteteam.cutetaxiproject.data.entities.Coordinates
 import ua.com.cuteteam.cutetaxiproject.data.entities.Order
 import ua.com.cuteteam.cutetaxiproject.extentions.mutation
-import ua.com.cuteteam.cutetaxiproject.livedata.LocationLiveData
 import ua.com.cuteteam.cutetaxiproject.livedata.MapAction
 import ua.com.cuteteam.cutetaxiproject.repositories.PassengerRepository
 import java.io.IOException
@@ -33,16 +32,6 @@ class PassengerViewModel(private val repository: PassengerRepository) : BaseView
         mapAction.value = MapAction.CreateMarker(pair)
     }
 
-    fun addMarkerByTag(tag: String, location: LatLng) {
-        val markers: MutableMap<String, MarkerData> = markersData.value ?: mutableMapOf()
-        when (tag) {
-            "A" -> markers[tag] = MarkerData(location, R.drawable.marker_a_icon)
-            "B" -> markers[tag] = MarkerData(location, R.drawable.marker_b_icon)
-        }
-        markersData.value = markers
-        updateMapObjects()
-    }
-
     fun addOnMapClickListener(callback: ((LatLng) -> Unit)) {
         mapAction.value = MapAction.AddOnMapClickListener(callback)
     }
@@ -54,7 +43,6 @@ class PassengerViewModel(private val repository: PassengerRepository) : BaseView
     val activeOrder: MutableLiveData<Order?>
         get() = repository.activeOrder
 
-
     val newOrder =
         MutableLiveData(Order(passengerId = FirebaseAuth.getInstance().currentUser!!.uid))
 
@@ -64,9 +52,6 @@ class PassengerViewModel(private val repository: PassengerRepository) : BaseView
         newOrder.map { it.addressDestination?.location?.toLatLng() }
 
     val addresses = MutableLiveData<List<Address>>()
-
-    val observableLocation: LocationLiveData
-        get() = repository.observableLocation
 
     fun setStartAddress(location: LatLng) = viewModelScope.launch {
         withContext(Dispatchers.IO) {
