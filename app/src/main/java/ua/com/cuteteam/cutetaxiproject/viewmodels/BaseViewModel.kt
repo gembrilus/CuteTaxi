@@ -68,10 +68,6 @@ abstract class BaseViewModel(
         mapAction.value = MapAction.MoveCamera(latLng)
     }
 
-    fun updateCameraForRoute() {
-        mapAction.value = MapAction.UpdateCameraForRoute
-    }
-
     suspend fun currentCameraPosition(): CameraPosition {
         return cameraPosition ?: countryCameraPosition()
     }
@@ -79,6 +75,13 @@ abstract class BaseViewModel(
     fun setMarkersData(pair: Pair<String, MarkerData>) {
         if (findMarkerDataByTag(pair.first)?.equals(pair.second) == true) return
         markersData.value = markersData.value?.plus(pair)?.toMutableMap()
+    }
+
+    fun buildRoute() {
+        val from = findMarkerDataByTag("A")?.position
+        val to = findMarkerDataByTag("B")?.position
+        if (from == null || to == null) return
+        mapAction.value = MapAction.BuildRoute(from, to)
     }
 
     fun findMarkerDataByTag(tag: String): MarkerData? {

@@ -79,6 +79,7 @@ abstract class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
 
             viewModel.markersData.observe(this@MapsFragment, Observer {
                 googleMapsHelper.updateMarkers(viewModel.markersData.value?.values)
+                viewModel.buildRoute()
             })
 
             viewModel.mapAction.observe(this@MapsFragment, Observer { mapAction ->
@@ -106,9 +107,13 @@ abstract class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
                         mapAction.callback
                     )
                     is MapAction.RemoveOnMapClickListener -> googleMapsHelper.removeOnMapClickListener()
-                    is MapAction.BuildRoute -> GlobalScope.launch (Dispatchers.Main) {
+                    is MapAction.BuildRoute -> GlobalScope.launch(Dispatchers.Main) {
                         viewModel.polylineOptions = googleMapsHelper.buildRoute(
-                            googleMapsHelper.routeSummary(mapAction.from, mapAction.to, mapAction.wayPoints)
+                            googleMapsHelper.routeSummary(
+                                mapAction.from,
+                                mapAction.to,
+                                mapAction.wayPoints
+                            )
                         )
                     }
                     is MapAction.MoveCamera -> GlobalScope.launch(Dispatchers.Main) {

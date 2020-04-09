@@ -22,16 +22,9 @@ import java.io.IOException
 class PassengerViewModel(private val repository: PassengerRepository) : BaseViewModel(repository) {
 
     fun nextMarker(latLng: LatLng): Pair<String, MarkerData> {
-        return if ( findMarkerDataByTag("A") == null )
+        return if (findMarkerDataByTag("A") == null)
             "A" to MarkerData(latLng, R.drawable.marker_a_icon)
         else "B" to MarkerData(latLng, R.drawable.marker_b_icon)
-    }
-
-    fun buildRoute() {
-        val from = findMarkerDataByTag("A")?.position
-        val to = findMarkerDataByTag("B")?.position
-        if (from == null || to == null) return
-        mapAction.value = MapAction.BuildRoute(from, to)
     }
 
     fun createMarker(pair: Pair<String, MarkerData>) {

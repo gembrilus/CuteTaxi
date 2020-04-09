@@ -39,8 +39,18 @@ class DriverMapsFragment : MapsFragment() {
                     val startPoint = it.addressStart?.location?.toLatLng()!!
                     val destinationPoint = it.addressDestination?.location?.toLatLng()!!
 
-                    viewModel.setMarkersData("A" to MarkerData(startPoint, R.drawable.marker_a_icon))
-                    viewModel.setMarkersData("B" to MarkerData(destinationPoint, R.drawable.marker_b_icon))
+                    viewModel.setMarkersData(
+                        "A" to MarkerData(
+                            startPoint,
+                            R.drawable.marker_a_icon
+                        )
+                    )
+                    viewModel.setMarkersData(
+                        "B" to MarkerData(
+                            destinationPoint,
+                            R.drawable.marker_b_icon
+                        )
+                    )
                     viewModel.buildRoute(location, destinationPoint, listOf(startPoint))
                 })
 
