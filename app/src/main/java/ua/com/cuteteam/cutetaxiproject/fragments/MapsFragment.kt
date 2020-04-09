@@ -5,9 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import com.google.android.gms.maps.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import ua.com.cuteteam.cutetaxiproject.helpers.GoogleMapsHelper
 import ua.com.cuteteam.cutetaxiproject.R
@@ -17,6 +15,8 @@ import ua.com.cuteteam.cutetaxiproject.livedata.MapAction
 import ua.com.cuteteam.cutetaxiproject.permissions.AccessFineLocationPermission
 import ua.com.cuteteam.cutetaxiproject.permissions.PermissionProvider
 import ua.com.cuteteam.cutetaxiproject.viewmodels.BaseViewModel
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 abstract class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
 
@@ -97,27 +97,25 @@ abstract class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
                         viewModel.setMarkers(mapAction.pair.first to marker)
                         viewModel.setMarkersData(mapAction.pair)
                     }
-
                     is MapAction.RemoveMarker -> {
                         googleMapsHelper.removeMarker(viewModel.findMarkerByTag(mapAction.tag))
                         viewModel.removeMarker(mapAction.tag)
                     }
-
                     is MapAction.AddOnMapClickListener -> googleMapsHelper.addOnMapClickListener(
                         mapAction.callback
                     )
                     is MapAction.RemoveOnMapClickListener -> googleMapsHelper.removeOnMapClickListener()
                     is MapAction.BuildRoute -> GlobalScope.launch(Dispatchers.Main) {
-                        viewModel.polylineOptions = googleMapsHelper.buildRoute(
-                            googleMapsHelper.routeSummary(
-                                mapAction.from,
-                                mapAction.to,
-                                mapAction.wayPoints
-                            )
-                        )
+                        buildRoute(googleMapsHelper, mapAction)
                     }
                     is MapAction.MoveCamera -> GlobalScope.launch(Dispatchers.Main) {
                         googleMapsHelper.moveCameraToLocation(mapAction.latLng)
+                    }
+                    is MapAction.UpdateCameraForRoute -> {
+                        viewModel.currentRoute.observe(this, Observer {
+                            if (it != null)
+                                googleMapsHelper.updateCameraForCurrentRoute(it)
+                        })
                     }
                 }
             })
@@ -133,6 +131,27 @@ abstract class MapsFragment : SupportMapFragment(), OnMapReadyCallback {
                 viewModel.cameraPosition = position
             }
         }
+    }
+
+    private suspend fun buildRoute(
+        googleMapsHelper: GoogleMapsHelper,
+        mapAction: MapAction.BuildRoute
+    ) {
+        viewModel.setCurrentRoute(
+            suspendCoroutine {
+                GlobalScope.launch(Dispatchers.Main) {
+                    it.resume(
+                        googleMapsHelper.routeSummary(
+                            mapAction.from,
+                            mapAction.to,
+                            mapAction.wayPoints
+                        ).also {
+                            viewModel.polylineOptions = googleMapsHelper.buildRoute(it)
+                        }
+                    )
+                }
+            }
+        )
     }
 
     abstract fun initMap(googleMapsHelper: GoogleMapsHelper)

@@ -34,7 +34,7 @@ abstract class BaseViewModel(
     val observableLocation: LocationLiveData
         get() = repository.observableLocation
 
-    var currentRoute: RouteProvider.RouteSummary? = null
+    var currentRoute = MutableLiveData<RouteProvider.RouteSummary>()
 
     var cameraPosition: CameraPosition? = null
 
@@ -46,6 +46,10 @@ abstract class BaseViewModel(
     val markersData = MutableLiveData(mutableMapOf<String, MarkerData>())
 
     private val markers = mutableMapOf<String, Marker?>()
+
+    fun setCurrentRoute(routeSummary: RouteProvider.RouteSummary) {
+        currentRoute.value = routeSummary
+    }
 
     fun setMarkers(pair: Pair<String, Marker?>) {
         markers[pair.first] = pair.second
@@ -62,6 +66,10 @@ abstract class BaseViewModel(
 
     fun updateMapObjects() {
         mapAction.value = MapAction.UpdateMapObjects
+    }
+
+    fun updateCameraForRoute() {
+        mapAction.value = MapAction.UpdateCameraForRoute
     }
 
     fun moveCamera(latLng: LatLng) {

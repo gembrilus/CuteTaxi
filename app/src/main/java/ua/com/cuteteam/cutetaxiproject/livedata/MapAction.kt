@@ -13,4 +13,5 @@ sealed class MapAction {
     class MoveCamera(val latLng: LatLng) : MapAction()
     class BuildRoute(val from: LatLng, val to: LatLng, val wayPoints: List<LatLng> = emptyList()) :
         MapAction()
+    object UpdateCameraForRoute : MapAction()
 }

@@ -81,7 +81,6 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
             .endCap(customCap)
 
         addPolyline(polylineOptions)
-        updateCameraForCurrentRoute(routeSummary)
         return polylineOptions
     }
 
@@ -93,7 +92,7 @@ class GoogleMapsHelper(private val googleMap: GoogleMap) {
         googleMap.setOnMapClickListener(null)
     }
 
-    private fun updateCameraForCurrentRoute(routeSummary: RouteProvider.RouteSummary?) {
+    fun updateCameraForCurrentRoute(routeSummary: RouteProvider.RouteSummary?) {
         routeSummary?.let {
             googleMap.animateCamera(
                 CameraUpdateFactory.newLatLngBounds(
